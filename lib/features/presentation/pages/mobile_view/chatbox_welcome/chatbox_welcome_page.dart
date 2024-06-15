@@ -1,3 +1,4 @@
+import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/app_icon_hold_widget.dart';
@@ -10,7 +11,7 @@ class ChatboxWelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = ThemeConstants.theme(context: context);
     return Scaffold(
       body: Center(
         child: Column(
@@ -48,15 +49,16 @@ class ChatboxWelcomePage extends StatelessWidget {
               ],
             ),
             kHeight20,
-            const CommonButtonContainer(
+             CommonButtonContainer(
+              onTap: () {
+                Navigator.pushNamed(context, "create_account");
+              },
               horizontalMarginOfButton: 30,
               text: "Get Started",
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-

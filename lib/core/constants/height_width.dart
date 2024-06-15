@@ -60,3 +60,5 @@ double screenWidth({required BuildContext context}){
 Size screenSize({required BuildContext context}){
   return MediaQuery.of(context).size;
 }
+
+

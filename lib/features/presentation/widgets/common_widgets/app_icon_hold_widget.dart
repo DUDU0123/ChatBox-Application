@@ -1,3 +1,4 @@
+import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,27 +10,28 @@ class AppIconHoldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeConstants.theme(context: context);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.sp),
-        boxShadow: const [
+        boxShadow:  [
           BoxShadow(
-            offset: Offset(1, 1),
+            offset: const Offset(0, 1),
             blurRadius: 1,
-            spreadRadius: 1,
-            color: Color.fromARGB(255, 5, 4, 11)
+            spreadRadius: 0.5,
+            color: theme.shadowColor,
           ),
           BoxShadow(
-            offset: Offset(0, -1),
+            offset: const Offset(0, -1),
             blurRadius: 1,
-            spreadRadius: 1,
-            color: Color.fromARGB(255, 5, 4, 11)
+            spreadRadius: 0.5,
+            color: theme.shadowColor,
           )
         ]
       ),
       height: 150,width: 150,
-      child: SvgPicture.asset(
-        "assets/appIconSvg.svg",
+      child: Image.asset(
+        "assets/appLogo.png",
         fit: BoxFit.cover,
       ),
     );
