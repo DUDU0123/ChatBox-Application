@@ -10,7 +10,7 @@ class TextFieldCommon extends StatelessWidget {
     this.suffixIcon,
     this.hintText,
     required this.controller,
-    required this.textAlign, this.enabled, this.keyboardType, this.style, this.prefix,
+    required this.textAlign, this.enabled, this.keyboardType, this.style, this.prefix, this.fillColor,
   });
   final InputBorder? border;
   final TextStyle? style;
@@ -21,6 +21,7 @@ class TextFieldCommon extends StatelessWidget {
   final bool? enabled;
   final TextInputType? keyboardType;
   final Widget? prefix;
+  final Color? fillColor;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class TextFieldCommon extends StatelessWidget {
       decoration: InputDecoration(
         prefix: prefix,
        // filled: true,
-        fillColor: kTransparent,
+        fillColor: fillColor??kTransparent,
         border: border,
         disabledBorder: border,
         enabledBorder: border,

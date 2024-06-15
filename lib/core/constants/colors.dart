@@ -15,7 +15,8 @@ Color darkLinearGradientColorTwo = const Color.fromARGB(255, 0, 14, 45);
 Color lightLinearGradientColorOne = const Color.fromARGB(255, 0, 79, 249);
 Color lightLinearGradientColorTwo = const Color.fromARGB(255, 0, 47, 147);
 Color buttonSmallTextColor = const Color.fromARGB(255, 0, 79, 249);
-
+Color onSecondaryColorDark = const Color.fromARGB(255, 45, 45, 45);
+Color onSecondaryColorLight = const Color.fromARGB(255, 228, 228, 228);
 TextStyle fieldStyle({required BuildContext context}) => TextStyle(
       fontSize:
           ThemeConstants.theme(context: context).textTheme.labelSmall?.fontSize,
@@ -27,3 +28,14 @@ TextStyle labelStyle({required BuildContext context}) => const TextStyle(
           16,
       fontWeight: FontWeight.bold,
     );
+
+
+// assets
+const doubleTick = "assets/double_tick.svg";
+const singleTick = "assets/one_tick.svg";
+const search = "assets/search.svg";
+const location = "assets/location.svg";
+const mute = "assets/mute.svg";
+const qrcode = "assets/qrcode.svg";
+const wallpaper = "assets/wallpaper.svg";
+const timer = "assets/timer.svg";

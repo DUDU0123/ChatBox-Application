@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // Blank Widget
-SizedBox sizedBoxBlank = const SizedBox();
+SizedBox zeroMeasureWidget = const SizedBox(height: 0,width: 0,);
+
 //Height
 SizedBox kHeight5 =  SizedBox(height: 5.h);
 SizedBox kHeight10 =  SizedBox(height: 10.h);
