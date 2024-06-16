@@ -15,15 +15,29 @@ class NavigatorBottomnavPage extends StatelessWidget {
     const StatusHomePage(),
     const CallHomePage(),
   ];
+  PageController pageController = PageController(initialPage: 0);
   @override
   Widget build(BuildContext context) {
+    final bottomNavBloc = BlocProvider.of<BottomNavBloc>(context);
     return Scaffold(
       body: BlocBuilder<BottomNavBloc, BottomNavState>(
         builder: (context, state) {
-          return pages[state.currentIndex];
+          return PageView(
+            onPageChanged: (index) {
+              bottomNavBloc.add(
+                BottomNavIconClickedEvent(
+                  currentIndex: index,
+                ),
+              );
+            },
+            controller: pageController,
+            children: pages,
+          );
         },
       ),
-      bottomNavigationBar: const BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(
+        pageController: pageController,
+      ),
     );
   }
 }

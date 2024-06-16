@@ -26,7 +26,12 @@ class ChatListTileWidget extends StatelessWidget {
   final String lastMessageArrivedTime;
   final int notificationNUmber;
   final bool isNotificationCome;
+  // message section
   final bool isMutedChat;
+  // final bool isTyping;
+  // final bool isVoiceRecoding;
+  // final bool isPhoto;
+  // final bool isIncomingMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +105,11 @@ class ChatListTileWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 isMutedChat
-                    ? SvgPicture.asset(
+                    ? Image.asset(
                         mute,
                         width: 20.w,
                         height: 17.h,
-                        colorFilter: ColorFilter.mode(
-                          darkSmallTextColor,
-                          BlendMode.srcIn,
-                        ),
+                        color: darkSmallTextColor,
                       )
                     : zeroMeasureWidget,
                 kWidth5,

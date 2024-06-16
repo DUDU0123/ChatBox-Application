@@ -9,7 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
     super.key,
+    required this.pageController,
   });
+  final PageController pageController;
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +23,13 @@ class BottomNavBar extends StatelessWidget {
         return BottomNavigationBar(
           currentIndex: state.currentIndex,
           onTap: (currentIndex) {
+            pageController.jumpToPage(currentIndex);
             bottomNavBloc.add(
               BottomNavIconClickedEvent(
                 currentIndex: currentIndex,
               ),
             );
           },
-          backgroundColor: theme.scaffoldBackgroundColor,
           // type: BottomNavigationBarType.fixed,
           // showSelectedLabels: true,
           // showUnselectedLabels: true,
@@ -43,29 +45,27 @@ class BottomNavBar extends StatelessWidget {
           // unselectedLabelStyle: const TextStyle(
           //   fontWeight: FontWeight.bold,
           // ),
+          backgroundColor: theme.scaffoldBackgroundColor,
           items: [
             BottomNavigationBarItem(
               icon: BottomIconWidget(
-                iconColor: bottomNavBloc.state.currentIndex == 0
+                iconColor: state.currentIndex == 0
                     ? theme.iconTheme.color
                     : theme.colorScheme.onPrimary,
-                color: bottomNavBloc.state.currentIndex == 0
-                    ? selectedIconColor
-                    : kTransparent,
+                color:
+                    state.currentIndex == 0 ? selectedIconColor : kTransparent,
                 iconName: "assets/chat.png",
                 scale: 21,
               ),
               label: "Chats",
             ),
             BottomNavigationBarItem(
-              icon:
-              BottomIconWidget(
-                iconColor: bottomNavBloc.state.currentIndex == 1
+              icon: BottomIconWidget(
+                iconColor: state.currentIndex == 1
                     ? theme.iconTheme.color
                     : theme.colorScheme.onPrimary,
-                color: bottomNavBloc.state.currentIndex == 1
-                    ? selectedIconColor
-                    : kTransparent,
+                color:
+                    state.currentIndex == 1 ? selectedIconColor : kTransparent,
                 iconName: "assets/groups.png",
                 scale: 15.sp,
               ),
@@ -73,12 +73,11 @@ class BottomNavBar extends StatelessWidget {
             ),
             BottomNavigationBarItem(
               icon: BottomIconWidget(
-                iconColor: bottomNavBloc.state.currentIndex == 2
+                iconColor: state.currentIndex == 2
                     ? theme.iconTheme.color
                     : theme.colorScheme.onPrimary,
-                color: bottomNavBloc.state.currentIndex == 2
-                    ? selectedIconColor
-                    : kTransparent,
+                color:
+                    state.currentIndex == 2 ? selectedIconColor : kTransparent,
                 iconName: "assets/status.png",
                 scale: 21,
               ),
@@ -86,12 +85,11 @@ class BottomNavBar extends StatelessWidget {
             ),
             BottomNavigationBarItem(
               icon: BottomIconWidget(
-                iconColor: bottomNavBloc.state.currentIndex == 3
+                iconColor: state.currentIndex == 3
                     ? theme.iconTheme.color
                     : theme.colorScheme.onPrimary,
-                color: bottomNavBloc.state.currentIndex == 3
-                    ? selectedIconColor
-                    : kTransparent,
+                color:
+                    state.currentIndex == 3 ? selectedIconColor : kTransparent,
                 iconName: "assets/call.png",
                 scale: 21,
               ),

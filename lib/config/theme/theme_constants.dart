@@ -6,6 +6,7 @@ class ThemeConstants {
   static ThemeData lightTheme = ThemeData(
     appBarTheme: AppBarTheme(
       backgroundColor: kWhite,
+      surfaceTintColor: kTransparent,
     ),
     brightness: Brightness.light,
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -66,6 +67,7 @@ class ThemeConstants {
 
   static ThemeData darkTheme = ThemeData(
     appBarTheme: AppBarTheme(
+      surfaceTintColor: kTransparent,
       backgroundColor: darkScaffoldColor,
     ),
     brightness: Brightness.dark,

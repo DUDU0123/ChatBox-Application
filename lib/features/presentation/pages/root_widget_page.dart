@@ -18,6 +18,7 @@ class RootWidgetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return ChangeNotifierProvider(
       create: (context) => ThemeManager()..init(),
       child: ScreenUtilInit(builder: (context, child) {
@@ -36,8 +37,8 @@ class RootWidgetPage extends StatelessWidget {
             initialRoute: "/",
             routes: {
               "/": (context) => const MainPage(
-                    mobileScreenLayout: ChatboxWelcomePage(),
-                    webScreenLayout: ChatboxWebAuthenticationPage(),
+                    // mobileScreenLayout: ChatboxWelcomePage(),
+                    // webScreenLayout: ChatboxWebAuthenticationPage(),
                   ),
               'welcome_page': (context) => const ChatboxWelcomePage(),
               "create_account": (context) => CreateAccountPage(),
