@@ -10,7 +10,7 @@ class TextFieldCommon extends StatelessWidget {
     this.suffixIcon,
     this.hintText,
     required this.controller,
-    required this.textAlign, this.enabled, this.keyboardType, this.style, this.prefix, this.fillColor,
+    required this.textAlign, this.enabled, this.keyboardType, this.style, this.prefix, this.fillColor, this.focusNode,
   });
   final InputBorder? border;
   final TextStyle? style;
@@ -22,11 +22,13 @@ class TextFieldCommon extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? prefix;
   final Color? fillColor;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeConstants.theme(context: context);
     return TextField(
+      focusNode: focusNode,
       cursorColor: theme.primaryColor,
       style: style,
       keyboardType: keyboardType,

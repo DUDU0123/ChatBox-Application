@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 Color kWhite = Colors.white;
 Color kBlack = Colors.black;
 Color kTransparent = Colors.transparent;
-Color kGrey = Colors.grey;
+Color kGrey = const Color.fromARGB(255, 108, 108, 108);
 Color darkScaffoldColor = const Color.fromARGB(255, 22, 23, 28);
 Color darkSmallTextColor = const Color.fromARGB(255, 5, 118, 251);
 Color bottomNavIconBgColor = const Color.fromARGB(255, 0, 87, 255);
@@ -17,6 +17,8 @@ Color lightLinearGradientColorTwo = const Color.fromARGB(255, 0, 47, 147);
 Color buttonSmallTextColor = const Color.fromARGB(255, 0, 79, 249);
 Color onSecondaryColorDark = const Color.fromARGB(255, 45, 45, 45);
 Color onSecondaryColorLight = const Color.fromARGB(255, 228, 228, 228);
+Color boxColorDark = const Color.fromARGB(255, 34, 35, 42);
+Color boxColorWhite = const Color.fromARGB(255, 237, 237, 237);
 TextStyle fieldStyle({required BuildContext context}) => TextStyle(
       fontSize:
           ThemeConstants.theme(context: context).textTheme.labelSmall?.fontSize,
@@ -39,3 +41,5 @@ const mute = "assets/mute.png";
 const qrcode = "assets/qrcode.svg";
 const wallpaper = "assets/wallpaper.svg";
 const timer = "assets/timer.svg";
+const document = "assets/document.svg";
+const microphoneFilled = "assets/microphone_filled.svg";
