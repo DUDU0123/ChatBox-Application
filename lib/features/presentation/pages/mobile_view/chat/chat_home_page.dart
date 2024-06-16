@@ -1,15 +1,10 @@
-import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/appbar_title_home.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_listtile_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/searchbar_chat_home.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/appbar_icons_home.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 class ChatHomePage extends StatelessWidget {
   ChatHomePage({super.key});
 

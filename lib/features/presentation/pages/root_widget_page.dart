@@ -1,3 +1,4 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/features/presentation/bloc/bottomNavBloc/bottom_nav_bloc.dart';
@@ -22,11 +23,7 @@ class RootWidgetPage extends StatelessWidget {
       child: ScreenUtilInit(builder: (context, child) {
         final themeManager = Provider.of<ThemeManager>(context);
         return MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => BottomNavBloc(),
-            ),
-          ],
+          providers: AppBlocProviders.allBlocProviders,
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             themeMode: ThemeMode.light,

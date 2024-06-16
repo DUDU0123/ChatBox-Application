@@ -30,7 +30,7 @@ class SearchBarChatHome extends StatelessWidget {
         width: screenWidth(context: context),
         child: Center(
           child: TextFieldCommon(
-            
+            keyboardType: TextInputType.name,
             hintText: "Search chat...",
             style: fieldStyle(context: context).copyWith(
               fontWeight: FontWeight.normal
