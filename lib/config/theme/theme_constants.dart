@@ -64,6 +64,7 @@ class ThemeConstants {
     colorScheme: const ColorScheme.light().copyWith(
       onPrimary: kBlack,
       onSecondary: onSecondaryColorLight,
+      onTertiary: kWhite,
     ),
     popupMenuTheme: PopupMenuThemeData(
       surfaceTintColor: kTransparent,
@@ -131,6 +132,7 @@ class ThemeConstants {
     colorScheme: const ColorScheme.dark().copyWith(
       onPrimary: kWhite,
       onSecondary: onSecondaryColorDark,
+      onTertiary: greyBlackColor,
     ),
     primaryColor: buttonSmallTextColor,
     iconTheme: IconThemeData(

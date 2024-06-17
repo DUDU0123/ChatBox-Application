@@ -6,8 +6,8 @@ import 'package:flutter_svg/svg.dart';
 
 Positioned messageBottomStatusIcons({required bool? isReadedMessage}) {
   return Positioned(
-    bottom: 0.h,
-    right: 5.w,
+    bottom: 3.h,
+    right: 10.w,
     child: Row(
       children: [
         Icon(

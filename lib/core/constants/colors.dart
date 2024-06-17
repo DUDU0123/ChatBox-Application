@@ -34,15 +34,42 @@ TextStyle labelStyle({required BuildContext context}) => const TextStyle(
     );
 
 
+// attachments color
+Color documentColorOne = const Color.fromARGB(255, 61, 49, 197);
+Color documentColorTwo = const Color.fromARGB(255, 73, 24, 111);
+Color cameraColorOne = const Color.fromARGB(255, 205, 0, 111);
+Color cameraColorTwo = const Color.fromARGB(255, 103, 0, 56);
+Color galleryColorOne = const Color.fromARGB(255, 224, 68, 237);
+Color galleryColorTwo = const Color.fromARGB(255, 128, 39, 135);
+Color audioColorOne = const Color.fromARGB(255, 244, 110, 53);
+Color audioColorTwo = const Color.fromARGB(255, 142, 64, 31);
+Color locationColorOne = const Color.fromARGB(255, 26, 176, 95);
+Color locationColorTwo = const Color.fromARGB(255, 11, 74, 40);
+Color contactColorOne = const Color.fromARGB(255, 30, 81, 92);
+Color contactColorTwo = const Color.fromARGB(255, 33, 197, 233);
+Color greyBlackColor = const Color.fromARGB(255, 32, 43, 67);
+
 // assets
 const doubleTick = "assets/double_tick.svg";
+const keyIcon = "assets/key.svg";
+const privacyIcon = "assets/privacy.svg";
+const chatsIcon = "assets/chat.svg";
+const notificationIcon = "assets/notifyIcon.svg";
+const storageIcon = "assets/storage.svg";
+const helpIcon = "assets/help.svg";
+const inviteIcon = "assets/invite.svg";
 const singleTick = "assets/one_tick.svg";
 const bgImageDark = "assets/backgroundImage.png";
+const bgImageLight = "assets/bgLightWallpaper.png";
 const cameraIcon = "assets/camera.svg";
+const gallery = "assets/photos.svg";
 const search = "assets/search.svg";
+const info = "assets/info.svg";
+const headphone = "assets/headphone.svg";
 const location = "assets/location.svg";
 const mute = "assets/mute.png";
 const qrcode = "assets/qrcode.svg";
+const contact = "assets/contact.svg";
 const wallpaper = "assets/wallpaper.svg";
 const timer = "assets/timer.svg";
 const document = "assets/document.svg";

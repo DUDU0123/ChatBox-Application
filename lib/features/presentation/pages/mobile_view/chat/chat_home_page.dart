@@ -10,7 +10,7 @@ class ChatHomePage extends StatelessWidget {
     return Scaffold(
       body:CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: SearchBarChatHome(),
             ),
             SliverList.separated(

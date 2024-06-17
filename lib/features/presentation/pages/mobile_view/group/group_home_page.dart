@@ -1,3 +1,4 @@
+import 'package:chatbox/features/presentation/enums/enums.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatbox/core/constants/height_width.dart';
@@ -168,8 +169,8 @@ List<Chats> chats = [
     isRecordedAudio: false,
     isContact: false,
   ),
-    Chats(
-      isOutgoing: true,
+  Chats(
+    isOutgoing: true,
     isGone: true,
     userName: "userName",
     lastMessage: "lastMessage",
@@ -188,7 +189,7 @@ List<Chats> chats = [
     isRecordedAudio: false,
     isContact: false,
   ),
-    Chats(
+  Chats(
     isGone: true,
     isOutgoing: true,
     userName: "userName",
@@ -208,7 +209,7 @@ List<Chats> chats = [
     isRecordedAudio: false,
     isContact: false,
   ),
-    Chats(
+  Chats(
     isGone: true,
     userName: "userName",
     lastMessage: "lastMessage",
@@ -228,7 +229,7 @@ List<Chats> chats = [
     isRecordedAudio: true,
     isContact: false,
   ),
-   Chats(
+  Chats(
     isGone: true,
     userName: "userName",
     lastMessage: "lastMessage",
@@ -264,24 +265,24 @@ class GroupHomePage extends StatelessWidget {
           return ChatListTileWidget(
             isGroup: true,
             isOutgoing: c.isOutgoing,
-          userName: "Group1",
-          lastMessage: "lastMessagednkanvkankdnv",
-          isSeen: c.isSeen,
-          userProfileImage: "assets/appLogo.png",
-          lastMessageTime: "10:00",
-          notificationCount: 10,
-          isGone: c.isGone,
-          isMutedChat: c.isMutedChat,
-          // message
-          isAudio: c.isAudio,
-          isContact: c.isContact,
-          isDocument: c.isDocument,
-          isIncomingMessage: c.isIncomingMessage,
-          isPhoto: c.isPhoto,
-          isRecordedAudio: c.isRecordedAudio,
-          isTyping: c.isTyping,
-          isVoiceRecoding: c.isVoiceRecoding,
-        );
+            userName: "Group1",
+            lastMessage: "lastMessagednkanvkankdnv",
+            isSeen: c.isSeen,
+            userProfileImage: "assets/appLogo.png",
+            lastMessageTime: "10:00",
+            notificationCount: 10,
+            isGone: c.isGone,
+            isMutedChat: c.isMutedChat,
+            // message
+            isAudio: c.isAudio,
+            isContact: c.isContact,
+            isDocument: c.isDocument,
+            isIncomingMessage: c.isIncomingMessage,
+            isPhoto: c.isPhoto,
+            isRecordedAudio: c.isRecordedAudio,
+            isTyping: c.isTyping,
+            isVoiceRecoding: c.isVoiceRecoding,
+          );
         },
         separatorBuilder: (context, index) => kHeight5,
       ),

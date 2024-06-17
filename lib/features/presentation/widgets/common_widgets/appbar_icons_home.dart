@@ -10,12 +10,12 @@ List<Widget> appBarIconsHome(
     required ThemeData theme,
     required int currentIndex,
     required BuildContext context}) {
-     final themeManager = Provider.of<ThemeManager>(context, listen: false);
+  final themeManager = Provider.of<ThemeManager>(context, listen: false);
   return [
     currentIndex == 0
         ? CircleAvatar(
-          backgroundColor: theme.primaryColor,
-          child: IconButton(
+            backgroundColor: theme.primaryColor,
+            child: IconButton(
               onPressed: () {
                 themeManager.changeTheme();
               },
@@ -24,7 +24,7 @@ List<Widget> appBarIconsHome(
                 size: 30.sp,
               ),
             ),
-        )
+          )
         : zeroMeasureWidget,
     CommonIconButtonWidget(
       theme: theme,
@@ -44,32 +44,54 @@ List<Widget> appBarIconsHome(
         : zeroMeasureWidget,
     PopupMenuButton(
       onSelected: (value) {},
-      // position: PopupMenuPosition.under,
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.sp)),
-      // color: theme.popupMenuTheme.color,
-      // iconColor: theme.colorScheme.onPrimary,
-      // iconSize: 26.sp,
       itemBuilder: (context) {
         if (currentIndex == 0) {
           return [
-            const PopupMenuItem(child: Text("New group")),
-            const PopupMenuItem(child: Text("New broadcast")),
-            const PopupMenuItem(child: Text("Linked devices")),
-            const PopupMenuItem(child: Text("Starred messages")),
-            const PopupMenuItem(child: Text("Payments")),
-            const PopupMenuItem(child: Text("Settings")),
+            PopupMenuItem(
+              child: const Text("New group"),
+              onTap: () {},
+            ),
+            PopupMenuItem(
+              child: const Text("New broadcast"),
+              onTap: () {},
+            ),
+            PopupMenuItem(
+              child: const Text("Linked devices"),
+              onTap: () {},
+            ),
+            PopupMenuItem(
+              child: const Text("Starred messages"),
+              onTap: () {},
+            ),
+            PopupMenuItem(
+              child: const Text("Payments"),
+              onTap: () {},
+            ),
+            settingsNavigatorMenu(context),
           ];
         }
         if (currentIndex == 1 || currentIndex == 2) {
           return [
-            const PopupMenuItem(child: Text("Settings")),
+            settingsNavigatorMenu(context),
           ];
         }
         return [
-          const PopupMenuItem(child: Text("Clear call log")),
-          const PopupMenuItem(child: Text("Settings")),
+          PopupMenuItem(
+            child: const Text("Clear call log"),
+            onTap: () {},
+          ),
+          settingsNavigatorMenu(context),
         ];
       },
     ),
   ];
+}
+
+PopupMenuItem<dynamic> settingsNavigatorMenu(BuildContext context) {
+  return PopupMenuItem(
+    child: const Text("Settings"),
+    onTap: () {
+      Navigator.pushNamed(context, "/settings_page");
+    },
+  );
 }

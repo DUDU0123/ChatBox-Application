@@ -8,6 +8,7 @@ import 'package:chatbox/features/presentation/pages/mobile_view/create_account/c
 import 'package:chatbox/features/presentation/pages/mobile_view/navigator_bottomnav_page/navigator_bottomnav_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/number_verify/number_verify_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/search_page/search_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -46,6 +47,7 @@ class RootWidgetPage extends StatelessWidget {
               "bottomNav_Navigator": (context) => NavigatorBottomnavPage(),
               //"/messaging_page":(context)=> MessagingPage(),
               "/search_page":(context)=> SearchPage(),
+              "/settings_page": (context)=> const SettingsPage()
             },
           ),
         );

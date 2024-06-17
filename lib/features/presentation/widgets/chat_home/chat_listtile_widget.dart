@@ -1,3 +1,4 @@
+import 'package:chatbox/features/presentation/enums/enums.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/messaging_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,11 @@ class ChatListTileWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagingPage(isGroup: isGroup,isReadedMessage: isSeen,),
+            builder: (context) => MessagingPage(
+              userName: userName,
+              isGroup: isGroup,
+              isReadedMessage: isSeen,
+            ),
           ),
         );
       },
