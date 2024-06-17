@@ -10,7 +10,14 @@ class TextFieldCommon extends StatelessWidget {
     this.suffixIcon,
     this.hintText,
     required this.controller,
-    required this.textAlign, this.enabled, this.keyboardType, this.style, this.prefix, this.fillColor, this.focusNode,
+    required this.textAlign,
+    this.enabled,
+    this.keyboardType,
+    this.style,
+    this.prefix,
+    this.fillColor,
+    this.focusNode,
+    this.maxLines,
   });
   final InputBorder? border;
   final TextStyle? style;
@@ -23,11 +30,13 @@ class TextFieldCommon extends StatelessWidget {
   final Widget? prefix;
   final Color? fillColor;
   final FocusNode? focusNode;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeConstants.theme(context: context);
     return TextField(
+      maxLines: maxLines,
       focusNode: focusNode,
       cursorColor: theme.primaryColor,
       style: style,
@@ -37,8 +46,8 @@ class TextFieldCommon extends StatelessWidget {
       textAlign: textAlign,
       decoration: InputDecoration(
         prefix: prefix,
-       // filled: true,
-        fillColor: fillColor??kTransparent,
+        // filled: true,
+        fillColor: fillColor ?? kTransparent,
         border: border,
         disabledBorder: border,
         enabledBorder: border,
@@ -46,8 +55,8 @@ class TextFieldCommon extends StatelessWidget {
         suffixIcon: suffixIcon,
         hintText: hintText,
         hintStyle: theme.textTheme.labelSmall?.copyWith(
-          color: kGrey,
-          fontSize: 18.sp,
+          color: iconGreyColor,
+          fontSize: 17.sp,
           fontWeight: FontWeight.normal,
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 SizedBox zeroMeasureWidget = const SizedBox(height: 0,width: 0,);
 
 //Height
+SizedBox kHeight2 =  SizedBox(height: 2.h);
 SizedBox kHeight5 =  SizedBox(height: 5.h);
 SizedBox kHeight10 =  SizedBox(height: 10.h);
 SizedBox kHeight15 =  SizedBox(height: 15.h);
@@ -26,6 +27,7 @@ SizedBox kHeight95 =  SizedBox(height: 95.h);
 SizedBox kHeight100 =  SizedBox(height: 100.h);
 
 // Width
+SizedBox kWidth2 =  SizedBox(width: 2.h);
 SizedBox kWidth5 =  SizedBox(width: 5.w);
 SizedBox kWidth10 =  SizedBox(width: 10.w);
 SizedBox kWidth15 =  SizedBox(width: 15.w);

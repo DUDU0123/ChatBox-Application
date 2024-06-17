@@ -4,8 +4,10 @@ import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget
 import 'package:chatbox/features/presentation/widgets/common_widgets/tile_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 Widget buildProfileImage({required String? userProfileImage}) {
   return CircleAvatar(
+    backgroundColor: kGrey,
     radius: 25.sp,
     child: userProfileImage != null
         ? ClipRRect(
@@ -73,8 +75,7 @@ Widget buildSubtitle({
         isTyping: isTyping,
         isVoiceRecoding: isVoiceRecoding,
       ),
-      
-     buildMessageText(
+      buildMessageText(
           isTyping: isTyping,
           isVoiceRecoding: isVoiceRecoding,
           lastMessage: lastMessage),

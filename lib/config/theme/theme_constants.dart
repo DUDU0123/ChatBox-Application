@@ -10,6 +10,7 @@ class ThemeConstants {
     ),
     brightness: Brightness.light,
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: kTransparent,
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: true,
       showUnselectedLabels: true,
@@ -65,7 +66,12 @@ class ThemeConstants {
       onSecondary: onSecondaryColorLight,
     ),
     popupMenuTheme: PopupMenuThemeData(
+      surfaceTintColor: kTransparent,
+      position: PopupMenuPosition.under,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.sp)),
       color: boxColorWhite,
+      iconColor: kBlack,
+      iconSize: 26.sp,
     ),
   );
 
@@ -87,6 +93,7 @@ class ThemeConstants {
         fontWeight: FontWeight.bold,
         color: kWhite,
       ),
+      backgroundColor: kTransparent,
       unselectedLabelStyle: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16.sp,
@@ -131,7 +138,11 @@ class ThemeConstants {
     ),
     popupMenuTheme: PopupMenuThemeData(
       surfaceTintColor: kTransparent,
+      position: PopupMenuPosition.under,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.sp)),
       color: boxColorDark,
+      iconColor: kWhite,
+      iconSize: 26.sp,
     )
   );
 
