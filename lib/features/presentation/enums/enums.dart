@@ -10,4 +10,5 @@ enum PageTypeEnum {
   groupSettingsPage,
   broadCastSettingsPage,
   settingEditProfilePage,
+  none
 }

@@ -3,23 +3,35 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PhoneNumberRecieveField extends StatelessWidget {
-  const PhoneNumberRecieveField({
+  PhoneNumberRecieveField({
     super.key,
     required this.phoneNumberController,
   });
 
   final TextEditingController phoneNumberController;
+  Country selectedCountry = Country(
+    phoneCode: "+91",
+    countryCode: "IN",
+    e164Sc: 0,
+    geographic: true,
+    level: 1,
+    name: "India",
+    example: "India",
+    displayName: "India",
+    displayNameNoCountryCode: "IN",
+    e164Key: "",
+  );
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeConstants.theme(context: context);
     return Container(
-      padding: EdgeInsets.only(left: 10.w),
-      margin: EdgeInsets.symmetric(horizontal: 30.w),
+      margin: EdgeInsets.symmetric(horizontal: 20.w),
       width: screenWidth(context: context),
       height: 50.sp,
       decoration: BoxDecoration(
@@ -31,11 +43,30 @@ class PhoneNumberRecieveField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          TextWidgetCommon(
-            text: "+91",
-            fontWeight: FontWeight.w500,
-            fontSize: theme.textTheme.labelSmall?.fontSize,
-          ),
+           GestureDetector(
+                onTap: () {
+                  showCountryPicker(
+                    countryListTheme: CountryListThemeData(
+                      backgroundColor: theme.colorScheme.onTertiary,
+                      bottomSheetHeight: screenHeight(context: context) / 2,
+                      borderRadius: BorderRadius.circular(15.sp),
+                    ),
+                    context: context,
+                    onSelect: (country) {
+                      selectedCountry = country;
+                    },
+                  );
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10.w),
+                  child: TextWidgetCommon(
+                    text: selectedCountry.flagEmoji + selectedCountry.phoneCode,
+                    fontWeight: FontWeight.w500,
+                    fontSize: theme.textTheme.labelSmall?.fontSize,
+                    textColor: theme.colorScheme.onPrimary,
+                  ),
+                ),
+              ),
           Expanded(
             child: TextFieldCommon(
               style: fieldStyle(context: context),
@@ -44,11 +75,7 @@ class PhoneNumberRecieveField extends StatelessWidget {
               enabled: true,
               textAlign: TextAlign.start,
               controller: phoneNumberController,
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: kTransparent,
-                ),
-              ),
+              border: InputBorder.none
             ),
           ),
         ],

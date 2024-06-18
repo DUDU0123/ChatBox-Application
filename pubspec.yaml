@@ -41,6 +41,8 @@ dependencies:
   flutter_svg: ^2.0.10+1
   flutter_bloc: ^8.1.6
   bloc: ^8.1.4
+  emoji_picker_flutter: ^2.2.0
+  country_picker: ^2.0.26
 
 dev_dependencies:
   flutter_test:

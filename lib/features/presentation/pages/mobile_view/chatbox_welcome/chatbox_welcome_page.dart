@@ -49,7 +49,7 @@ class ChatboxWelcomePage extends StatelessWidget {
               ],
             ),
             kHeight20,
-             CommonButtonContainer(
+            CommonButtonContainer(
               onTap: () {
                 Navigator.pushNamed(context, "create_account");
               },

@@ -17,7 +17,7 @@ class TextFieldCommon extends StatelessWidget {
     this.prefix,
     this.fillColor,
     this.focusNode,
-    this.maxLines, this.cursorColor,
+    this.maxLines, this.cursorColor, this.minLines,
   });
   final InputBorder? border;
   final TextStyle? style;
@@ -32,6 +32,7 @@ class TextFieldCommon extends StatelessWidget {
   final FocusNode? focusNode;
   final int? maxLines;
   final Color? cursorColor;
+  final int? minLines;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,8 @@ class TextFieldCommon extends StatelessWidget {
         // FocusScope.of(context).requestFocus(FocusNode());
         FocusManager.instance.primaryFocus?.unfocus();
       },
-      maxLines: maxLines,
+      maxLines: maxLines??1,
+      minLines: minLines??1,
       focusNode: focusNode,
       cursorColor: cursorColor??theme.primaryColor,
       style: style,

@@ -23,6 +23,7 @@ class MessagingPage extends StatelessWidget {
   final bool? isReadedMessage;
   TextEditingController messageController = TextEditingController();
   bool isVisible = false;
+  bool isImojiButtonClicked = false;
   // final bool? isGone;
   @override
   Widget build(BuildContext context) {
@@ -66,12 +67,13 @@ class MessagingPage extends StatelessWidget {
                 },
               ),
             ),
-            // Positioned(
-            //   bottom: 0.h,
-            //   child: ChatBarWidget(
-            //     messageController: messageController,
-            //   ),
-            // ),
+            Positioned(
+              bottom: 0.h,
+              child: ChatBarWidget(
+                isImojiButtonClicked: isImojiButtonClicked,
+                messageController: messageController,
+              ),
+            ),
             Align(
               alignment: Alignment.topCenter,
               child: Container(
@@ -84,11 +86,12 @@ class MessagingPage extends StatelessWidget {
                 child: Text("MM/dd/YYYY"),
               ),
             ),
+            
             Positioned(
               right: screenWidth(context: context) / 3.5,
               bottom: 0,
               child: Visibility(
-                visible: true,
+                visible: false,
                 replacement: zeroMeasureWidget,
                 child: Container(
                     height: screenHeight(context: context) / 3.h,
@@ -134,14 +137,14 @@ class MessagingPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-            bottom:
-                isKeyboardOpen ? MediaQuery.of(context).viewInsets.bottom : 0),
-        child: ChatBarWidget(
-          messageController: messageController,
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: EdgeInsets.only(
+      //       bottom:
+      //           isKeyboardOpen ? MediaQuery.of(context).viewInsets.bottom : 0),
+      //   child: ChatBarWidget(
+      //     messageController: messageController,
+      //   ),
+      // ),
     );
   }
 }

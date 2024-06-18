@@ -16,44 +16,48 @@ class NumberVerifyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ThemeConstants.theme(context: context);
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-         const AppIconHoldWidget(),
-          kHeight25,
-          TextWidgetCommon(
-            textAlign: TextAlign.center,
-            text: "To verify, enter the otp send to the given number",
-            fontSize: 20.sp,
-            textColor: theme.textTheme.titleMedium?.color,
-            fontWeight: theme.textTheme.titleMedium?.fontWeight,
-          ),
-          kHeight20,
-          Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 40.w),
-            child: TextFieldCommon(
-              style: fieldStyle(context: context),
-              hintText: "Enter otp",
+      body: Padding(
+        padding:  EdgeInsets.symmetric(horizontal: 40.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+           const AppIconHoldWidget(),
+            kHeight25,
+            TextWidgetCommon(
               textAlign: TextAlign.center,
-              controller: numberVerifyController,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.sp),
-                borderSide: BorderSide(
-
-                  color: theme.primaryColor,
+              text: "To verify, enter the otp send to the given number",
+              fontSize: 20.sp,
+              textColor: theme.textTheme.titleMedium?.color,
+              fontWeight: theme.textTheme.titleMedium?.fontWeight,
+            ),
+            kHeight20,
+            SizedBox(
+              height: 50.h,
+              child: TextFieldCommon(
+                maxLines: 1,
+                keyboardType: TextInputType.number,
+                style: fieldStyle(context: context),
+                hintText: "Enter otp",
+                textAlign: TextAlign.center,
+                controller: numberVerifyController,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15.sp),
+                  borderSide: BorderSide(
+                    color: theme.primaryColor,
+                  ),
                 ),
               ),
             ),
-          ),
-          kHeight15,
-          CommonButtonContainer(
-            onTap: () {
-              Navigator.pushNamed(context, "bottomNav_Navigator");
-            },
-            horizontalMarginOfButton: 30,
-            text: "Next",
-          ),
-        ],
+            kHeight15,
+            CommonButtonContainer(
+              onTap: () {
+                Navigator.pushNamed(context, "bottomNav_Navigator");
+              },
+              horizontalMarginOfButton: 30,
+              text: "Next",
+            ),
+          ],
+        ),
       ),
     );
   }

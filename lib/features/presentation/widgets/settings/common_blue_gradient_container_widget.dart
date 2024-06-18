@@ -1,6 +1,8 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/enums/enums.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_butttons_common.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,12 +15,14 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
     required this.subTitle,
     required this.icon,
     required this.pageType,
+    this.controller,
   });
 
   final String title;
   final String subTitle;
   final String icon;
   final PageTypeEnum pageType;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +50,7 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
               BlendMode.srcIn,
             ),
           ),
-          kWidth5,
+          kWidth10,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,14 +59,17 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                 TextWidgetCommon(
                   text: title,
                   overflow: TextOverflow.ellipsis,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.5.sp,
+                  fontWeight: !(pageType==PageTypeEnum.none || pageType==PageTypeEnum.settingEditProfilePage)?FontWeight.w500:FontWeight.w400,
+                  fontSize:!(pageType==PageTypeEnum.none || pageType==PageTypeEnum.settingEditProfilePage)? 16.5.sp: 13.sp,
+                  textColor: !(pageType==PageTypeEnum.none || pageType==PageTypeEnum.settingEditProfilePage)?kWhite:iconGreyColor,
                 ),
                 kHeight2,
                 subTitle.isEmpty
                     ? zeroMeasureWidget
                     : TextWidgetCommon(
-                        textColor: iconGreyColor,
+                      fontSize: !(pageType==PageTypeEnum.none || pageType==PageTypeEnum.settingEditProfilePage)?12.sp:18.sp,
+                      fontWeight: !(pageType==PageTypeEnum.none || pageType==PageTypeEnum.settingEditProfilePage)?FontWeight.normal:FontWeight.w500,
+                        textColor: !(pageType==PageTypeEnum.none || pageType==PageTypeEnum.settingEditProfilePage)? iconGreyColor:kWhite,
                         maxLines: 1,
                         text: subTitle,
                         overflow: TextOverflow.ellipsis,
@@ -72,7 +79,31 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
           ),
           pageType == PageTypeEnum.settingEditProfilePage
               ? IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          height: screenHeight(context: context) / 4,
+                          color: greyBlackColor,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextWidgetCommon(text: "Enter name"),
+                              if (controller != null)
+                                TextFieldCommon(
+                                  controller: controller!,
+                                  textAlign: TextAlign.start,
+                                ),
+                              TextButtonsCommon(
+                                buttonName: "Save",
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
                   icon: Icon(
                     Icons.edit,
                     color: kWhite,
@@ -84,3 +115,4 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
     );
   }
 }
+
