@@ -1,11 +1,11 @@
 import 'package:chatbox/config/routes/app_routes_name.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/create_account/create_account_page.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/number_verify/number_verify_page.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/presentation/pages/mobile_view/chat/chat_home_page.dart';
+import 'package:chatbox/presentation/pages/mobile_view/create_account/create_account_page.dart';
+import 'package:chatbox/presentation/pages/mobile_view/number_verify/number_verify_page.dart';
+import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 
-import 'package:chatbox/features/presentation/pages/mobile_view/chatbox_welcome/chatbox_welcome_page.dart';
+import 'package:chatbox/presentation/pages/mobile_view/chatbox_welcome/chatbox_welcome_page.dart';
 
 class AppPages {
   static List<RouteEntity> routes() {
