@@ -1,6 +1,6 @@
 import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
-import 'package:chatbox/presentation/bloc/bottomNavBloc/bottom_nav_bloc.dart';
+import 'package:chatbox/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/presentation/widgets/bottom_nav/bottom_nav_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

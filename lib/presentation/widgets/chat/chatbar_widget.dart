@@ -1,9 +1,8 @@
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
-import 'package:chatbox/core/utils/app_methods.dart';
+import 'package:chatbox/core/utils/emoji_select.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_field_common.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -138,7 +137,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
               ],
             ),
           ),
-          widget.isImojiButtonClicked? AppMethods.emojiSelect(textEditingController: widget.messageController):zeroMeasureWidget,
+          widget.isImojiButtonClicked? emojiSelect(textEditingController: widget.messageController):zeroMeasureWidget,
         ],
       ),
     );

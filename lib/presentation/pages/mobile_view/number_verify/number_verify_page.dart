@@ -5,6 +5,7 @@ import 'package:chatbox/presentation/widgets/common_widgets/app_icon_hold_widget
 import 'package:chatbox/presentation/widgets/common_widgets/common_button_container.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/presentation/widgets/verify_number/resend_otp_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,11 +18,11 @@ class NumberVerifyPage extends StatelessWidget {
     final theme = ThemeConstants.theme(context: context);
     return Scaffold(
       body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 40.w),
+        padding: EdgeInsets.symmetric(horizontal: 40.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-           const AppIconHoldWidget(),
+            const AppIconHoldWidget(),
             kHeight25,
             TextWidgetCommon(
               textAlign: TextAlign.center,
@@ -56,6 +57,8 @@ class NumberVerifyPage extends StatelessWidget {
               horizontalMarginOfButton: 30,
               text: "Next",
             ),
+            kHeight5,
+            ResendOtpWidget(),
           ],
         ),
       ),
