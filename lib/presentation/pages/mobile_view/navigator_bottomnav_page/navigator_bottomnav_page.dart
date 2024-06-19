@@ -1,5 +1,5 @@
-import 'package:chatbox/core/constants/app_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/utils/get_appbar_title.dart';
 import 'package:chatbox/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/presentation/pages/mobile_view/calls/call_home_page.dart';
 import 'package:chatbox/presentation/pages/mobile_view/chat/chat_home_page.dart';

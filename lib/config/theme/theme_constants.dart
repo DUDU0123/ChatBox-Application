@@ -1,9 +1,21 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+final androidTransitionBuilder = PageTransitionsTheme(
+  builders: {
+    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(), // Example: FadeUpwards transition
+  },
+);
 
+// Define a custom transition builder for iOS
+final iosTransitionBuilder = PageTransitionsTheme(
+  builders: {
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(), // Example: Cupertino style transition
+  },
+);
 class ThemeConstants {
   static ThemeData lightTheme = ThemeData(
+    pageTransitionsTheme: androidTransitionBuilder,
     appBarTheme: AppBarTheme(
       backgroundColor: kWhite,
       surfaceTintColor: kTransparent,
@@ -77,6 +89,7 @@ class ThemeConstants {
   );
 
   static ThemeData darkTheme = ThemeData(
+    pageTransitionsTheme: androidTransitionBuilder,
     appBarTheme: AppBarTheme(
       surfaceTintColor: kTransparent,
       backgroundColor: darkScaffoldColor,

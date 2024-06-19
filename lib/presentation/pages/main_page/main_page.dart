@@ -1,4 +1,5 @@
 import 'package:chatbox/presentation/pages/mobile_view/chatbox_welcome/chatbox_welcome_page.dart';
+import 'package:chatbox/presentation/pages/mobile_view/splash_screen/splash_screen.dart';
 import 'package:chatbox/presentation/pages/web_view/chatbox_web_auth/chatbox_web_authentication_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,6 @@ class MainPage extends StatelessWidget {
       return ChatboxWebAuthenticationPage();
     }
     // mobile view
-    return ChatboxWelcomePage();
+    return SplashScreen();
   }
 }

@@ -1,21 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
-String getAppBarTitle({required int currentIndex}) {
-  switch (currentIndex) {
-    case 0:
-      return "ChatBox";
-    case 1:
-      return "Groups";
-    case 2:
-      return "Status";
-    case 3:
-      return "Calls";
-    default:
-      return '';
-  }
-}
-
 class AttachmentModel {
   final Color colorOne;
   final Color colorTwo;

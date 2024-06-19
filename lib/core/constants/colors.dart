@@ -39,7 +39,9 @@ Color greyBlackColor = const Color.fromARGB(255, 32, 43, 67);
 
 // assets
 const doubleTick = "assets/double_tick.svg";
+const appLogo = "assets/appLogo.png";
 const keyIcon = "assets/key.svg";
+const indiaFlag = "assets/india_flag.png";
 const privacyIcon = "assets/privacy.svg";
 const chatsIcon = "assets/chat.svg";
 const notificationIcon = "assets/notifyIcon.svg";

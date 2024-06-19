@@ -20,12 +20,14 @@ class AppPages {
     ];
   }
 
+
   static MaterialPageRoute generateRouteSettings(RouteSettings settings) {
     if (settings.name != null) {
       var result = routes().where((route) => route.path == settings.name);
       if (result.first.path == AppRoutesName.welcomePage) {
+        final args = settings.arguments;
         return MaterialPageRoute(
-            builder: (_) => const ChatboxWelcomePage(), settings: settings);
+            builder: (_) => const ChatboxWelcomePage(), settings: settings,);
       }
     }
     return MaterialPageRoute(
