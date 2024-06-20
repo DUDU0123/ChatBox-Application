@@ -24,6 +24,7 @@ class AuthenticationBloc
     on<CreateUserEvent>(verifyOtpAndcreateUserEvent);
     on<CheckUserLoggedInEvent>(checkUserLoggedInEvent);
     on<CountrySelectedEvent>(countrySelectedEvent);
+    on<ResendOtpEvent>(resendOtpEvent);
     add(CheckUserLoggedInEvent());
   }
 
@@ -73,8 +74,8 @@ class AuthenticationBloc
           id: userCredential.user?.uid,
           phoneNumber: userCredential.user?.phoneNumber,
         );
-        userRepository.saveUserDataToDataBase(userData: userModel);
-
+        userRepository.saveUserDataToDataBase(userModel: userModel);
+        
         emit(AuthenticationSuccessState(user: UserModel()));
 
         debugPrint("Hi From Bloc Verify Otp: ${userCredential.user?.uid}");
@@ -102,5 +103,33 @@ class AuthenticationBloc
   FutureOr<void> countrySelectedEvent(
       CountrySelectedEvent event, Emitter<AuthenticationState> emit) {
     emit(AuthenticationState(country: event.selectedCountry));
+  }
+
+  FutureOr<void> resendOtpEvent(
+      ResendOtpEvent event, Emitter<AuthenticationState> emit) {
+    try {
+      RegExp phoneRegExp =
+          RegExp(r'^\+?(\d{1,3})?[-. ]?(\(?\d{3}\)?)[-. ]?\d{3}[-. ]?\d{4}$');
+      if ((event.phoneNumberWithCountryCode != null &&
+          phoneRegExp.hasMatch(event.phoneNumberWithCountryCode!))) {
+        log("IF resend COndition inside try");
+        log("Has resend Match");
+        authenticationRepo.resentOtp(
+          context: event.context,
+          phoneNumber: event.phoneNumberWithCountryCode!,
+          forceResendingToken: event.forceResendingToken,
+        );
+        emit(OtpReSentState());
+      } else {
+        log("Else COndition inside try");
+        emit(AuthenticationErrorState(message: "Enter valid phone number"));
+      }
+    } on FirebaseAuthException catch (e) {
+      log("Firebase exception");
+      emit(AuthenticationErrorState(message: e.message.toString()));
+    } catch (e) {
+      log("Catch error");
+      emit(AuthenticationErrorState(message: e.toString()));
+    }
   }
 }

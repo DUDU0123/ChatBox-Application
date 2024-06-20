@@ -12,16 +12,21 @@ class SplashScreen extends StatelessWidget {
       body: BlocListener<AuthenticationBloc, AuthenticationState>(
         listener: (context, state) {
           if (state is AuthenticationInitial) {
-            state.isUserSignedIn
-                ? Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    "bottomNav_Navigator",
-                    (route) => false,
-                  )
-                : Navigator.pushNamed(
-                    context,
-                    "welcome_page",
-                  );
+            Future.delayed(
+              const Duration(seconds: 3),
+              () {
+                state.isUserSignedIn
+                    ? Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        "bottomNav_Navigator",
+                        (route) => false,
+                      )
+                    : Navigator.pushNamed(
+                        context,
+                        "welcome_page",
+                      );
+              },
+            );
           }
         },
         child: const Center(

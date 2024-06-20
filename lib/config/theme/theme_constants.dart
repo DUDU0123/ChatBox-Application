@@ -1,14 +1,14 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-final androidTransitionBuilder = PageTransitionsTheme(
+const androidTransitionBuilder = PageTransitionsTheme(
   builders: {
     TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(), // Example: FadeUpwards transition
   },
 );
 
 // Define a custom transition builder for iOS
-final iosTransitionBuilder = PageTransitionsTheme(
+const  iosTransitionBuilder = PageTransitionsTheme(
   builders: {
     TargetPlatform.iOS: CupertinoPageTransitionsBuilder(), // Example: Cupertino style transition
   },

@@ -4,11 +4,11 @@ import 'package:chatbox/data/models/user_model/user_model.dart';
 
 abstract class UserRepository{
   Future<void> saveUserDataToDataBase({
-    required UserModel userData,
+    required UserModel userModel,
     File? profileImage,
   });
   Future<void> updateUserInDataBase({
-    required UserModel userData,
+    required UserModel userModel,
     required File? profileImage,
   });
   Future<List<UserModel>> getAllUsersFromDB();

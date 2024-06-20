@@ -89,13 +89,13 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidgetCommon(text: "Enter name"),
+                              const TextWidgetCommon(text: "Enter name"),
                               if (controller != null)
                                 TextFieldCommon(
                                   controller: controller!,
                                   textAlign: TextAlign.start,
                                 ),
-                              TextButtonsCommon(
+                              const TextButtonsCommon(
                                 buttonName: "Save",
                               )
                             ],

@@ -40,4 +40,15 @@ class CreateUserEvent extends AuthenticationEvent {
   List<Object> get props => [context, verificationId, otpCode];
 }
 
+class ResendOtpEvent extends AuthenticationEvent {
+  final String? phoneNumberWithCountryCode;
+  final BuildContext context;
+  final int? forceResendingToken;
+  const ResendOtpEvent({
+    this.phoneNumberWithCountryCode,
+    required this.context,
+    this.forceResendingToken,
+  });
+}
+
 class CheckUserLoggedInEvent extends AuthenticationEvent{}

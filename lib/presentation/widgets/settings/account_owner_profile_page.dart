@@ -23,7 +23,7 @@ class AccountOwnerProfilePage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SettingsProfileImageAvatarWidget(),
+          const SettingsProfileImageAvatarWidget(),
           // next
           kHeight60,
           Expanded(

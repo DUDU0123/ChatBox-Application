@@ -1,3 +1,4 @@
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/domain/entities/user_entity/user_entity.dart';
 
 class UserModel extends UserEntity {
@@ -12,35 +13,38 @@ class UserModel extends UserEntity {
     super.createdAt,
     super.tfaPin,
     super.isBlockedUser,
+    super.userGroupIdList,
   });
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
     return UserModel(
-      id: map['id'],
-      userName: map['username'] ?? '',
-      userEmailId: map['user_email'] ?? '',
-      phoneNumber: map['phone_number'] ?? '',
-      userAbout: map['user_about'] ?? '',
-      userProfileImage: map['user_profile_image'] ?? '',
-      userNetworkStatus: map['user_network_status'] ?? '',
-      createdAt: map['created_at'] ?? '',
-      tfaPin: map['tfa_pin'] ?? '',
-      isBlockedUser: map['is_blocked_user'] ?? false,
+      id: map[userDbId],
+      userName: map[userDbName] ?? '',
+      userEmailId: map[userDbEmail] ?? '',
+      phoneNumber: map[userDbPhoneNumber] ?? '',
+      userAbout: map[userDbAbout] ?? '',
+      userProfileImage: map[userDbProfileImage] ?? '',
+      userNetworkStatus: map[userDbNetworkStatus] ?? '',
+      createdAt: map[userDbCreatedAt] ?? '',
+      tfaPin: map[userDbTFAPin] ?? '',
+      isBlockedUser: map[userDbBlockedStatus] ?? false,
+      userGroupIdList: map[userDbGroupIdList]??[]
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'username': userName,
-      'user_email': userEmailId,
-      'phone_number': phoneNumber,
-      'user_about': userAbout,
-      'user_profile_image': userProfileImage,
-      'user_network_status': userNetworkStatus,
-      'created_at': createdAt,
-      'tfa_pin': tfaPin,
-      'is_blocked_user': isBlockedUser,
+      userDbId: id,
+      userDbName: userName,
+      userDbEmail: userEmailId,
+      userDbPhoneNumber: phoneNumber,
+      userDbAbout: userAbout,
+      userDbProfileImage: userProfileImage,
+      userDbNetworkStatus: userNetworkStatus,
+      userDbCreatedAt: createdAt,
+      userDbTFAPin: tfaPin,
+      userDbBlockedStatus: isBlockedUser,
+      userDbGroupIdList: userGroupIdList,
     };
   }
 
@@ -55,6 +59,8 @@ class UserModel extends UserEntity {
     String? createdAt,
     String? tfaPin,
     bool? isBlockedUser,
+    List<String>? userGroupIdList,
+
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -67,6 +73,7 @@ class UserModel extends UserEntity {
       createdAt: createdAt ?? this.createdAt,
       tfaPin: tfaPin ?? this.tfaPin,
       isBlockedUser: isBlockedUser ?? this.isBlockedUser,
+      userGroupIdList: userGroupIdList??this.userGroupIdList
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbox/core/constants/app_constants.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,12 +11,12 @@ const userAuthStatusKey = "is_user_signedIn";
 class AuthenticationRepoImpl extends AuthenticationRepo {
   static FirebaseAuth auth = FirebaseAuth.instance;
   @override
-  void createAccountInChatBoxUsingPhoneNumber({
+  Future<void> createAccountInChatBoxUsingPhoneNumber({
     required BuildContext context,
     required String phoneNumber,
-  }) {
+  }) async {
     try {
-      auth.verifyPhoneNumber(
+      await auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
           await auth.signInWithCredential(phoneAuthCredential);
@@ -24,8 +25,15 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
           throw Exception(error.message);
         },
         codeSent: (verificationId, forceResendingToken) {
-          Navigator.pushNamed(context, "verify_number",
-              arguments: verificationId);
+          Navigator.pushNamed(
+            context,
+            "verify_number",
+            arguments: AuthOtpModel(
+              phoneNumber: phoneNumber,
+              verifyId: verificationId,
+              forceResendingToken: forceResendingToken,
+            ),
+          );
         },
         codeAutoRetrievalTimeout: (verificationId) {},
       );
@@ -44,7 +52,6 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required Function onSuccess,
   }) async {
     try {
-      FirebaseAuth auth = FirebaseAuth.instance;
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: otpCode,
@@ -64,6 +71,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
       throw Exception(e);
     }
   }
+
   @override
   Future<void> signOutUser({required userId}) async {
     try {
@@ -73,6 +81,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
       throw Exception(e);
     }
   }
+
   @override
   Future<bool> getUserAthStatus() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -84,6 +93,46 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     await sharedPreferences.setBool(userAuthStatusKey, isSignedIn);
   }
-  
-  
+
+  @override
+  Future<void> resentOtp({
+    required BuildContext context,
+    required String phoneNumber,
+    required int? forceResendingToken,
+  }) async {
+    try {
+      await auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        forceResendingToken:
+            forceResendingToken, // Use the resending token here
+        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
+          await auth.signInWithCredential(phoneAuthCredential);
+        },
+        verificationFailed: (error) {
+          throw Exception(error.message);
+        },
+        codeSent: (verificationId, forceResendingToken) {
+          forceResendingToken =
+              forceResendingToken; // Update the resending token
+          Navigator.pushNamed(
+            context,
+            "verify_number",
+            arguments: AuthOtpModel(
+              phoneNumber: phoneNumber,
+              verifyId: verificationId,
+              forceResendingToken: forceResendingToken,
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+      );
+    } on FirebaseAuthException catch (e) {
+      commonSnackBarWidget(
+        context: context,
+        contentText: e.toString(),
+      );
+    } catch (e) {
+      log(e.toString());
+    }
+  }
 }

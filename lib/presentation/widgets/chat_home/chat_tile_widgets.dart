@@ -4,7 +4,28 @@ import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.d
 import 'package:chatbox/presentation/widgets/common_widgets/tile_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+// Container(
+//     height: 50.h,width: 50.h,
+//     decoration: BoxDecoration(
+//       color:  Provider.of<ThemeManager>(context).isDark?kBlack:kWhite,
+//       borderRadius: BorderRadius.circular(100.sp),
+//       boxShadow:  [
+//         BoxShadow(
+//           blurRadius: 3,
+//           spreadRadius: 0,
+//           offset: Offset(0, 1),
+//           color: Provider.of<ThemeManager>(context).isDark?buttonSmallTextColor.withOpacity(0.3): Color.fromARGB(255, 9, 12, 35),
+//         ),
+//         BoxShadow(
+//           blurRadius: 3,
+//           spreadRadius: 0,
+//           offset: Offset(-1, -1),
+//           color:  Provider.of<ThemeManager>(context).isDark? buttonSmallTextColor.withOpacity(0.3):Color.fromARGB(255, 238, 236, 236),
+//         ),
+//       ],
+//     ),
+//     child:  Center(child: Icon(Icons.person, size: 50.sp,)),
+//   );
 Widget buildProfileImage({required String? userProfileImage}) {
   return CircleAvatar(
     backgroundColor: kGrey,
@@ -12,7 +33,7 @@ Widget buildProfileImage({required String? userProfileImage}) {
     child: userProfileImage != null
         ? ClipRRect(
             borderRadius: BorderRadius.circular(25.sp),
-            child: Image.asset(
+            child: Image.network(
               userProfileImage,
               fit: BoxFit.cover,
             ),
@@ -29,7 +50,7 @@ Widget buildUserName({required String userName}) {
     text: userName,
     overflow: TextOverflow.ellipsis,
     fontSize: 17.sp,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.bold,
   );
 }
 

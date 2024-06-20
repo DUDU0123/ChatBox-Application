@@ -36,7 +36,7 @@ class AccountOwnerProfileDetailsGridView extends StatelessWidget {
           icon: info,
           pageType: PageTypeEnum.settingEditProfilePage,
         ),
-        CommonBlueGradientContainerWidget(
+       const CommonBlueGradientContainerWidget(
           title: "Phone number",
           subTitle: "User Name",
           icon: call,

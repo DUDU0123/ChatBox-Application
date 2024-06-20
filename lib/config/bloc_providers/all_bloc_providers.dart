@@ -1,7 +1,12 @@
+import 'package:chatbox/data/data_sources/contact_data/contact_data.dart';
+import 'package:chatbox/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/data/repositories/auth_repo/authentication_repo_impl.dart';
+import 'package:chatbox/data/repositories/contact_repository/contact_repo_impl.dart';
 import 'package:chatbox/data/repositories/user_repository/user_repository_impl.dart';
 import 'package:chatbox/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:chatbox/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
+import 'package:chatbox/presentation/bloc/contact/contact_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -12,9 +17,17 @@ class AppBlocProvider {
     ),
     BlocProvider(
       create: (context) => AuthenticationBloc(
-        userRepository: UserRepositoryImpl(),
+        userRepository: UserRepositoryImpl(userData: UserData()),
         authenticationRepo: AuthenticationRepoImpl(),
       )..add(CheckUserLoggedInEvent()),
+    ),
+    BlocProvider(
+      create: (context) => ContactBloc(
+        contactRepository: ContactRepoImpl(
+          contactData: ContactData(),
+          firebaseFirestore: FirebaseFirestore.instance,
+        ),
+      ),
     ),
   ];
 }

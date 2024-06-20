@@ -83,7 +83,7 @@ class MessagingPage extends StatelessWidget {
                   color: iconGreyColor.withAlpha(150),
                   borderRadius: BorderRadius.circular(5.sp),
                 ),
-                child: Text("MM/dd/YYYY"),
+                child: const Text("MM/dd/YYYY"),
               ),
             ),
             

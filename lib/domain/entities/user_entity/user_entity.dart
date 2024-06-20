@@ -11,6 +11,7 @@ class UserEntity extends Equatable {
   String? createdAt;
   String? tfaPin;
   bool? isBlockedUser;
+  List<String>? userGroupIdList;
   UserEntity({
     this.id,
     this.userName,
@@ -22,6 +23,7 @@ class UserEntity extends Equatable {
     this.createdAt,
     this.tfaPin,
     this.isBlockedUser,
+    this.userGroupIdList,
   });
 
   @override
@@ -37,6 +39,7 @@ class UserEntity extends Equatable {
       createdAt,
       tfaPin,
       isBlockedUser,
+      userGroupIdList,
     ];
   }
 }

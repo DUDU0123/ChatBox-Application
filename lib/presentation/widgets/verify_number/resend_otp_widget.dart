@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class ResendOtpWidget extends StatelessWidget {
   const ResendOtpWidget({
-    super.key,
+    super.key, this.onTap,
   });
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class ResendOtpWidget extends StatelessWidget {
           textColor: iconGreyColor,
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: onTap,
           child: TextWidgetCommon(
             text: "Resend",
             textColor: buttonSmallTextColor,

@@ -31,6 +31,7 @@ class AuthenticationInitial extends AuthenticationState {
 class AuthenticationLoadingState extends AuthenticationState {}
 
 class OtpSentState extends AuthenticationState{}
+class OtpReSentState extends AuthenticationState{}
 class AuthenticationSuccessState extends AuthenticationState {
   final UserModel user;
    AuthenticationSuccessState({

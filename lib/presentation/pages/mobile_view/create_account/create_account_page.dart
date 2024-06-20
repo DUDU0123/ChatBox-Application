@@ -1,7 +1,5 @@
-import 'dart:developer';
 
 import 'package:chatbox/config/theme/theme_constants.dart';
-import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';

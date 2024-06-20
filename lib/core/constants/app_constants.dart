@@ -1,5 +1,6 @@
-import 'package:chatbox/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+
+import 'package:chatbox/core/constants/colors.dart';
 
 class AttachmentModel {
   final Color colorOne;
@@ -22,6 +23,18 @@ class SettingsHomeButtonModel {
     required this.subtitle,
     required this.icon,
   });
+}
+
+class AuthOtpModel {
+  final String phoneNumber;
+  final int? forceResendingToken;
+  final String verifyId;
+  AuthOtpModel({
+    required this.phoneNumber,
+    this.forceResendingToken,
+    required this.verifyId,
+  });
+  
 }
 
 List<SettingsHomeButtonModel> settingsButtonsList = [

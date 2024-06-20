@@ -16,7 +16,7 @@ class AppPages {
           path: AppRoutesName.createAccountPage, page: CreateAccountPage()),
       RouteEntity(
           path: AppRoutesName.verifyNumberPage, page: NumberVerifyPage()),
-      RouteEntity(path: AppRoutesName.chatHomePage, page: ChatHomePage()),
+      RouteEntity(path: AppRoutesName.chatHomePage, page: const ChatHomePage()),
     ];
   }
 
@@ -25,7 +25,7 @@ class AppPages {
     if (settings.name != null) {
       var result = routes().where((route) => route.path == settings.name);
       if (result.first.path == AppRoutesName.welcomePage) {
-        final args = settings.arguments;
+       // final args = settings.arguments;
         return MaterialPageRoute(
             builder: (_) => const ChatboxWelcomePage(), settings: settings,);
       }

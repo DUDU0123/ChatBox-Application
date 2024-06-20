@@ -26,9 +26,9 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AccountOwnerProfileTile(),
+            const AccountOwnerProfileTile(),
             kHeight10,
-            CommonDivider(),
+            const CommonDivider(),
             kHeight20,
             Expanded(
               child: GridView.builder(

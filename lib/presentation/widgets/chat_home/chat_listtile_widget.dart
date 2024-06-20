@@ -1,4 +1,3 @@
-import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/presentation/pages/mobile_view/chat/messaging_page.dart';
 import 'package:chatbox/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +60,7 @@ class ChatListTileWidget extends StatelessWidget {
           ),
         );
       },
-      leading: buildProfileImage(userProfileImage: userProfileImage),
+      leading: buildProfileImage(userProfileImage: userProfileImage,),
       title: buildUserName(userName: userName),
       subtitle: buildSubtitle(
         isOutgoing: isOutgoing,

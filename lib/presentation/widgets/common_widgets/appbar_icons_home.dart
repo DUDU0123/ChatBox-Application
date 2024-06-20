@@ -1,6 +1,8 @@
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/height_width.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/common_icon_button_widget.dart';
+import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/presentation/bloc/contact/contact_bloc.dart';
+import 'package:chatbox/presentation/pages/mobile_view/chat/select_contact_to_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -26,19 +28,27 @@ List<Widget> appBarIconsHome(
             ),
           )
         : zeroMeasureWidget,
-    CommonIconButtonWidget(
+    currentIndex == 0
+        ? addChatButtonHome(
+            theme: theme,
+            onTap: () {
+              context.read<ContactBloc>().add(GetContactsEvent());
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SelectContactToChat(),
+                ),
+              );
+            },
+          )
+        : zeroMeasureWidget,
+    cameraButtonMainPage(
       theme: theme,
-      height: 30,
-      width: 30,
-      iconImage: "assets/camera.svg",
       onPressed: () {},
     ),
     isSearchIconNeeded
-        ? CommonIconButtonWidget(
+        ? searchButton(
             theme: theme,
-            height: 22,
-            width: 22,
-            iconImage: "assets/search.svg",
             onPressed: () {},
           )
         : zeroMeasureWidget,
@@ -85,13 +95,4 @@ List<Widget> appBarIconsHome(
       },
     ),
   ];
-}
-
-PopupMenuItem<dynamic> settingsNavigatorMenu(BuildContext context) {
-  return PopupMenuItem(
-    child: const Text("Settings"),
-    onTap: () {
-      Navigator.pushNamed(context, "/settings_page");
-    },
-  );
 }

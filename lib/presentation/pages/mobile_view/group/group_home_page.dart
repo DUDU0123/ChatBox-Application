@@ -1,11 +1,7 @@
-import 'package:chatbox/core/enums/enums.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatbox/core/constants/height_width.dart';
-import 'package:chatbox/presentation/widgets/chat_home/appbar_title_home.dart';
 import 'package:chatbox/presentation/widgets/chat_home/chat_listtile_widget.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/appbar_icons_home.dart';
-
 class Chats {
   final bool isGone;
   final String userName;

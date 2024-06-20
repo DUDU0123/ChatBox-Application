@@ -1,9 +1,11 @@
 import 'package:chatbox/config/theme/theme_constants.dart';
+import 'package:chatbox/core/constants/app_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:chatbox/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/app_icon_hold_widget.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_button_container.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_field_common.dart';
@@ -19,8 +21,8 @@ class NumberVerifyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String verifyID =
-        ModalRoute.of(context)?.settings.arguments as String;
+    final AuthOtpModel data =
+        ModalRoute.of(context)?.settings.arguments as AuthOtpModel;
     final theme = ThemeConstants.theme(context: context);
     return Scaffold(
       body: Padding(
@@ -33,7 +35,14 @@ class NumberVerifyPage extends StatelessWidget {
                 contentText: state.message,
               );
             }
+            if (state is OtpReSentState) {
+              commonSnackBarWidget(
+                context: context,
+                contentText: "Otp Sent Successfully",
+              );
+            }
             if (state is AuthenticationSuccessState) {
+              
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 "bottomNav_Navigator",
@@ -85,7 +94,7 @@ class NumberVerifyPage extends StatelessWidget {
                           CreateUserEvent(
                             context: context,
                             otpCode: numberVerifyController.text,
-                            verificationId: verifyID,
+                            verificationId: data.verifyId,
                           ),
                         );
                     numberVerifyController.text = '';
@@ -94,7 +103,15 @@ class NumberVerifyPage extends StatelessWidget {
                   text: "Next",
                 ),
                 kHeight5,
-                ResendOtpWidget(),
+                ResendOtpWidget(
+                  onTap: () {
+                    context.read<AuthenticationBloc>().add(ResendOtpEvent(
+                          context: context,
+                          phoneNumberWithCountryCode: data.phoneNumber,
+                          forceResendingToken: data.forceResendingToken,
+                        ));
+                  },
+                ),
               ],
             );
           },
