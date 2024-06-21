@@ -1,5 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/presentation/widgets/chat/message_icon_widgets.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +10,11 @@ class MessageHoldContainer extends StatelessWidget {
   MessageHoldContainer({
     super.key,
     required this.isReadedMessage,
+    required this.messageType,
   });
 
   final bool? isReadedMessage;
+  final MessageType messageType;
 
   bool isLongPressed = false;
 
@@ -38,11 +41,7 @@ class MessageHoldContainer extends StatelessWidget {
                   padding: EdgeInsets.only(
                       left: 10.w, right: 10.w, top: 5.h, bottom: 5.h),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10.sp),
-                        bottomRight: Radius.circular(10.sp),
-                        topRight: Radius.circular(10.sp),
-                        topLeft: Radius.circular(1.sp)),
+                    borderRadius: BorderRadius.circular(10.sp),
                     gradient: LinearGradient(
                       colors: [
                         lightLinearGradientColorOne,
@@ -51,7 +50,10 @@ class MessageHoldContainer extends StatelessWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    padding: EdgeInsets.symmetric(
+                        vertical:
+                            10.h
+                        ),
                     child: Row(
                       children: [
                         Align(

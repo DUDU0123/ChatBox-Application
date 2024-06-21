@@ -9,9 +9,13 @@ sealed class MessageEvent extends Equatable {
 
 class MessageTypedEvent extends MessageEvent {
   final int textLength;
- const MessageTypedEvent({
+  const MessageTypedEvent({
     required this.textLength,
   });
   @override
-  List<Object> get props => [textLength,];
+  List<Object> get props => [
+        textLength,
+      ];
 }
+
+class AttachmentIconClickedEvent extends MessageEvent {}

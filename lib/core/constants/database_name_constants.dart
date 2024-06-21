@@ -13,3 +13,19 @@ const userDbGroupIdList = 'user_group_id_list';
 
 // collections names
 const usersCollection = 'users';
+
+
+
+// messageDb fields name
+const dbMessageID = 'message_id';
+const dbMessageSenderID = 'message_sender_id';
+const dbMessageRecieverID = 'message_reciever_id';
+const dbMessageContent = 'message_content';
+const dbMessageSendTime = 'message_send_time';
+const dbMessageStatus = 'message_status';
+const dbMessageType = 'message_type';
+const dbAttachmentsWithMessage = 'message_attachments';
+const dbIsMessageEdited = 'edited_message';
+const dbIsMessageDeleted = 'deleted_message';
+const dbIsMessagePinned = 'pinned_message';
+const dbIsMessageStarred = 'starred_message';

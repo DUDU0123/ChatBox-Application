@@ -2,11 +2,14 @@ import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/presentation/widgets/chat/attachment_list_container_vertical.dart';
 import 'package:chatbox/presentation/widgets/chat/chatbar_widget.dart';
 import 'package:chatbox/presentation/widgets/chat/message_hold_container.dart';
 import 'package:chatbox/presentation/widgets/chat/message_page_date_show_widget.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -25,11 +28,11 @@ class MessagingPage extends StatelessWidget {
   bool isVisible = false;
   bool isImojiButtonClicked = false;
   // final bool? isGone;
+  MessageType messageType = MessageType.photo;
   @override
   Widget build(BuildContext context) {
-    
-    final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final theme = Theme.of(context);
+    // final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -44,26 +47,31 @@ class MessagingPage extends StatelessWidget {
       body: Stack(
         children: [
           SizedBox(
-            width: screenWidth(context: context),height: screenHeight(context: context),
+            width: screenWidth(context: context),
+            height: screenHeight(context: context),
             child: Image.asset(
               fit: BoxFit.cover,
               Provider.of<ThemeManager>(context).isDark
-                    ? bgImageDark
-                    : bgImageLight,
+                  ? bgImageDark
+                  : bgImageLight,
             ),
           ),
           Column(
             children: [
               Expanded(
-                child: ListView.separated(
-                  separatorBuilder: (context, index) =>index%5==0?  Padding(
-                    padding:  EdgeInsets.all(10.sp),
-                    child:  const Column(
-                      children: [
-                        MessagePageDateShowWidget(date: "10 June, 2024"),
-                      ],
-                    ),
-                  ):zeroMeasureWidget,
+                child: 
+                
+                ListView.separated(
+                  separatorBuilder: (context, index) => index % 5 == 0
+                      ? Padding(
+                          padding: EdgeInsets.all(10.sp),
+                          child: const Column(
+                            children: [
+                              MessagePageDateShowWidget(date: "10 June, 2024"),
+                            ],
+                          ),
+                        )
+                      : zeroMeasureWidget,
                   itemCount: 17,
                   padding: EdgeInsets.only(
                     top: 10.h,
@@ -73,6 +81,7 @@ class MessagingPage extends StatelessWidget {
                     return Container(
                       margin: EdgeInsets.symmetric(vertical: 2.h),
                       child: MessageHoldContainer(
+                        messageType: messageType,
                         isReadedMessage: isReadedMessage,
                       ),
                     );
@@ -85,6 +94,19 @@ class MessagingPage extends StatelessWidget {
               ),
             ],
           ),
+          Positioned(
+            bottom: 60.h,
+            right: screenWidth(context: context) / 3.3,
+            child: BlocBuilder<MessageBloc, MessageState>(
+              builder: (context, state) {
+                return Visibility(
+                  visible: state.isAttachmentListOpened??false,
+                  replacement: zeroMeasureWidget,
+                  child: AttachmentListContainerVertical(),
+                );
+              },
+            ),
+          ),
           const Align(
             alignment: Alignment.topCenter,
             child: MessagePageDateShowWidget(date: "10 July, 2022"),
@@ -92,6 +114,9 @@ class MessagingPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
     // Scaffold(
     // appBar: PreferredSize(
     //   preferredSize: const Size.fromHeight(60),
@@ -108,9 +133,9 @@ class MessagingPage extends StatelessWidget {
     //     decoration: BoxDecoration(
     //       image: DecorationImage(
     //         image: AssetImage(
-              // Provider.of<ThemeManager>(context).isDark
-              //     ? bgImageDark
-              //     : bgImageLight,
+    // Provider.of<ThemeManager>(context).isDark
+    //     ? bgImageDark
+    //     : bgImageLight,
     //         ),
     //         fit: BoxFit.cover,
     //       ),
@@ -156,45 +181,45 @@ class MessagingPage extends StatelessWidget {
     //           child: Visibility(
     //             visible: false,
     //             replacement: zeroMeasureWidget,
-    //             child: Container(
-    //                 height: screenHeight(context: context) / 3.h,
-    //                 width: 50.w,
-    //                 decoration: BoxDecoration(
-    //                   color: theme.colorScheme.onTertiary,
-    //                   borderRadius: BorderRadius.circular(15.sp),
+    // child: Container(
+    //     height: screenHeight(context: context) / 3.h,
+    //     width: 50.w,
+    //     decoration: BoxDecoration(
+    //       color: theme.colorScheme.onTertiary,
+    //       borderRadius: BorderRadius.circular(15.sp),
+    //     ),
+    //     child: ClipRRect(
+    //       borderRadius: BorderRadius.circular(15.sp),
+    //       child: ListView.separated(
+    //         padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
+    //         itemCount: attachmentIcons.length,
+    //         itemBuilder: (context, index) {
+    //           return Container(
+    //             decoration: BoxDecoration(
+    //               shape: BoxShape.circle,
+    //               gradient: LinearGradient(
+    //                 colors: [
+    //                   attachmentIcons[index].colorOne,
+    //                   attachmentIcons[index].colorTwo,
+    //                 ],
+    //               ),
+    //             ),
+    //             child: IconButton(
+    //               onPressed: () {},
+    //               icon: SvgPicture.asset(
+    //                 attachmentIcons[index].icon,
+    //                height: 24.h,width: 24.h,
+    //                 colorFilter: ColorFilter.mode(
+    //                   kBlack,
+    //                   BlendMode.srcIn,
     //                 ),
-    //                 child: ClipRRect(
-    //                   borderRadius: BorderRadius.circular(15.sp),
-    //                   child: ListView.separated(
-    //                     padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
-    //                     itemCount: attachmentIcons.length,
-    //                     itemBuilder: (context, index) {
-    //                       return Container(
-    //                         decoration: BoxDecoration(
-    //                           shape: BoxShape.circle,
-    //                           gradient: LinearGradient(
-    //                             colors: [
-    //                               attachmentIcons[index].colorOne,
-    //                               attachmentIcons[index].colorTwo,
-    //                             ],
-    //                           ),
-    //                         ),
-    //                         child: IconButton(
-    //                           onPressed: () {},
-    //                           icon: SvgPicture.asset(
-    //                             attachmentIcons[index].icon,
-    //                            height: 24.h,width: 24.h,
-    //                             colorFilter: ColorFilter.mode(
-    //                               kBlack,
-    //                               BlendMode.srcIn,
-    //                             ),
-    //                           ),
-    //                         ),
-    //                       );
-    //                     },
-    //                     separatorBuilder: (context, index) => kHeight5,
-    //                   ),
-    //                 )),
+    //               ),
+    //             ),
+    //           );
+    //         },
+    //         separatorBuilder: (context, index) => kHeight5,
+    //       ),
+    //     )),
     //           ),
     //         ),
     //       ],
@@ -209,5 +234,3 @@ class MessagingPage extends StatelessWidget {
     //   //   ),
     //   // ),
     // );
-  }
-}

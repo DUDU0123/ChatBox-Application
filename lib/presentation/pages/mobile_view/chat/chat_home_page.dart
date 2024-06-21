@@ -11,7 +11,7 @@ class ChatHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     List chatList = [];
     return Scaffold(
-      body: chatList.isEmpty
+      body: chatList.isNotEmpty
           ? emptyShowWidget(
               context: context,
               text:
@@ -23,7 +23,7 @@ class ChatHomePage extends StatelessWidget {
                   child: SearchBarChatHome(),
                 ),
                 SliverList.separated(
-                  itemCount: 0,
+                  itemCount: 10,
                   itemBuilder: (context, index) {
                     return const ChatListTileWidget(
                       isGroup: false,
@@ -53,5 +53,4 @@ class ChatHomePage extends StatelessWidget {
             ),
     );
   }
-
 }

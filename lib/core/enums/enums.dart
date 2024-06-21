@@ -12,3 +12,11 @@ enum PageTypeEnum {
   settingEditProfilePage,
   none
 }
+
+enum MessageStatus{
+  sent,delivered,read
+}
+
+enum MessageType{
+  text,photo,audio,video,document,location,contact
+}

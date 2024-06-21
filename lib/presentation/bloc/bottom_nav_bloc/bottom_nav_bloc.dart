@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 part 'bottom_nav_event.dart';
 part 'bottom_nav_state.dart';
 
