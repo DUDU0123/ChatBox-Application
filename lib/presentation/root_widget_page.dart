@@ -18,7 +18,6 @@ class RootWidgetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return ChangeNotifierProvider(
       create: (context) => ThemeManager()..init(),
       child: ScreenUtilInit(builder: (context, child) {
@@ -35,22 +34,42 @@ class RootWidgetPage extends StatelessWidget {
             //   webScreenLayout: ChatboxWebAuthenticationPage(),
             // ),
             initialRoute: "/",
-            routes: {
-              "/": (context) => const MainPage(
-                    // mobileScreenLayout: ChatboxWelcomePage(),
-                    // webScreenLayout: ChatboxWebAuthenticationPage(),
-                  ),
-              'welcome_page': (context) => const ChatboxWelcomePage(),
-              "create_account": (context) => CreateAccountPage(),
-              "verify_number": (context) => NumberVerifyPage(),
-              "bottomNav_Navigator": (context) => NavigatorBottomnavPage(),
-              //"/messaging_page":(context)=> MessagingPage(),
-              "/search_page":(context)=> SearchPage(),
-              "/settings_page": (context)=> const SettingsPage()
-            },
+            routes: routes(context: context),
+            // {
+            //   "/": (context) => const MainPage(
+            //         // mobileScreenLayout: ChatboxWelcomePage(),
+            //         // webScreenLayout: ChatboxWebAuthenticationPage(),
+            //       ),
+            //   'welcome_page': (context) => const ChatboxWelcomePage(),
+            //   "create_account": (context) => CreateAccountPage(),
+            //   "verify_number": (context) => NumberVerifyPage(),
+            //   "bottomNav_Navigator": (context) => NavigatorBottomnavPage(),
+            //   //"/messaging_page":(context)=> MessagingPage(),
+            //   "/search_page":(context)=> SearchPage(),
+            //   "/settings_page": (context)=> const SettingsPage()
+            // },
           ),
         );
       }),
     );
   }
+
+  // routes provider method start
+  Map<String, Widget Function(BuildContext)> routes(
+      {required BuildContext context}) {
+    return {
+      "/": (context) => const MainPage(
+          // mobileScreenLayout: ChatboxWelcomePage(),
+          // webScreenLayout: ChatboxWebAuthenticationPage(),
+          ),
+      'welcome_page': (context) => const ChatboxWelcomePage(),
+      "create_account": (context) => CreateAccountPage(),
+      "verify_number": (context) => NumberVerifyPage(),
+      "bottomNav_Navigator": (context) => NavigatorBottomnavPage(),
+      // "/messaging_page":(context)=> MessagingPage(),
+      "/search_page": (context) => SearchPage(),
+      "/settings_page": (context) => const SettingsPage()
+    };
+  } //routes provider method end
+
 }

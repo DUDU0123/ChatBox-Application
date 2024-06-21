@@ -6,6 +6,7 @@ import 'package:chatbox/data/repositories/user_repository/user_repository_impl.d
 import 'package:chatbox/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:chatbox/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/presentation/bloc/contact/contact_bloc.dart';
+import 'package:chatbox/presentation/bloc/message/message_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
@@ -28,6 +29,9 @@ class AppBlocProvider {
           firebaseFirestore: FirebaseFirestore.instance,
         ),
       ),
+    ),
+    BlocProvider(
+      create: (context) => MessageBloc(),
     ),
   ];
 }

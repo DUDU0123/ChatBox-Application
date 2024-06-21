@@ -11,17 +11,14 @@ class MessagePageDateShowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        margin: EdgeInsets.only(top: 3.h),
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-        decoration: BoxDecoration(
-          color: iconGreyColor.withAlpha(150),
-          borderRadius: BorderRadius.circular(5.sp),
-        ),
-        child: Text(date),
+    return Container(
+      margin: EdgeInsets.only(top: 3.h),
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+      decoration: BoxDecoration(
+        color: iconGreyColor.withAlpha(150),
+        borderRadius: BorderRadius.circular(5.sp),
       ),
+      child: Text(date),
     );
   }
 }
