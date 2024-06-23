@@ -35,7 +35,7 @@ class ChatHomePage extends StatelessWidget {
                       lastMessageTime: "10:24",
                       notificationCount: 30,
                       userName: "Anonymous Person",
-                      userProfileImage: "assets/appLogo.png",
+                      userProfileImage: "",
                       // message
                       isAudio: false,
                       isContact: false,

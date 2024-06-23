@@ -264,7 +264,7 @@ class GroupHomePage extends StatelessWidget {
             userName: "Group1",
             lastMessage: "lastMessagednkanvkankdnv",
             isSeen: c.isSeen,
-            userProfileImage: "assets/appLogo.png",
+            userProfileImage: "",
             lastMessageTime: "10:00",
             notificationCount: 10,
             isGone: c.isGone,

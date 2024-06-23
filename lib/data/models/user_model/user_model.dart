@@ -19,7 +19,7 @@ class UserModel extends UserEntity {
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
     return UserModel(
       id: map[userDbId],
-      userName: map[userDbName] ?? '',
+      userName: map[userDbName] ?? 'No Username',
       userEmailId: map[userDbEmail] ?? '',
       phoneNumber: map[userDbPhoneNumber] ?? '',
       userAbout: map[userDbAbout] ?? '',

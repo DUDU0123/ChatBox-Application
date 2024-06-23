@@ -9,12 +9,13 @@ Future<void> main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-          apiKey: "AIzaSyAjw1MzBwJsUdOGpLQeUDhUwHOyrCY61BE",
-          authDomain: "official-chatbox-application.firebaseapp.com",
-          projectId: "official-chatbox-application",
-          storageBucket: "official-chatbox-application.appspot.com",
-          messagingSenderId: "414609473719",
-          appId: "1:414609473719:web:e12041a79bed5ab66e4d32"),
+        apiKey: "AIzaSyAjw1MzBwJsUdOGpLQeUDhUwHOyrCY61BE",
+        authDomain: "official-chatbox-application.firebaseapp.com",
+        projectId: "official-chatbox-application",
+        storageBucket: "official-chatbox-application.appspot.com",
+        messagingSenderId: "414609473719",
+        appId: "1:414609473719:web:e12041a79bed5ab66e4d32",
+      ),
     );
   }
   await Firebase.initializeApp(

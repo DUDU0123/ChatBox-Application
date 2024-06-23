@@ -1,7 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/data/models/user_model/user_model.dart';
+import 'package:chatbox/data/repositories/auth_repo/authentication_repo_impl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class UserData{
@@ -23,6 +26,14 @@ class UserData{
       throw Exception("Error while fetching all users: $e");
     }
   }
+
+  // getCurrentUserData(){
+  //   try {
+  //     firestore.collection(usersCollection).doc(AuthenticationRepoImpl.auth.currentUser?.uid).get();
+  //   } catch (e) {
+  //     throw Exception("Error while fetching current user data: $e");
+  //   }
+  // }
 
   // method to get one user by id
   Future<UserModel> getOneUserDataFromDataBase({required String userId}) async {
@@ -61,6 +72,7 @@ class UserData{
             ref: "profile_images/${userData.id}", file: profileImage);
         userData = userData.copyWith(userProfileImage: userProfileImage);
       }
+      log("user data updatingg..");
       await firestore.collection(usersCollection).doc(userData.id).update(userData.toJson());
     } catch (e) {
       throw Exception("Error while updating user data: $e");
@@ -83,5 +95,10 @@ class UserData{
     TaskSnapshot taskSnapshot = await uploadTask;
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
+  }
+
+
+  saveUserProfileImageToDatabase(){
+    
   }
 }

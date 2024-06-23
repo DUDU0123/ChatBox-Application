@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/utils/invite_app_function.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/presentation/pages/mobile_view/chat/messaging_page.dart';
@@ -10,6 +11,7 @@ import 'package:chatbox/presentation/widgets/common_widgets/user_tile_name_about
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SelectContactToChat extends StatelessWidget {
   const SelectContactToChat({super.key});
@@ -78,9 +80,7 @@ class SelectContactToChat extends StatelessWidget {
                                             onPressed: () async {
                                               //create the link to send as invitation
                                               // write the logic to send an invitation to install and use the application
-                                              // final r = await Share.share(
-                                              //     'We are excited to invite you to download and install ChatBox, your ultimate chat application, now available on the Amazon Appstore! ChatBox offers a seamless and engaging communication experience with its user-friendly interface, innovative features, and robust security. Connect with friends, family, and colleagues like never before. Don’t miss out—visit the Amazon Appstore today and make ChatBox your go-to app for all your messaging needs!');
-                                              // print(r);
+                                              await inviteToChatBoxApp();
                                             },
                                             child: TextWidgetCommon(
                                               text: "Invite",

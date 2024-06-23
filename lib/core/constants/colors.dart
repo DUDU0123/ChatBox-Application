@@ -23,6 +23,7 @@ Color onSecondaryColorLight = const Color.fromARGB(255, 228, 228, 228);
 Color boxColorDark = const Color.fromARGB(255, 34, 35, 42);
 Color boxColorWhite = const Color.fromARGB(255, 237, 237, 237);
 Color messageSeenColor = const Color.fromARGB(255, 23, 199, 255);
+Color darkGreyColor = const Color.fromARGB(255, 29, 31, 35);
 
 // attachments color
 Color documentColorOne = const Color.fromARGB(255, 61, 49, 197);
@@ -70,6 +71,14 @@ const call = "assets/call.svg";
 const sendIcon = "assets/send_svg.svg";
 const smileIcon = "assets/emoji_chat.svg";
 const microphoneFilled = "assets/microphone_filled.svg";
+const changeNumberIcon = "assets/changeNumber.svg";
+const tfaPin = "assets/tfaIcon.svg";
+const deleteIcon = "assets/delete.svg";
+const deleteIcon2 = "assets/deleteIcon.svg";
+const theme = "assets/theme.svg";
+const clearIcon = "assets/clearIcon.svg";
+
+
 
 // styles
 TextStyle fieldStyle({required BuildContext context}) => TextStyle(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/enums/enums.dart';
 
 class AttachmentModel {
   final Color colorOne;
@@ -18,10 +19,12 @@ class SettingsHomeButtonModel {
   final String title;
   final String subtitle;
   final String icon;
+  final PageTypeEnum pageType;
   SettingsHomeButtonModel({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.pageType,
   });
 }
 
@@ -38,13 +41,13 @@ class AuthOtpModel {
 }
 
 List<SettingsHomeButtonModel> settingsButtonsList = [
-  SettingsHomeButtonModel(title: "Account", subtitle: "Delete account", icon: keyIcon),
-  SettingsHomeButtonModel(title: "Privacy", subtitle: "Profile photo", icon: privacyIcon),
-  SettingsHomeButtonModel(title: "Chats", subtitle: "Theme, wallpaper", icon: chatsIcon),
-  SettingsHomeButtonModel(title: "Notifications", subtitle: "Message, call tones", icon: notificationIcon),
-  SettingsHomeButtonModel(title: "Storage", subtitle: "Manage storage", icon: storageIcon),
-  SettingsHomeButtonModel(title: "Help", subtitle: "Help center, contact us", icon: helpIcon),
-  SettingsHomeButtonModel(title: "Invite a friend", subtitle: "", icon: inviteIcon),
+  SettingsHomeButtonModel(title: "Account", subtitle: "Delete account", icon: keyIcon, pageType: PageTypeEnum.accountSetting),
+  SettingsHomeButtonModel(title: "Privacy", subtitle: "Profile photo", icon: privacyIcon, pageType: PageTypeEnum.privacySetting),
+  SettingsHomeButtonModel(title: "Chats", subtitle: "Theme, wallpaper", icon: chatsIcon, pageType: PageTypeEnum.chatSetting),
+  SettingsHomeButtonModel(title: "Notifications", subtitle: "Message, call tones", icon: notificationIcon, pageType: PageTypeEnum.notificationsSetting),
+  SettingsHomeButtonModel(title: "Storage", subtitle: "Manage storage", icon: storageIcon,pageType: PageTypeEnum.storageSetting),
+  SettingsHomeButtonModel(title: "Help", subtitle: "Help center, contact us", icon: helpIcon,pageType: PageTypeEnum.helpSetting),
+  SettingsHomeButtonModel(title: "Invite a friend", subtitle: "", icon: inviteIcon,pageType: PageTypeEnum.inviteButton),
 ];
 
 List<AttachmentModel> attachmentIcons = [

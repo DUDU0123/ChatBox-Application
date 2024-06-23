@@ -7,7 +7,9 @@ import 'package:chatbox/presentation/bloc/authentication/authentication_bloc.dar
 import 'package:chatbox/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -32,6 +34,14 @@ class AppBlocProvider {
     ),
     BlocProvider(
       create: (context) => MessageBloc(),
+    ),
+    BlocProvider(
+      create: (context) => UserBloc(
+        firebaseAuth: FirebaseAuth.instance,
+        userRepository: UserRepositoryImpl(
+          userData: UserData(),
+        ),
+      )..add(GetCurrentUserData()),
     ),
   ];
 }

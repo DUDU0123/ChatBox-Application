@@ -10,13 +10,21 @@ enum PageTypeEnum {
   groupSettingsPage,
   broadCastSettingsPage,
   settingEditProfilePage,
-  none
+  accountSetting,
+  privacySetting,
+  chatSetting,
+  notificationsSetting,
+  storageSetting,
+  helpSetting,
+  inviteButton,
+  none,
 }
 
-enum MessageStatus{
-  sent,delivered,read
+enum FieldTypeSettings {
+  name,
+  about,
 }
 
-enum MessageType{
-  text,photo,audio,video,document,location,contact
-}
+enum MessageStatus { sent, delivered, read }
+
+enum MessageType { text, photo, audio, video, document, location, contact }

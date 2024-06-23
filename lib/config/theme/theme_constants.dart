@@ -15,6 +15,12 @@ const  iosTransitionBuilder = PageTransitionsTheme(
 );
 class ThemeConstants {
   static ThemeData lightTheme = ThemeData(
+     switchTheme: SwitchThemeData(
+      trackColor: WidgetStateProperty.all(darkSwitchColor)
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.all(buttonSmallTextColor)
+    ),
     pageTransitionsTheme: androidTransitionBuilder,
     appBarTheme: AppBarTheme(
       backgroundColor: kWhite,
@@ -89,6 +95,14 @@ class ThemeConstants {
   );
 
   static ThemeData darkTheme = ThemeData(
+    switchTheme: SwitchThemeData(
+      trackColor: WidgetStateProperty.all(darkSwitchColor)
+    ),
+    checkboxTheme: CheckboxThemeData(
+      overlayColor: WidgetStateProperty.all(kTransparent),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.sp)),
+      fillColor: WidgetStateProperty.all(buttonSmallTextColor)
+    ),
     pageTransitionsTheme: androidTransitionBuilder,
     appBarTheme: AppBarTheme(
       surfaceTintColor: kTransparent,
