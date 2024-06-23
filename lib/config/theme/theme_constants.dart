@@ -152,8 +152,8 @@ class ThemeConstants {
     dialogTheme: DialogTheme(
       titleTextStyle: TextStyle(
         color: kWhite,
-        fontSize: 13.sp,
-        fontWeight: FontWeight.bold,
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w500,
       ),
     ),
     colorScheme: const ColorScheme.dark().copyWith(

@@ -1,12 +1,15 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/presentation/pages/mobile_view/settings/storage/manage_storage_page.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/divider_common.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/presentation/widgets/settings/common_check_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class StorageSettings extends StatelessWidget {
   const StorageSettings({super.key});
 
@@ -21,13 +24,24 @@ class StorageSettings extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w,vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             commonListTile(
-              onTap: () {},
-              leading: Icon(Icons.folder_outlined,color: iconGreyColor, size: 30.sp,),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManageStoragePage(),
+                  ),
+                );
+              },
+              leading: Icon(
+                Icons.folder_outlined,
+                color: iconGreyColor,
+                size: 30.sp,
+              ),
               title: "Manage storage",
               isSmallTitle: false,
               context: context,
@@ -81,27 +95,6 @@ class StorageSettings extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget commonCheckTile({
-    required BuildContext context,
-    required String title,
-    bool? boxValue,
-    required void Function(bool?)? onChanged,
-  }) {
-    return commonListTile(
-      onTap: () {},
-      title: title,
-      isSmallTitle: false,
-      context: context,
-      leading: Checkbox(
-        checkColor: kWhite,
-        activeColor: buttonSmallTextColor,
-        fillColor: WidgetStateProperty.all(boxValue!=null?boxValue?buttonSmallTextColor:kTransparent:kTransparent),
-        value: boxValue,
-        onChanged: (value) {},
       ),
     );
   }

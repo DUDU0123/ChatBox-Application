@@ -22,21 +22,21 @@ class CommonButtonContainer extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: horizontalMarginOfButton.sp),
+        margin: EdgeInsets.symmetric(horizontal: horizontalMarginOfButton.w),
         height: 50.h,
         width: screenWidth(context: context),
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              offset: const Offset(1, 1),
+              offset: const Offset(0, 0),
               blurRadius: 1,
-              spreadRadius: 0.5,
+              spreadRadius: 0,
               color: theme.shadowColor,
             ),
             BoxShadow(
-              offset: const Offset(0, -1),
+              offset: const Offset(0, 0),
               blurRadius: 1,
-              spreadRadius: 0.5,
+              spreadRadius: 0,
               color: theme.shadowColor,
             )
           ],
@@ -53,7 +53,7 @@ class CommonButtonContainer extends StatelessWidget {
             text: text,
             fontSize: theme.textTheme.labelSmall?.fontSize,
             textColor: theme.textTheme.labelSmall?.color,
-            fontWeight: theme.textTheme.labelSmall?.fontWeight,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

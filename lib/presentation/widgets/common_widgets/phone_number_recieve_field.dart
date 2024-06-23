@@ -52,6 +52,12 @@ class PhoneNumberRecieveField extends StatelessWidget {
             },
             child: countrySelectedShowWidget(),
           ),
+          kWidth2,
+          VerticalDivider(
+            color: iconGreyColor,
+            endIndent: 5,
+            indent: 5,
+          ),
           Expanded(
             child: TextFieldCommon(
               style: fieldStyle(context: context),

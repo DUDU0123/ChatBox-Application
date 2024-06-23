@@ -1,12 +1,9 @@
-import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_list_tile.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class NotificationSettings extends StatelessWidget {
   const NotificationSettings({super.key});
