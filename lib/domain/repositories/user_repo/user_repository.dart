@@ -12,12 +12,13 @@ abstract class UserRepository{
     required File? profileImage,
   });
   Future<List<UserModel>> getAllUsersFromDB();
-  Future<UserModel> getOneUserDataFromDB({required String userId});
+  Future<UserModel?> getOneUserDataFromDB({required String userId});
   Future<void> deleteUserInDataBase({required String userId});
   Future<String> saveUserFileToDBStorage({
     required String ref,
     required File file,
   });
+  Future<void> saveUserProfileImageToDatabase({required File? profileImage});
   // void userChangeNumber();
   // void userDeleteAccount();
   // void blockUser();

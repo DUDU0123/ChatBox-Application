@@ -1,11 +1,10 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/theme_type_giver.dart';
 import 'package:chatbox/presentation/pages/mobile_view/settings/chat/wallpaper_setpage.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_list_tile.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/text_butttons_common.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:chatbox/presentation/widgets/dialog_widgets/theme_set_dialogbox.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class ChatSettings extends StatelessWidget {
   const ChatSettings({super.key});
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +39,7 @@ class ChatSettings extends StatelessWidget {
                 );
               },
               title: "Theme",
-              subtitle: "System default",
+              subtitle: themeType(context: context),
               isSmallTitle: false,
               context: context,
               leading: SvgPicture.asset(

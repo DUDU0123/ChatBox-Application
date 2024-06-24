@@ -1,31 +1,38 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/enums/enums.dart';
 
-class AttachmentModel {
+class AttachmentModel extends Equatable {
   final Color colorOne;
   final Color colorTwo;
   final String icon;
-  AttachmentModel({
+  const AttachmentModel({
     required this.colorOne,
     required this.colorTwo,
     required this.icon,
   });
+
+  @override
+  List<Object> get props => [colorOne, colorTwo, icon];
 }
 
 
-class SettingsHomeButtonModel {
+class SettingsHomeButtonModel extends Equatable {
   final String title;
   final String subtitle;
   final String icon;
   final PageTypeEnum pageType;
-  SettingsHomeButtonModel({
+  const SettingsHomeButtonModel({
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.pageType,
   });
+
+  @override
+  List<Object> get props => [title, subtitle, icon, pageType];
 }
 
 class AuthOtpModel {
@@ -40,7 +47,7 @@ class AuthOtpModel {
   
 }
 
-List<SettingsHomeButtonModel> settingsButtonsList = [
+List<SettingsHomeButtonModel> settingsButtonsList = const [
   SettingsHomeButtonModel(title: "Account", subtitle: "Delete account", icon: keyIcon, pageType: PageTypeEnum.accountSetting),
   SettingsHomeButtonModel(title: "Privacy", subtitle: "Profile photo", icon: privacyIcon, pageType: PageTypeEnum.privacySetting),
   SettingsHomeButtonModel(title: "Chats", subtitle: "Theme, wallpaper", icon: chatsIcon, pageType: PageTypeEnum.chatSetting),

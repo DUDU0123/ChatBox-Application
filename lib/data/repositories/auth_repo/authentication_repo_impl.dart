@@ -1,25 +1,30 @@
 import 'dart:developer';
-import 'package:chatbox/core/constants/app_constants.dart';
-import 'package:chatbox/core/utils/snackbar.dart';
-import 'package:chatbox/domain/repositories/authentication_repo/authentication_repo.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:chatbox/core/constants/app_constants.dart';
+import 'package:chatbox/core/utils/snackbar.dart';
+import 'package:chatbox/domain/repositories/authentication_repo/authentication_repo.dart';
+
 const userAuthStatusKey = "is_user_signedIn";
 
 class AuthenticationRepoImpl extends AuthenticationRepo {
-  static FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth;
+  AuthenticationRepoImpl({
+    required this.firebaseAuth,
+  });
   @override
   Future<void> createAccountInChatBoxUsingPhoneNumber({
     required BuildContext context,
     required String phoneNumber,
   }) async {
     try {
-      await auth.verifyPhoneNumber(
+      await firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
-          await auth.signInWithCredential(phoneAuthCredential);
+          await firebaseAuth.signInWithCredential(phoneAuthCredential);
         },
         verificationFailed: (error) {
           throw Exception(error.message);
@@ -56,7 +61,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
         verificationId: verificationId,
         smsCode: otpCode,
       );
-      Future<UserCredential> value = auth.signInWithCredential(credential);
+      Future<UserCredential> value = firebaseAuth.signInWithCredential(credential);
       // Set user authentication status in SharedPreferences
       setUserAuthStatus(isSignedIn: true);
       onSuccess();
@@ -75,7 +80,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
   @override
   Future<void> signOutUser({required userId}) async {
     try {
-      await auth.signOut();
+      await firebaseAuth.signOut();
     } catch (e) {
       debugPrint(e.toString());
       throw Exception(e);
@@ -101,12 +106,12 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required int? forceResendingToken,
   }) async {
     try {
-      await auth.verifyPhoneNumber(
+      await firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         forceResendingToken:
             forceResendingToken, // Use the resending token here
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
-          await auth.signInWithCredential(phoneAuthCredential);
+          await firebaseAuth.signInWithCredential(phoneAuthCredential);
         },
         verificationFailed: (error) {
           throw Exception(error.message);

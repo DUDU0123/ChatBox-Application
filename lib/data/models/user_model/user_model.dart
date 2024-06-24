@@ -19,10 +19,10 @@ class UserModel extends UserEntity {
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
     return UserModel(
       id: map[userDbId],
-      userName: map[userDbName] ?? 'No Username',
+      userName: map[userDbName] ?? 'chatbox user',
       userEmailId: map[userDbEmail] ?? '',
       phoneNumber: map[userDbPhoneNumber] ?? '',
-      userAbout: map[userDbAbout] ?? '',
+      userAbout: map[userDbAbout] ?? 'chatbox about',
       userProfileImage: map[userDbProfileImage] ?? '',
       userNetworkStatus: map[userDbNetworkStatus] ?? '',
       createdAt: map[userDbCreatedAt] ?? '',
@@ -47,6 +47,7 @@ class UserModel extends UserEntity {
       userDbGroupIdList: userGroupIdList,
     };
   }
+  
 
   UserModel copyWith({
     String? id,
@@ -76,4 +77,6 @@ class UserModel extends UserEntity {
       userGroupIdList: userGroupIdList??this.userGroupIdList
     );
   }
+
+  
 }

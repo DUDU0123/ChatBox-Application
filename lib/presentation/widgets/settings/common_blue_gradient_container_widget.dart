@@ -7,7 +7,7 @@ import 'package:chatbox/presentation/widgets/common_widgets/text_butttons_common
 import 'package:chatbox/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:chatbox/core/service/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -104,7 +104,7 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
           pageType == PageTypeEnum.settingEditProfilePage
               ? IconButton(
                   onPressed: () {
-                    bottomSheetCommon(
+                    userDataEditDialogBox(
                       controller: controller,
                       context: context,
                       fieldTitle: fieldTypeSettings == FieldTypeSettings.name
@@ -113,7 +113,7 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                       hintText: fieldTypeSettings == FieldTypeSettings.name
                           ? "Enter name"
                           : "Enter about",
-                          fieldTypeSettings: fieldTypeSettings,
+                      fieldTypeSettings: fieldTypeSettings,
                     );
                   },
                   icon: Icon(
@@ -127,13 +127,18 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
     );
   }
 
-  Future<dynamic> bottomSheetCommon({
+  Future<dynamic> userDataEditDialogBox({
     required BuildContext context,
     required String fieldTitle,
     required String hintText,
     TextEditingController? controller,
     required FieldTypeSettings? fieldTypeSettings,
   }) {
+    final currentState =
+        context.read<UserBloc>().state as CurrentUserLoadedState;
+    controller?.text = fieldTypeSettings == FieldTypeSettings.name
+        ? currentState.currentUserData.userName ?? ""
+        : currentState.currentUserData.userAbout ?? "";
     return showDialog(
       context: context,
       builder: (context) {
@@ -145,7 +150,8 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
           ),
           backgroundColor: darkGreyColor,
           child: Container(
-            padding: EdgeInsets.only(top: 20.h, left: 30.w, right: 20.w, bottom: 10.h),
+            padding: EdgeInsets.only(
+                top: 20.h, left: 30.w, right: 20.w, bottom: 10.h),
             height: screenHeight(context: context) / 4,
             decoration: BoxDecoration(
               color: darkGreyColor,
@@ -159,8 +165,8 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                 TextWidgetCommon(
                   textColor: kWhite,
                   text: fieldTypeSettings == FieldTypeSettings.name
-                          ? "Enter your name"
-                          : "About",
+                      ? "Enter your name"
+                      : "About",
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -169,15 +175,14 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                     height: 50.h,
                     child: TextFieldCommon(
                       minLines: 1,
-                    
-                      maxLines: fieldTitle=="About"?5:1,
+                      maxLines: fieldTitle == "About" ? 5 : 1,
                       style: TextStyle(
                         color: kWhite,
-                    
                       ),
                       border: UnderlineInputBorder(
-                        borderSide: BorderSide(color: buttonSmallTextColor,)
-                      ),
+                          borderSide: BorderSide(
+                        color: buttonSmallTextColor,
+                      )),
                       cursorColor: buttonSmallTextColor,
                       hintText: fieldTypeSettings == FieldTypeSettings.name
                           ? "Enter name"
@@ -186,15 +191,22 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                       textAlign: TextAlign.start,
                     ),
                   ),
-                 const Spacer(),
+                const Spacer(),
                 TextButtonsCommon(
                   onPressed: () {
-                 UserModel userModel = fieldTypeSettings == FieldTypeSettings.name?  UserModel(
-                      userName: controller?.text
-                    ): UserModel(
-                      userAbout: controller?.text,
-                    );
-                    context.read<UserBloc>().add(EditCurrentUserData(userModel: userModel));
+                    UserModel currentUser = getItInstance<UserModel>();
+                    UserModel updateUser =
+                        fieldTypeSettings == FieldTypeSettings.name
+                            ? currentUser.copyWith(
+                                userName: controller?.text,
+                              )
+                            : currentUser.copyWith(
+                                userAbout: controller?.text,
+                              );
+                    context
+                        .read<UserBloc>()
+                        .add(EditCurrentUserData(userModel: updateUser));
+                    Navigator.pop(context);
                   },
                   buttonName: "Save",
                 )

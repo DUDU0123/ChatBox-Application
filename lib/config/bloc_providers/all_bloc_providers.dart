@@ -1,3 +1,4 @@
+import 'package:chatbox/core/service/locator.dart';
 import 'package:chatbox/data/data_sources/contact_data/contact_data.dart';
 import 'package:chatbox/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/data/repositories/auth_repo/authentication_repo_impl.dart';
@@ -10,8 +11,74 @@ import 'package:chatbox/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
+
+// final getItInstance = GetIt.instance;
+// void initializeServiceLocator() {
+//   getItInstance.registerSingleton(() => FirebaseAuth.instance);
+//   getItInstance.registerSingleton(() => FirebaseStorage.instance);
+//   getItInstance.registerSingleton(() => FirebaseFirestore.instance);
+
+//   getItInstance.registerLazySingleton(
+//     () => ContactData(),
+//   );
+//   getItInstance.registerLazySingleton(
+//     () => AuthenticationRepoImpl(firebaseAuth: getItInstance<FirebaseAuth>()),
+//   );
+//   getItInstance.registerLazySingleton(
+//     () => ContactRepoImpl(
+//       contactData: getItInstance<ContactData>(),
+//       firebaseFirestore: getItInstance<FirebaseFirestore>(),
+//     ),
+//   );
+//   getItInstance.registerLazySingleton(
+//     () => UserData(
+//       firestore: getItInstance<FirebaseFirestore>(),
+//       firebaseStorage: getItInstance<FirebaseStorage>(),
+//       firebaseAuth: getItInstance<FirebaseAuth>(),
+//     ),
+//   );
+//   getItInstance.registerLazySingleton(
+//     () => UserRepositoryImpl(
+//       userData: getItInstance<UserData>(),
+//     ),
+//   );
+//   getItInstance.registerFactory(() => UserModel());
+// }
+
+// class AppBlocProvider {
+//   static List<SingleChildWidget> allBlocProviders = [
+//     BlocProvider(
+//       create: (context) => BottomNavBloc(),
+//     ),
+//     BlocProvider(
+//       create: (context) => AuthenticationBloc(
+//         userRepository: getItInstance<UserRepositoryImpl>(),
+//         authenticationRepo:getItInstance<AuthenticationRepoImpl>(),
+//       )..add(CheckUserLoggedInEvent()),
+//     ),
+//     BlocProvider(
+//       create: (context) => ContactBloc(
+//         contactRepository: getItInstance<ContactRepoImpl>(),
+//       ),
+//     ),
+//     BlocProvider(
+//       create: (context) => MessageBloc(),
+//     ),
+//     BlocProvider(
+//       create: (context) => UserBloc(
+//         firebaseAuth: getItInstance<FirebaseAuth>(),
+//         userRepository: getItInstance<UserRepositoryImpl>(),
+//       )..add(GetCurrentUserData()),
+//     ),
+//   ];
+// }
+
+FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+FirebaseFirestore fireStore = FirebaseFirestore.instance;
+FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
 class AppBlocProvider {
   static List<SingleChildWidget> allBlocProviders = [
@@ -20,8 +87,16 @@ class AppBlocProvider {
     ),
     BlocProvider(
       create: (context) => AuthenticationBloc(
-        userRepository: UserRepositoryImpl(userData: UserData()),
-        authenticationRepo: AuthenticationRepoImpl(),
+        userRepository: UserRepositoryImpl(
+          userData: UserData(
+            firebaseAuth: firebaseAuth,
+            firestore: fireStore,
+            firebaseStorage: firebaseStorage,
+          ),
+        ),
+        authenticationRepo: AuthenticationRepoImpl(
+          firebaseAuth: FirebaseAuth.instance,
+        ),
       )..add(CheckUserLoggedInEvent()),
     ),
     BlocProvider(
@@ -39,7 +114,11 @@ class AppBlocProvider {
       create: (context) => UserBloc(
         firebaseAuth: FirebaseAuth.instance,
         userRepository: UserRepositoryImpl(
-          userData: UserData(),
+          userData: UserData(
+            firebaseAuth: firebaseAuth,
+            firestore: fireStore,
+            firebaseStorage: firebaseStorage,
+          ),
         ),
       )..add(GetCurrentUserData()),
     ),

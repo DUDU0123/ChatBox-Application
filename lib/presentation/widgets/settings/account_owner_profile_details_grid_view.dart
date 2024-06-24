@@ -26,6 +26,7 @@ class AccountOwnerProfileDetailsGridView extends StatelessWidget {
         }
         if (state is CurrentUserLoadedState) {
            return GridView.count(
+            physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           crossAxisCount: 1,
           childAspectRatio: 4.5,

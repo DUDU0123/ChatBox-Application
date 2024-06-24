@@ -22,7 +22,7 @@ class UserRepositoryImpl extends UserRepository {
 
   // method to get one user by id
   @override
-  Future<UserModel> getOneUserDataFromDB({required String userId}) async {
+  Future<UserModel?> getOneUserDataFromDB({required String userId}) async {
     return userData.getOneUserDataFromDataBase(userId: userId);
   }
 
@@ -49,5 +49,10 @@ class UserRepositoryImpl extends UserRepository {
     required File file,
   }) async {
     return userData.saveUserFileToDataBaseStorage(ref: ref, file: file);
+  }
+  
+  @override
+  Future<void> saveUserProfileImageToDatabase({required File? profileImage}) {
+    return userData.saveUserProfileImageToDatabase(profileImage: profileImage);
   }
 }

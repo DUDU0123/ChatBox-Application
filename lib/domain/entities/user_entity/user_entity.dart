@@ -11,7 +11,7 @@ class UserEntity extends Equatable {
   String? createdAt;
   String? tfaPin;
   bool? isBlockedUser;
-  List<String>? userGroupIdList;
+  List<dynamic>? userGroupIdList;
   UserEntity({
     this.id,
     this.userName,
