@@ -24,6 +24,15 @@ class CurrentUserEditState extends UserState{}
 
 class CurrentUserDeleteState extends UserState{}
 
+class CurrentUserDeleteErrorState extends UserState{
+  final String message;
+  const CurrentUserDeleteErrorState({
+    required this.message,
+  });
+  @override
+  List<Object> get props => [message,];
+}
+
 class CurrentUserErrorState extends UserState {
   final String message;
   const CurrentUserErrorState({

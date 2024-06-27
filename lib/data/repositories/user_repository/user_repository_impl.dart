@@ -40,8 +40,12 @@ class UserRepositoryImpl extends UserRepository {
   }
   
   @override
-  Future<void> deleteUserInDataBase({required String userId}) async {
-    deleteUserInDataBase(userId: userId);
+  Future<void> deleteUserInDataBase({required String userId, String? fullPathToFile}) async {
+    await userData.deleteUserInFireStoreDB(userId: userId);
+    if(fullPathToFile!=null){
+      await userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
+    }
+    await userData.deleteUserAuthInDB();
   }
 
   @override
@@ -56,17 +60,10 @@ class UserRepositoryImpl extends UserRepository {
   Future<void> saveUserProfileImageToDatabase({required File? profileImage, required UserModel currentUser}) {
     return userData.saveUserProfileImageToDatabase(profileImage: profileImage, currentUser: currentUser);
   }
-
-
-
-
-  // Future<void> saveUserProfileImageUrl(String url) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('userProfileImageUrl', url);
+  
+  // @override
+  // Future<void> deleteUserFilesInDB({required String fullPathToFile}) {
+  //   return userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
   // }
 
-  // Future<String?> getUserProfileImageUrl() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString('userProfileImageUrl');
-  // }
 }

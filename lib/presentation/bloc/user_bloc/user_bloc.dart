@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
+import 'package:chatbox/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -24,16 +26,16 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetCurrentUserData>(getCurrentUserData);
     on<EditCurrentUserData>(editCurrentUserData);
     on<PickProfileImageFromDevice>(pickProfileImageFromDevice);
-    on<DeleteUserPermenantEvent>(deleteUserPermenantEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
       GetCurrentUserData event, Emitter<UserState> emit) async {
     try {
-      UserModel? userModel = await userRepository.getOneUserDataFromDB(
+      UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
-      if (userModel != null) {
-        emit(CurrentUserLoadedState(currentUserData: userModel));
+      if (currentUser != null) {
+      
+        emit(CurrentUserLoadedState(currentUserData: currentUser));
       } else {
         log("User model is null error");
       }
@@ -76,7 +78,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       if (pickedImage != null && currentUser != null) {
         String? userProfileImageUrl =
             await userRepository.saveUserFileToDBStorage(
-          ref: "profile_images/${currentUser.id}",
+          ref: "$usersProfileImageFolder${currentUser.id}",
           file: pickedImage,
         );
         UserModel updatedUser = currentUser.copyWith(
@@ -110,25 +112,4 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(ImagePickErrorState(message: e.toString()));
     }
   }
-
-  FutureOr<void> deleteUserPermenantEvent(
-      DeleteUserPermenantEvent event, Emitter<UserState> emit) {
-        firebaseAuth.currentUser?.delete();
-        firebaseStorage.refFromURL('').delete();
-
-        fireStore.collection('').doc().delete();
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

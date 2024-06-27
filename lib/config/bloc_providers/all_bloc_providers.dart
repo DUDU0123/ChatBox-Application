@@ -87,8 +87,11 @@ class AppBlocProvider {
     ),
     BlocProvider(
       create: (context) => AuthenticationBloc(
+        firebaseAuth: firebaseAuth,
         userRepository: UserRepositoryImpl(
+          
           userData: UserData(
+            authenticationRepo: AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
             firebaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,
@@ -115,6 +118,7 @@ class AppBlocProvider {
         firebaseAuth: FirebaseAuth.instance,
         userRepository: UserRepositoryImpl(
           userData: UserData(
+            authenticationRepo: AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
             firebaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,

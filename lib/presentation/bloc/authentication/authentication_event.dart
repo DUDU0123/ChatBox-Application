@@ -49,6 +49,17 @@ class ResendOtpEvent extends AuthenticationEvent {
     required this.context,
     this.forceResendingToken,
   });
+  @override
+  List<Object> get props => [phoneNumberWithCountryCode??"", context, forceResendingToken??0];
 }
 
 class CheckUserLoggedInEvent extends AuthenticationEvent{}
+
+class UserPermanentDeleteEvent extends AuthenticationEvent{
+  final String phoneNumberWithCountryCode;
+  const UserPermanentDeleteEvent({
+    required this.phoneNumberWithCountryCode,
+  });
+  @override
+  List<Object> get props => [phoneNumberWithCountryCode];
+}

@@ -15,14 +15,14 @@ class SettingsProfileImageAvatarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-       userProfileImage!=null? Navigator.push(
+       userProfileImage!=null ?userProfileImage!.isNotEmpty? Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PhotoViewSection(
               userProfileImage: userProfileImage!,
             ),
           ),
-        ): null;
+        ): null:null;
       },
       child: userProfileImageContainerWidget(
         context: context,

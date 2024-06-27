@@ -29,3 +29,7 @@ const dbIsMessageEdited = 'edited_message';
 const dbIsMessageDeleted = 'deleted_message';
 const dbIsMessagePinned = 'pinned_message';
 const dbIsMessageStarred = 'starred_message';
+
+
+// database storage folder name or file name
+const usersProfileImageFolder = "profile_images/";

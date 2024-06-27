@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/data/models/user_model/user_model.dart';
 import 'package:chatbox/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:chatbox/domain/repositories/user_repo/user_repository.dart';
@@ -16,9 +17,11 @@ class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final AuthenticationRepo authenticationRepo;
   final UserRepository userRepository;
-  AuthenticationBloc({
+  final FirebaseAuth firebaseAuth;
+  AuthenticationBloc( {
     required this.authenticationRepo,
     required this.userRepository,
+    required this.firebaseAuth,
   }) : super(AuthenticationInitial(isUserSignedIn: false)) {
     on<OtpSentEvent>(otpSentEvent);
     on<CreateUserEvent>(verifyOtpAndcreateUserEvent);
@@ -26,6 +29,29 @@ class AuthenticationBloc
     on<CountrySelectedEvent>(countrySelectedEvent);
     on<ResendOtpEvent>(resendOtpEvent);
     add(CheckUserLoggedInEvent());
+    on<UserPermanentDeleteEvent>(userPermanentDeleteEvent);
+  }
+
+  Future<FutureOr<void>> userPermanentDeleteEvent(
+      UserPermanentDeleteEvent event, Emitter<AuthenticationState> emit) async {
+    try {
+      UserModel? currentUser = await userRepository.getOneUserDataFromDB(
+          userId: firebaseAuth.currentUser!.uid);
+      if(currentUser!=null){
+        await userRepository.deleteUserInDataBase(userId: currentUser.id!, fullPathToFile: "$usersProfileImageFolder${currentUser.id}");
+        final bool userAuthStatus = await authenticationRepo.getUserAthStatus();
+        emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
+      }else{
+        log("User is null");
+        emit( AuthenticationErrorState(message: "User is null"));
+      }
+    } catch (e) {
+      emit(
+        AuthenticationErrorState(
+          message: e.toString(),
+        ),
+      );
+    }
   }
 
   FutureOr<void> otpSentEvent(

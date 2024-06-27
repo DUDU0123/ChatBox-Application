@@ -23,7 +23,7 @@ class UserModel extends UserEntity {
       userEmailId: map[userDbEmail] ?? '',
       phoneNumber: map[userDbPhoneNumber] ?? '',
       userAbout: map[userDbAbout] ?? 'chatbox about',
-      userProfileImage: map[userDbProfileImage] ?? '',
+      userProfileImage: map[userDbProfileImage],
       userNetworkStatus: map[userDbNetworkStatus] ?? '',
       createdAt: map[userDbCreatedAt] ?? '',
       tfaPin: map[userDbTFAPin] ?? '',
