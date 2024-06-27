@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:chatbox/data/models/user_model/user_model.dart';
 
-abstract class UserRepository{
+abstract class UserRepository {
   Future<void> saveUserDataToDataBase({
     required UserModel userModel,
     File? profileImage,
   });
   Future<void> updateUserInDataBase({
     required UserModel userModel,
-    required File? profileImage,
+    File? profileImage,
   });
   Future<List<UserModel>> getAllUsersFromDB();
   Future<UserModel?> getOneUserDataFromDB({required String userId});
@@ -18,7 +18,12 @@ abstract class UserRepository{
     required String ref,
     required File file,
   });
-  Future<void> saveUserProfileImageToDatabase({required File? profileImage});
+  Future<void> saveUserProfileImageToDatabase({
+    required File? profileImage,
+    required UserModel currentUser,
+  });
+  // Future<void> saveUserProfileImageUrl(String url);
+  // Future<String?> getUserProfileImageUrl();
   // void userChangeNumber();
   // void userDeleteAccount();
   // void blockUser();

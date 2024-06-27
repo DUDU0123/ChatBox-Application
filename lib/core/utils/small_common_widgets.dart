@@ -39,7 +39,7 @@ Widget countrySelectedShowWidget() {
   );
 }
 
-Widget commonAnimationWidget({required BuildContext context, bool? isTextNeeded = true, String? text, double? fontSize}) {
+Widget commonAnimationWidget({required BuildContext context, bool? isTextNeeded = true, String? text, double? fontSize, String? lottie}) {
     return Center(
       child: SizedBox(
         width: 200.w,
@@ -56,7 +56,7 @@ Widget commonAnimationWidget({required BuildContext context, bool? isTextNeeded 
               fontSize: fontSize?? 26.sp,
             ):zeroMeasureWidget,
             Lottie.network(
-              'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
+             lottie?? 'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
             ),
           ],
         ),

@@ -103,6 +103,9 @@ class UserData {
     }
   }
 
+  deleteUserFilesInDB(){}
+  deleteUserAuthInDB(){}
+
   // Method to save user file to database storage
   Future<String> saveUserFileToDataBaseStorage({
     required String ref,
@@ -120,15 +123,14 @@ class UserData {
 
   // Method to save current user profile image to DB
   Future<void> saveUserProfileImageToDatabase(
-      {required File? profileImage}) async {
+      {required File? profileImage, required UserModel currentUser,}) async {
     try {
-      final currentUser = firebaseAuth.currentUser;
       if (currentUser != null && profileImage != null) {
         final userProfileImage = await saveUserFileToDataBaseStorage(
-            ref: "profile_images/${currentUser.uid}", file: profileImage);
+            ref: "profile_images/${currentUser.id}", file: profileImage);
         await firestore
             .collection(usersCollection)
-            .doc(currentUser.uid)
+            .doc(currentUser.id)
             .update({
           'profileImage': userProfileImage,
         });

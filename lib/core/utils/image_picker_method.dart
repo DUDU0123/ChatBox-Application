@@ -9,7 +9,11 @@ Future<File?> pickImage({required ImageSource imageSource}) async {
     if (pickedXFile != null) {
       file = File(pickedXFile.path);
     }
-    return file;
+    if(file!=null){
+      return file;
+    }else{
+      return null;
+    }
   } catch (e) {
     throw Exception(e);
   }

@@ -25,4 +25,9 @@ class EditCurrentUserData extends UserEvent {
     required this.userModel,
   });
 }
-class DeletCurrentUserData extends UserEvent{}
+class DeleteUserPermenantEvent extends UserEvent {
+  final String? phoneNumberWithCountryCode;
+  const DeleteUserPermenantEvent({
+    this.phoneNumberWithCountryCode,
+  });
+}

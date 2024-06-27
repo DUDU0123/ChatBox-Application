@@ -60,7 +60,7 @@ class UserModel extends UserEntity {
     String? createdAt,
     String? tfaPin,
     bool? isBlockedUser,
-    List<String>? userGroupIdList,
+    List<dynamic>? userGroupIdList,
 
   }) {
     return UserModel(

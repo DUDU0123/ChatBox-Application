@@ -2,8 +2,8 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
-import 'package:chatbox/presentation/widgets/settings/account_owner_profile_page.dart';
-import 'package:chatbox/presentation/widgets/settings/user_profile_container_widget.dart';
+import 'package:chatbox/presentation/pages/mobile_view/settings/user_details/account_owner_profile_page.dart';
+import 'package:chatbox/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,6 +70,4 @@ class AccountOwnerProfileTile extends StatelessWidget {
       ),
     );
   }
-
-  
 }

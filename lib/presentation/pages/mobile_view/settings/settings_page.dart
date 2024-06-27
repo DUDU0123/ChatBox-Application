@@ -10,7 +10,7 @@ import 'package:chatbox/presentation/pages/mobile_view/settings/privacy/privacy_
 import 'package:chatbox/presentation/pages/mobile_view/settings/storage/storage_settings.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:chatbox/presentation/widgets/common_widgets/divider_common.dart';
-import 'package:chatbox/presentation/widgets/settings/account_owner_profile_tile.dart';
+import 'package:chatbox/presentation/pages/mobile_view/settings/user_details/account_owner_profile_tile.dart';
 import 'package:chatbox/presentation/widgets/settings/common_blue_gradient_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +33,7 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AccountOwnerProfileTile(),
+             AccountOwnerProfileTile(),
             kHeight10,
             const CommonDivider(),
             kHeight20,

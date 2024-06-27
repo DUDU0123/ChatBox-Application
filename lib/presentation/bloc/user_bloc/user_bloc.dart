@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +24,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetCurrentUserData>(getCurrentUserData);
     on<EditCurrentUserData>(editCurrentUserData);
     on<PickProfileImageFromDevice>(pickProfileImageFromDevice);
+    on<DeleteUserPermenantEvent>(deleteUserPermenantEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -50,10 +52,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         UserModel updatedUser = currentUser.copyWith(
           userName: event.userModel.userName ?? currentUser.userName,
           userAbout: event.userModel.userAbout ?? currentUser.userAbout,
+          userProfileImage: currentUser.userProfileImage,
         );
         await userRepository.updateUserInDataBase(
           userModel: updatedUser,
-          profileImage: event.userProfileImage,
         );
         emit(CurrentUserLoadedState(currentUserData: updatedUser));
       } else {
@@ -66,26 +68,67 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   Future<FutureOr<void>> pickProfileImageFromDevice(
       PickProfileImageFromDevice event, Emitter<UserState> emit) async {
-        emit(LoadCurrentUserData());
+    emit(LoadCurrentUserData());
     try {
       final pickedImage = await pickImage(imageSource: event.imageSource);
       UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
       if (pickedImage != null && currentUser != null) {
-        String userProfileImageData =
+        String? userProfileImageUrl =
             await userRepository.saveUserFileToDBStorage(
           ref: "profile_images/${currentUser.id}",
           file: pickedImage,
         );
         UserModel updatedUser = currentUser.copyWith(
-          userProfileImage: userProfileImageData,
+          userProfileImage: userProfileImageUrl,
         );
+        await userRepository.updateUserInDataBase(
+          userModel: updatedUser,
+        );
+        log("User Profie image: $userProfileImageUrl");
+        //await Future.delayed(const Duration(seconds: 1), () {
         emit(CurrentUserLoadedState(currentUserData: updatedUser));
+        // },);
       } else {
         log("Picked Image is null");
+        UserModel nonEditedUser = currentUser!.copyWith(
+          createdAt: currentUser.createdAt,
+          isBlockedUser: currentUser.isBlockedUser,
+          id: currentUser.id,
+          phoneNumber: currentUser.phoneNumber,
+          tfaPin: currentUser.tfaPin,
+          userAbout: currentUser.userAbout,
+          userEmailId: currentUser.userEmailId,
+          userGroupIdList: currentUser.userGroupIdList,
+          userName: currentUser.userName,
+          userNetworkStatus: currentUser.userNetworkStatus,
+          userProfileImage: currentUser.userProfileImage,
+        );
+        emit(CurrentUserLoadedState(currentUserData: nonEditedUser));
       }
     } catch (e) {
       emit(ImagePickErrorState(message: e.toString()));
     }
   }
+
+  FutureOr<void> deleteUserPermenantEvent(
+      DeleteUserPermenantEvent event, Emitter<UserState> emit) {
+        firebaseAuth.currentUser?.delete();
+        firebaseStorage.refFromURL('').delete();
+
+        fireStore.collection('').doc().delete();
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

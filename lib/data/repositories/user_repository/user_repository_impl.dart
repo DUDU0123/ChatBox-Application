@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:chatbox/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/data/models/user_model/user_model.dart';
 import 'package:chatbox/domain/repositories/user_repo/user_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepositoryImpl extends UserRepository {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -34,7 +35,7 @@ class UserRepositoryImpl extends UserRepository {
 
   
   @override
-  Future<void> updateUserInDataBase({required UserModel userModel, required File? profileImage}) async {
+  Future<void> updateUserInDataBase({required UserModel userModel, File? profileImage}) async {
     userData.updateUserInDB(userData: userModel, profileImage: profileImage);
   }
   
@@ -48,11 +49,24 @@ class UserRepositoryImpl extends UserRepository {
     required String ref,
     required File file,
   }) async {
-    return userData.saveUserFileToDataBaseStorage(ref: ref, file: file);
+    return await userData.saveUserFileToDataBaseStorage(ref: ref, file: file);
   }
   
   @override
-  Future<void> saveUserProfileImageToDatabase({required File? profileImage}) {
-    return userData.saveUserProfileImageToDatabase(profileImage: profileImage);
+  Future<void> saveUserProfileImageToDatabase({required File? profileImage, required UserModel currentUser}) {
+    return userData.saveUserProfileImageToDatabase(profileImage: profileImage, currentUser: currentUser);
   }
+
+
+
+
+  // Future<void> saveUserProfileImageUrl(String url) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('userProfileImageUrl', url);
+  // }
+
+  // Future<String?> getUserProfileImageUrl() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('userProfileImageUrl');
+  // }
 }
