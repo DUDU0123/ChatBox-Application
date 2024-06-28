@@ -77,6 +77,7 @@ const deleteIcon = "assets/delete.svg";
 const deleteIcon2 = "assets/deleteIcon.svg";
 const theme = "assets/theme.svg";
 const clearIcon = "assets/clearIcon.svg";
+const bgImage = "assets/chatBoxBg.png";
 const settingsLottie = "https://lottie.host/13f9dae6-a998-4e91-82d1-a505b5aacd64/mI4P96e8ll.json";
 
 

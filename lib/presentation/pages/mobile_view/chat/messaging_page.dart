@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
@@ -50,18 +52,24 @@ class MessagingPage extends StatelessWidget {
             width: screenWidth(context: context),
             height: screenHeight(context: context),
             child: Image.asset(
-              fit: BoxFit.cover,
-              Provider.of<ThemeManager>(context).isDark
-                  ? bgImageDark
-                  : bgImageLight,
-            ),
+                fit: BoxFit.cover,
+                Provider.of<ThemeManager>(context).isDark
+                    ? bgImage
+                    // bgImageDark
+                    : bgImage
+                // bgImageLight,
+                ),
           ),
+          //   BackdropFilter(
+          //   filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          //   child: Container(
+          //     color: Color.fromARGB(255, 160, 160, 160).withOpacity(0.3), // You can adjust the opacity here
+          //   ),
+          // ),
           Column(
             children: [
               Expanded(
-                child: 
-                
-                ListView.separated(
+                child: ListView.separated(
                   separatorBuilder: (context, index) => index % 5 == 0
                       ? Padding(
                           padding: EdgeInsets.all(10.sp),
@@ -72,7 +80,7 @@ class MessagingPage extends StatelessWidget {
                           ),
                         )
                       : zeroMeasureWidget,
-                  itemCount: 17,
+                  itemCount: 2,
                   padding: EdgeInsets.only(
                     top: 10.h,
                     bottom: 10.h,
@@ -100,7 +108,7 @@ class MessagingPage extends StatelessWidget {
             child: BlocBuilder<MessageBloc, MessageState>(
               builder: (context, state) {
                 return Visibility(
-                  visible: state.isAttachmentListOpened??false,
+                  visible: state.isAttachmentListOpened ?? false,
                   replacement: zeroMeasureWidget,
                   child: AttachmentListContainerVertical(),
                 );

@@ -3,6 +3,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchBarChatHome extends StatelessWidget {
   const SearchBarChatHome({
@@ -27,13 +28,27 @@ class SearchBarChatHome extends StatelessWidget {
         width: screenWidth(context: context),
         child: Align(
           alignment: Alignment.centerLeft,
-          child: Text(
-            "Search chat...",
-            style: fieldStyle(context: context).copyWith(
-              fontWeight: FontWeight.normal,
-              fontSize: 18.sp,
-              color: kGrey,
-            ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                search,
+                width: 17.w,
+                height: 17.h,
+                colorFilter: ColorFilter.mode(
+                  iconGreyColor,
+                  BlendMode.srcIn,
+                ),
+              ),
+              kWidth10,
+              Text(
+                "Search chat...",
+                style: fieldStyle(context: context).copyWith(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 18.sp,
+                  color: kGrey,
+                ),
+              ),
+            ],
           ),
         ),
       ),
