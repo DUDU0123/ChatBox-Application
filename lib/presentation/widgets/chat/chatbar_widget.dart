@@ -1,7 +1,4 @@
 import 'dart:developer';
-
-import 'package:chatbox/config/theme/theme_manager.dart';
-import 'package:chatbox/core/constants/app_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
@@ -11,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 
 class ChatBarWidget extends StatefulWidget {

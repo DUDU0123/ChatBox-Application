@@ -54,18 +54,20 @@ class MessagingPage extends StatelessWidget {
             child: Image.asset(
                 fit: BoxFit.cover,
                 Provider.of<ThemeManager>(context).isDark
-                    ? bgImage
-                    // bgImageDark
-                    : bgImage
-                // bgImageLight,
+                    ?
+                    // bgImage
+                    bgImageDark
+                    : 
+                    //bgImage
+                bgImageLight,
                 ),
           ),
-          //   BackdropFilter(
-          //   filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-          //   child: Container(
-          //     color: Color.fromARGB(255, 160, 160, 160).withOpacity(0.3), // You can adjust the opacity here
-          //   ),
-          // ),
+            BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
+            child: Container(
+              color: Color.fromARGB(255, 43, 43, 43).withOpacity(0.3), // You can adjust the opacity here
+            ),
+          ),
           Column(
             children: [
               Expanded(

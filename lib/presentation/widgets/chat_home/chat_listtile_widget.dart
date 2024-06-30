@@ -1,3 +1,4 @@
+import 'package:chatbox/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/presentation/pages/mobile_view/chat/messaging_page.dart';
 import 'package:chatbox/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:flutter/material.dart';
@@ -49,13 +50,23 @@ class ChatListTileWidget extends StatelessWidget {
     return ListTile(
       onTap: () {
         // Navigator.pushNamed(context, "/messaging_page");
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => MessagingPage(
+        //       userName: userName,
+        //       isGroup: isGroup,
+        //       isReadedMessage: isSeen,
+        //     ),
+        //   ),
+        // );
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagingPage(
+            builder: (context) => ChatRoomPage(
               userName: userName,
               isGroup: isGroup,
-              isReadedMessage: isSeen,
+              //isReadedMessage: isSeen,
             ),
           ),
         );
