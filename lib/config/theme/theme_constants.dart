@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 const androidTransitionBuilder = PageTransitionsTheme(
   builders: {
-    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(), // Example: FadeUpwards transition
+    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
   },
 );
 
-// Define a custom transition builder for iOS
 const  iosTransitionBuilder = PageTransitionsTheme(
   builders: {
-    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(), // Example: Cupertino style transition
+    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
   },
 );
 class ThemeConstants {

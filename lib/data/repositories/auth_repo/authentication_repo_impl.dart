@@ -63,7 +63,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
       );
       Future<UserCredential> value = firebaseAuth.signInWithCredential(credential);
       // Set user authentication status in SharedPreferences
-      setUserAuthStatus(isSignedIn: true);
+      await setUserAuthStatus(isSignedIn: true);
       onSuccess();
       return value;
     } on FirebaseAuthException catch (e) {

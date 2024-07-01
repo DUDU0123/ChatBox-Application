@@ -31,6 +31,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Future<FutureOr<void>> getCurrentUserData(
       GetCurrentUserData event, Emitter<UserState> emit) async {
     try {
+      log("Current User: userbloc: ${firebaseAuth.currentUser?.uid}");
       UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
       if (currentUser != null) {

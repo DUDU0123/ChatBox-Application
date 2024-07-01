@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chatbox/data/models/user_model/user_model.dart';
+import 'package:flutter/material.dart';
 
 abstract class UserRepository {
   Future<void> saveUserDataToDataBase({
@@ -18,6 +19,8 @@ abstract class UserRepository {
   Future<void> deleteUserInDataBase({
     required String userId,
     String? fullPathToFile,
+    required BuildContext context,
+    required String phoneNumber,
   });
   Future<String> saveUserFileToDBStorage({
     required String ref,

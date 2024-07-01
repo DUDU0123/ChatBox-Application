@@ -55,10 +55,12 @@ class ResendOtpEvent extends AuthenticationEvent {
 
 class CheckUserLoggedInEvent extends AuthenticationEvent{}
 
-class UserPermanentDeleteEvent extends AuthenticationEvent{
+class UserPermanentDeleteEvent extends AuthenticationEvent {
   final String phoneNumberWithCountryCode;
+  final  BuildContext context;
   const UserPermanentDeleteEvent({
     required this.phoneNumberWithCountryCode,
+    required this.context,
   });
   @override
   List<Object> get props => [phoneNumberWithCountryCode];

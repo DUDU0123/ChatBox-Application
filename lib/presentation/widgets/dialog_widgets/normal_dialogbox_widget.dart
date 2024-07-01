@@ -13,22 +13,38 @@ void normalDialogBoxWidget({
   showDialog(
     context: context,
     builder: (context) {
-      return AlertDialog(
-        title: Text(
-          title,
-          style: Theme.of(context).dialogTheme.titleTextStyle,
-        ),
-        actions: dialogBoxActionButtons(
-          context: context,
-          onPressed: onPressed,
-          actionButtonName: actionButtonName,
-        ),
+      return alertDialog(
+        context: context,
+        title: title,
         content: TextWidgetCommon(
           text: subtitle,
           fontSize: 16.sp,
         ),
+        onPressed: onPressed,
+        actionButtonName: actionButtonName,
       );
     },
+  );
+}
+
+Widget alertDialog({
+  required BuildContext context,
+  required String title,
+  required Widget content,
+  required void Function()? onPressed,
+  required String actionButtonName,
+}) {
+  return AlertDialog(
+    title: Text(
+      title,
+      style: Theme.of(context).dialogTheme.titleTextStyle,
+    ),
+    actions: dialogBoxActionButtons(
+      context: context,
+      onPressed: onPressed,
+      actionButtonName: actionButtonName,
+    ),
+    content: content,
   );
 }
 

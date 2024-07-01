@@ -28,8 +28,8 @@ class AuthenticationBloc
     on<CheckUserLoggedInEvent>(checkUserLoggedInEvent);
     on<CountrySelectedEvent>(countrySelectedEvent);
     on<ResendOtpEvent>(resendOtpEvent);
-    add(CheckUserLoggedInEvent());
     on<UserPermanentDeleteEvent>(userPermanentDeleteEvent);
+    add(CheckUserLoggedInEvent());
   }
 
   Future<FutureOr<void>> userPermanentDeleteEvent(
@@ -38,9 +38,11 @@ class AuthenticationBloc
       UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
       if(currentUser!=null){
-        await userRepository.deleteUserInDataBase(userId: currentUser.id!, fullPathToFile: "$usersProfileImageFolder${currentUser.id}");
+        event.phoneNumberWithCountryCode;
+        await userRepository.deleteUserInDataBase(userId: currentUser.id!, fullPathToFile: "$usersProfileImageFolder${currentUser.id}", context: event.context, phoneNumber: event.phoneNumberWithCountryCode,);
         final bool userAuthStatus = await authenticationRepo.getUserAthStatus();
         emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
+        
       }else{
         log("User is null");
         emit( AuthenticationErrorState(message: "User is null"));

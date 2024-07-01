@@ -40,7 +40,7 @@ class SelectContactToChat extends StatelessWidget {
               builder: (context, state) {
                 log("Length: Contactpage: ${state.contactList.length}");
                 if (state is ContactsFetchErrorState) {
-                  return emptyShowWidget(context: context, text: state.message);
+                  return emptyShowWidget(context: context, text: "No contacts");
                 }
                 if (state is ContactsLoadingState) {
                   return commonAnimationWidget(

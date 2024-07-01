@@ -5,7 +5,7 @@ class MessageModel extends MessageEntity {
   const MessageModel({
     super.messageId,
     super.senderID,
-    super.recieverID,
+    super.receiverID,
     super.messageContent,
     super.messageTime,
     super.messageStatus,
@@ -23,7 +23,7 @@ class MessageModel extends MessageEntity {
     return MessageModel(
       messageId: map[dbMessageID],
       senderID: map[dbMessageSenderID],
-      recieverID: map[dbMessageRecieverID],
+      receiverID: map[dbMessageRecieverID],
       messageContent: map[dbMessageContent],
       messageType: map[dbMessageType],
       messageStatus: map[dbMessageStatus],
@@ -40,7 +40,7 @@ class MessageModel extends MessageEntity {
     return {
       dbMessageID: messageId,
       dbMessageSenderID: senderID,
-      dbMessageRecieverID: recieverID,
+      dbMessageRecieverID: receiverID,
       dbMessageContent: messageContent,
       dbMessageType: messageType,
       dbMessageStatus: messageStatus,

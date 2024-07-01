@@ -1,10 +1,10 @@
-import 'package:chatbox/core/enums/enums.dart';
 import 'package:equatable/equatable.dart';
+import 'package:chatbox/core/enums/enums.dart';
 
 class MessageEntity extends Equatable {
   final String? messageId;
   final String? senderID;
-  final String? recieverID;
+  final String? receiverID;
   final String? messageContent;
   final String? messageTime;
   final MessageStatus? messageStatus;
@@ -17,7 +17,7 @@ class MessageEntity extends Equatable {
   const MessageEntity({
     this.messageId,
     this.senderID,
-    this.recieverID,
+    this.receiverID,
     this.messageContent,
     this.messageTime,
     this.messageStatus,
@@ -34,7 +34,7 @@ class MessageEntity extends Equatable {
     return [
       messageId,
       senderID,
-      recieverID,
+      receiverID,
       messageContent,
       messageTime,
       messageStatus,
@@ -48,11 +48,14 @@ class MessageEntity extends Equatable {
   }
 }
 
-class MessageAttachmentModel {
+class MessageAttachmentModel extends Equatable {
   final String? attachmentUrl;
   final MessageType messageType;
-  MessageAttachmentModel({
+  const MessageAttachmentModel({
     this.attachmentUrl,
     required this.messageType,
   });
+
+  @override
+  List<Object?> get props => [attachmentUrl, messageType];
 }

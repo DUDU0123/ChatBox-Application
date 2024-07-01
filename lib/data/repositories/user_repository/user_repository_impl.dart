@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:chatbox/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/data/models/user_model/user_model.dart';
 import 'package:chatbox/domain/repositories/user_repo/user_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepositoryImpl extends UserRepository {
@@ -18,7 +19,7 @@ class UserRepositoryImpl extends UserRepository {
   // method to get all users
   @override
   Future<List<UserModel>> getAllUsersFromDB() async {
-      return userData.getAllUsersFromDataBase();
+    return userData.getAllUsersFromDataBase();
   }
 
   // method to get one user by id
@@ -29,23 +30,29 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<void> saveUserDataToDataBase(
-      {required UserModel userModel,File? profileImage}) async {
+      {required UserModel userModel, File? profileImage}) async {
     userData.saveUserDataToDB(userData: userModel);
   }
 
-  
   @override
-  Future<void> updateUserInDataBase({required UserModel userModel, File? profileImage}) async {
+  Future<void> updateUserInDataBase(
+      {required UserModel userModel, File? profileImage}) async {
     userData.updateUserInDB(userData: userModel, profileImage: profileImage);
   }
-  
+
   @override
-  Future<void> deleteUserInDataBase({required String userId, String? fullPathToFile}) async {
+  Future<void> deleteUserInDataBase({
+    required String userId,
+    String? fullPathToFile,
+    required BuildContext context,
+    required String phoneNumber,
+  }) async {
+    
     await userData.deleteUserInFireStoreDB(userId: userId);
-    if(fullPathToFile!=null){
+    if (fullPathToFile != null) {
       await userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
     }
-    await userData.deleteUserAuthInDB();
+    await userData.deleteUserAuthInDB(context: context, phoneNumber: phoneNumber,);
   }
 
   @override
@@ -55,15 +62,16 @@ class UserRepositoryImpl extends UserRepository {
   }) async {
     return await userData.saveUserFileToDataBaseStorage(ref: ref, file: file);
   }
-  
+
   @override
-  Future<void> saveUserProfileImageToDatabase({required File? profileImage, required UserModel currentUser}) {
-    return userData.saveUserProfileImageToDatabase(profileImage: profileImage, currentUser: currentUser);
+  Future<void> saveUserProfileImageToDatabase(
+      {required File? profileImage, required UserModel currentUser}) {
+    return userData.saveUserProfileImageToDatabase(
+        profileImage: profileImage, currentUser: currentUser);
   }
-  
+
   // @override
   // Future<void> deleteUserFilesInDB({required String fullPathToFile}) {
   //   return userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
   // }
-
 }
