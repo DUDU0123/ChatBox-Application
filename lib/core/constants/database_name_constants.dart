@@ -9,7 +9,8 @@ const userDbCreatedAt = 'created_at';
 const userDbTFAPin = 'tfa_pin';
 const userDbBlockedStatus = 'is_blocked_user';
 const userDbGroupIdList = 'user_group_id_list';
-
+const isUserDisabled = 'is_disabled_user';
+const isActiverUser = 'is_active_user';
 
 // collections names
 const usersCollection = 'users';

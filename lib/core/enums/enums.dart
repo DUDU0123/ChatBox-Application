@@ -25,6 +25,41 @@ enum FieldTypeSettings {
   about,
 }
 
-enum MessageStatus { sent, delivered, read }
+enum MessageStatus {
+  sent,
+  delivered,
+  read,
+}
 
-enum MessageType { text, photo, audio, video, document, location, contact }
+enum MessageType {
+  text,
+  photo,
+  audio,
+  video,
+  document,
+  location,
+  contact,
+}
+
+extension Converter on String{
+  MessageType toEnum (){
+    switch (this) {
+      case 'text':
+        return MessageType.text;
+      case 'audio':
+        return MessageType.audio;
+      case 'video':
+        return MessageType.video;
+      case 'photo':
+        return MessageType.photo;
+      case 'document':
+        return MessageType.document;
+      case 'location':
+        return MessageType.location;
+      case 'contact':
+        return MessageType.contact;
+      default:
+        return MessageType.text;
+    }
+  }
+}

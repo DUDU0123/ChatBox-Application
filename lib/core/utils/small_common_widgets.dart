@@ -1,8 +1,8 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
-import 'package:chatbox/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/common_icon_button_widget.dart';
-import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/common_icon_button_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

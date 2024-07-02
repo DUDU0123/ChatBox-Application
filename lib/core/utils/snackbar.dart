@@ -1,4 +1,4 @@
-import 'package:chatbox/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 
 void commonSnackBarWidget({
