@@ -1,4 +1,5 @@
 import 'package:chatbox/core/constants/database_name_constants.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/domain/entities/chat_entity/chat_entity.dart';
 
 class ChatModel extends ChatEntity {
@@ -25,8 +26,8 @@ class ChatModel extends ChatEntity {
       lastMessage: map[chatLastMessage],
       isMuted: map[chatMuted]??false,
       notificationCount: map[chatMessageNotificationCount],
-      // lastMessageStatus: map[lastMessageStatus],
-      // lastMessageType: map[lastMessageType],
+      lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
+      lastMessageType: MessageType.values.byName(map[lastChatType]),
     );
   }
   Map<String, dynamic> toJson() {
@@ -39,6 +40,8 @@ class ChatModel extends ChatEntity {
       chatLastMessage: lastMessage,
       chatMuted: isMuted,
       chatMessageNotificationCount: notificationCount,
+      lastChatType: lastMessageType,
+      lastChatStatus: lastMessageStatus,
     };
   }
 }

@@ -26,6 +26,7 @@ class ChatHomePage extends StatelessWidget {
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     return const ChatListTileWidget(
+                      
                       isGroup: false,
                       isOutgoing: true,
                       isMutedChat: true,
