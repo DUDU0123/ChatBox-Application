@@ -47,7 +47,7 @@ const receiverProfilePhoto = 'receiver_profile_image';
 const chatMuted = 'is_muted_chat';
 const lastChatStatus = 'last_message_status';
 const lastChatType = 'last_message_type';
-
+const receiverNameInChatList = 'receiver_name';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

@@ -12,7 +12,8 @@ class ChatModel extends ChatEntity {
     super.lastMessageStatus,
     super.lastMessageType,
     super.notificationCount,
-    super.recieverProfileImage,
+    super.receiverProfileImage,
+    super.receiverName,
     super.isMuted,
   });
 
@@ -21,13 +22,14 @@ class ChatModel extends ChatEntity {
       chatID: map[chatId],
       receiverID: map[receiverId],
       senderID: map[senderId],
-      recieverProfileImage: map[receiverProfilePhoto],
+      receiverProfileImage: map[receiverProfilePhoto],
       lastMessageTime: map[chatLastMessageTime],
       lastMessage: map[chatLastMessage],
       isMuted: map[chatMuted]??false,
       notificationCount: map[chatMessageNotificationCount],
       lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
       lastMessageType: MessageType.values.byName(map[lastChatType]),
+      receiverName: map[receiverNameInChatList],
     );
   }
   Map<String, dynamic> toJson() {
@@ -35,13 +37,14 @@ class ChatModel extends ChatEntity {
       chatId: chatID,
       receiverId: receiverID,
       senderId: senderID,
-      receiverProfilePhoto: recieverProfileImage,
+      receiverProfilePhoto: receiverProfileImage,
       chatLastMessageTime: lastMessageTime,
       chatLastMessage: lastMessage,
       chatMuted: isMuted,
       chatMessageNotificationCount: notificationCount,
-      lastChatType: lastMessageType,
-      lastChatStatus: lastMessageStatus,
+      lastChatType: lastMessageType?.name,
+      lastChatStatus: lastMessageStatus?.name,
+      receiverNameInChatList: receiverName,
     };
   }
 }

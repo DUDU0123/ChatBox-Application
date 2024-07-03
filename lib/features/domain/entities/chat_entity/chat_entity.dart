@@ -6,18 +6,20 @@ class ChatEntity extends Equatable {
   final String? receiverID;
   final String? lastMessage;
   final String? lastMessageTime;
-  final String? recieverProfileImage;
+  final String? receiverName;
+  final String? receiverProfileImage;
   final bool? isMuted;
   final MessageStatus? lastMessageStatus;
   final MessageType? lastMessageType;
   final int? notificationCount;
   final String? senderID;
   const ChatEntity({
+    this.receiverName,
     this.chatID,
     this.receiverID,
     this.lastMessage,
     this.lastMessageTime,
-    this.recieverProfileImage,
+    this.receiverProfileImage,
     this.isMuted,
     this.notificationCount,
     this.senderID,
@@ -32,12 +34,13 @@ class ChatEntity extends Equatable {
       receiverID,
       lastMessage,
       lastMessageTime,
-      recieverProfileImage,
+      receiverProfileImage,
       isMuted,
       notificationCount,
       senderID,
       lastMessageStatus,
       lastMessageType,
+      receiverName
     ];
   }
 }

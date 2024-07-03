@@ -1,4 +1,5 @@
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/messaging_page.dart';
@@ -25,7 +26,7 @@ class ChatListTileWidget extends StatelessWidget {
     this.isAudio,
     this.isContact,
     this.isOutgoing,
-    required this.isGroup,
+    required this.isGroup, required this.messageStatus,
   });
 
   final String userName;
@@ -46,6 +47,7 @@ class ChatListTileWidget extends StatelessWidget {
   final bool? isContact;
   final bool? isOutgoing;
   final bool isGroup;
+  final MessageStatus messageStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,7 @@ class ChatListTileWidget extends StatelessWidget {
       leading: buildProfileImage(userProfileImage: userProfileImage,),
       title: buildUserName(userName: userName),
       subtitle: buildSubtitle(
+        messageStatus: messageStatus,
         isOutgoing: isOutgoing,
         isIncomingMessage: isIncomingMessage,
         isGroup: isGroup,

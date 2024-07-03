@@ -4,17 +4,36 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/invite_app_function.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
+import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/messaging_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/user_tile_name_about_profile_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SelectContactToChat extends StatelessWidget {
   const SelectContactToChat({super.key});
+
+  chatOpen(
+      {required ContactModel contactModel, required BuildContext context}) {
+    context
+        .read<ChatBloc>()
+        .add(CreateANewChatEvent(contactModel: contactModel));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MessagingPage(
+          isGroup: false,
+          userName: contactModel.userContactName ?? '',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +78,9 @@ class SelectContactToChat extends StatelessWidget {
                               if (state.contactList[index].isChatBoxUser !=
                                   null) {
                                 state.contactList[index].isChatBoxUser!
-                                    ? Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MessagingPage(
-                                            isGroup: false,
-                                            userName: state.contactList[index]
-                                                    .userContactName ??
-                                                '',
-                                          ),
-                                        ),
+                                    ? chatOpen(
+                                        contactModel: state.contactList[index],
+                                        context: context,
                                       )
                                     : null;
                               }

@@ -1,5 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_listtile_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class SearchPage extends StatelessWidget {
       body: ListView.separated(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         itemBuilder: (context, index) {
-          return const ChatListTileWidget(userName: "User", isGroup: false,);
+          return const ChatListTileWidget(userName: "User", isGroup: false,messageStatus: MessageStatus.none,);
         },
         separatorBuilder: (context, index) => kHeight5,
         itemCount: 10,

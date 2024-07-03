@@ -1,9 +1,11 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/tile_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 // Container(
 //     height: 50.h,width: 50.h,
 //     decoration: BoxDecoration(
@@ -68,6 +70,7 @@ Widget buildSubtitle({
   required bool? isPhoto,
   required bool? isRecordedAudio,
   required bool? isContact,
+  required MessageStatus messageStatus
 }) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.end,
@@ -76,6 +79,7 @@ Widget buildSubtitle({
     children: [
       if (isOutgoing ?? false)
         buildOutgoingStatus(
+          messageStatus: messageStatus,
           isTyping: isTyping,
           isVoiceRecoding: isVoiceRecoding,
           isGone: isGone,
@@ -97,9 +101,10 @@ Widget buildSubtitle({
         isVoiceRecoding: isVoiceRecoding,
       ),
       buildMessageText(
-          isTyping: isTyping,
-          isVoiceRecoding: isVoiceRecoding,
-          lastMessage: lastMessage),
+        isTyping: isTyping,
+        isVoiceRecoding: isVoiceRecoding,
+        lastMessage: lastMessage,
+      ),
     ],
   );
 }
@@ -109,9 +114,11 @@ Widget buildOutgoingStatus({
   required bool? isVoiceRecoding,
   required bool? isGone,
   required bool? isSeen,
+  required MessageStatus messageStatus
 }) {
   if (!(isTyping ?? false) && !(isVoiceRecoding ?? false)) {
     return messageStatusWidget(
+      messageStatus: messageStatus,
         isGone: isGone ?? false, isSeen: isSeen ?? false);
   }
   return zeroMeasureWidget;
@@ -175,7 +182,7 @@ Widget buildTrailing(
     required bool? isMutedChat,
     required String? lastMessageTime}) {
   return SizedBox(
-    width: screenWidth(context: context) / 6.6,
+    // width: screenWidth(context: context) / 8,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -187,6 +194,7 @@ Widget buildTrailing(
           fontWeight: FontWeight.normal,
         ),
         Row(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             if (isMutedChat ?? false) tileMuteIconWidget(),

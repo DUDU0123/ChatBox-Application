@@ -1,11 +1,14 @@
 import 'package:chatbox/core/service/locator.dart';
+import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/data_sources/contact_data/contact_data.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/repositories/auth_repo/authentication_repo_impl.dart';
+import 'package:chatbox/features/data/repositories/chat_repository/chat_repo_impl.dart';
 import 'package:chatbox/features/data/repositories/contact_repository/contact_repo_impl.dart';
 import 'package:chatbox/features/data/repositories/user_repository/user_repository_impl.dart';
 import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
@@ -89,9 +92,9 @@ class AppBlocProvider {
       create: (context) => AuthenticationBloc(
         firebaseAuth: firebaseAuth,
         userRepository: UserRepositoryImpl(
-          
           userData: UserData(
-            authenticationRepo: AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
+            authenticationRepo:
+                AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
             firebaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,
@@ -118,13 +121,25 @@ class AppBlocProvider {
         firebaseAuth: FirebaseAuth.instance,
         userRepository: UserRepositoryImpl(
           userData: UserData(
-            authenticationRepo: AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
+            authenticationRepo:
+                AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
             firebaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,
           ),
         ),
       )..add(GetCurrentUserData()),
+    ),
+    BlocProvider(
+      create: (context) => ChatBloc(
+        chatRepo: ChatRepoImpl(
+          chatData: ChatData(
+            firestore: fireStore,
+            firebaseAuth: firebaseAuth,
+          ),
+          firebaseAuth: firebaseAuth,
+        ),
+      )..add(GetAllChatsEvent()),
     ),
   ];
 }

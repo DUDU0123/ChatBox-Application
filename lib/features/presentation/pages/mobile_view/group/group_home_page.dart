@@ -1,3 +1,4 @@
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatbox/core/constants/height_width.dart';
@@ -259,6 +260,7 @@ class GroupHomePage extends StatelessWidget {
         itemBuilder: (context, index) {
           final c = chats[index];
           return ChatListTileWidget(
+            messageStatus: MessageStatus.delivered,
             isGroup: true,
             isOutgoing: c.isOutgoing,
             userName: "Group1",

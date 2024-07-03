@@ -29,6 +29,8 @@ enum MessageStatus {
   sent,
   delivered,
   read,
+  notDelivered,
+  none,
 }
 
 enum MessageType {
@@ -39,6 +41,7 @@ enum MessageType {
   document,
   location,
   contact,
+  none,
 }
 
 extension Converter on String{
