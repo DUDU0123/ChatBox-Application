@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/tile_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Container(
@@ -28,23 +30,38 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 //     ),
 //     child:  Center(child: Icon(Icons.person, size: 50.sp,)),
 //   );
-Widget buildProfileImage({required String? userProfileImage}) {
-  return CircleAvatar(
-    backgroundColor: kGrey,
-    radius: 25.sp,
-    child: userProfileImage != null
-        ? ClipRRect(
-            borderRadius: BorderRadius.circular(25.sp),
-            child: Image.network(
-              userProfileImage,
+Widget buildProfileImage({
+  required String? userProfileImage,
+  required BuildContext context,
+}) {
+  return userProfileImage != null
+      ? Container(
+          height: 50.h,
+          width: 50.w,
+          decoration: BoxDecoration(
+            color: Theme.of(context).popupMenuTheme.color,
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              image: CachedNetworkImageProvider(userProfileImage),
               fit: BoxFit.cover,
             ),
-          )
-        : const Icon(
-            Icons.person,
-            color: Color.fromARGB(255, 134, 134, 134),
           ),
-  );
+        )
+      : Container(
+          height: 50.h,
+          width: 50.w,
+          decoration: BoxDecoration(
+            color: Theme.of(context).popupMenuTheme.color,
+            shape: BoxShape.circle,
+          ),
+          child:  Center(
+            child: Icon(
+              Icons.person,
+              color: const Color.fromARGB(255, 134, 134, 134),
+              size: 30.sp,
+            ),
+          ),
+        );
 }
 
 Widget buildUserName({required String userName}) {
@@ -56,22 +73,21 @@ Widget buildUserName({required String userName}) {
   );
 }
 
-Widget buildSubtitle({
-  required bool? isOutgoing,
-  required bool? isIncomingMessage,
-  required bool isGroup,
-  required bool? isTyping,
-  required bool? isVoiceRecoding,
-  required bool? isGone,
-  required bool? isSeen,
-  required String? lastMessage,
-  required bool? isAudio,
-  required bool? isDocument,
-  required bool? isPhoto,
-  required bool? isRecordedAudio,
-  required bool? isContact,
-  required MessageStatus messageStatus
-}) {
+Widget buildSubtitle(
+    {required bool? isOutgoing,
+    required bool? isIncomingMessage,
+    required bool isGroup,
+    required bool? isTyping,
+    required bool? isVoiceRecoding,
+    required bool? isGone,
+    required bool? isSeen,
+    required String? lastMessage,
+    required bool? isAudio,
+    required bool? isDocument,
+    required bool? isPhoto,
+    required bool? isRecordedAudio,
+    required bool? isContact,
+    required MessageStatus messageStatus}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.end,
     mainAxisSize: MainAxisSize.min,
@@ -109,17 +125,17 @@ Widget buildSubtitle({
   );
 }
 
-Widget buildOutgoingStatus({
-  required bool? isTyping,
-  required bool? isVoiceRecoding,
-  required bool? isGone,
-  required bool? isSeen,
-  required MessageStatus messageStatus
-}) {
+Widget buildOutgoingStatus(
+    {required bool? isTyping,
+    required bool? isVoiceRecoding,
+    required bool? isGone,
+    required bool? isSeen,
+    required MessageStatus messageStatus}) {
   if (!(isTyping ?? false) && !(isVoiceRecoding ?? false)) {
     return messageStatusWidget(
-      messageStatus: messageStatus,
-        isGone: isGone ?? false, isSeen: isSeen ?? false);
+        messageStatus: messageStatus,
+        isGone: isGone ?? false,
+        isSeen: isSeen ?? false);
   }
   return zeroMeasureWidget;
 }

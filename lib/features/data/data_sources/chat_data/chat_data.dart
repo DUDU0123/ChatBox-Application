@@ -202,6 +202,7 @@ class ChatData {
 
   Future<void> createANewChat({required ContactModel contactModel}) async {
     try {
+      log("Contact Model User Id: ${contactModel.chatBoxUserId}");
       String currentUserId = firebaseAuth.currentUser!.uid;
       String chatId = _generateChatId(
         currentUserId: currentUserId,
@@ -216,7 +217,7 @@ class ChatData {
         lastMessageStatus: MessageStatus.none,
         lastMessageType: MessageType.none,
         notificationCount: 0,
-        receiverName: contactModel.userContactName??contactModel.userContactNumber,
+        receiverName: contactModel.userContactName,
         receiverProfileImage: contactModel.userProfilePhotoOnChatBox,
         isMuted: false,
       );
@@ -256,7 +257,7 @@ class ChatData {
               .map((doc) => ChatModel.fromJson(doc.data()))
 
               .toList());
-              val.listen((data)=>log("${data[0].chatID}"));
+              val.listen((data)=>log("Id: ${data[0].chatID} name: ${data[0].receiverName} Imageee: ${data[0].receiverProfileImage}"));
       return firestore
           .collection(usersCollection)
           .doc(currentUserId)

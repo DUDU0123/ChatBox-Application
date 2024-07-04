@@ -22,7 +22,7 @@ class UserTileWithNameAndAboutAndProfileImage extends StatelessWidget {
     return ListTile(
       trailing: trailing,
       onTap: onTap,
-      leading: buildProfileImage(userProfileImage: userPicture),
+      leading: buildProfileImage(userProfileImage: userPicture, context: context,),
       title: buildUserName(userName: userName),
       subtitle: userAbout != null
           ? TextWidgetCommon(

@@ -17,30 +17,23 @@ class ChatHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List chatList = [];
     return Scaffold(
-      body: chatList.isNotEmpty
-          ? emptyShowWidget(
-              context: context,
-              text:
-                  "No Chats\nStart a chat by selecting a contact by click on above chat icon",
-            )
-          : CustomScrollView(
+      body: CustomScrollView(
               slivers: [
                 const SliverToBoxAdapter(
                   child: SearchBarChatHome(),
                 ),
                 BlocBuilder<ChatBloc, ChatState>(
                   builder: (context, state) {
-                    // if (state is ChatLoadingState) {
-                    //   return SliverToBoxAdapter(
-                    //     child: commonAnimationWidget(
-                    //       context: context,
-                    //       isTextNeeded: false,
-                    //       lottie: settingsLottie,
-                    //     ),
-                    //   );
-                    // }
+                    if (state is ChatLoadingState) {
+                      return SliverToBoxAdapter(
+                        child: commonAnimationWidget(
+                          context: context,
+                          isTextNeeded: false,
+                          lottie: settingsLottie,
+                        ),
+                      );
+                    }
                     if (state is ChatErrorState) {
                       return SliverToBoxAdapter(
                           child: Center(
@@ -50,18 +43,23 @@ class ChatHomePage extends StatelessWidget {
                     if (state is ChatSuccessState) {
                       log("Length: ${state.chatList.length}");
 
-                      return StreamBuilder<List<ChatModel>>(
+                      return
+                       StreamBuilder<List<ChatModel>>(
                         stream: state.chatList,
                         builder: (context, snapshot) {
-                          if (state.chatList.length.toString() == '0') {
-                            return SliverToBoxAdapter(
-                              child: Center(
-                                child: TextWidgetCommon(
-                                  text: "No Chats",
-                                  textColor: kBlack,
+                          if (snapshot.data != null) {
+                            if (snapshot.data!.isEmpty) {
+                              return SliverToBoxAdapter(
+                                child: SizedBox(
+                                  width: screenWidth(context: context),
+                                  height: screenWidth(context: context),
+                                  child: emptyShowWidget(
+                                    context: context,
+                                    text: noChatText,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           }
 
                           log("Hello inside");
@@ -72,29 +70,23 @@ class ChatHomePage extends StatelessWidget {
                               if (chat == null) {
                                 return zeroMeasureWidget;
                               }
+                              log("Image : ${chat[index].receiverProfileImage}$index");
                               final lastMessage = chat[index].lastMessage;
                               return ChatListTileWidget(
-                                messageStatus: chat[index].lastMessageStatus??MessageStatus.none,
+                                messageStatus: chat[index].lastMessageStatus ??
+                                    MessageStatus.none,
                                 isGroup: false,
-                                // isOutgoing: true,
                                 isMutedChat: chat[index].isMuted,
-                                // isGone: true,
-                                // isSeen: true,
                                 lastMessage: lastMessage,
-                                lastMessageTime: lastMessage==null||lastMessage.isEmpty?'': chat[index].lastMessageTime,
-                                notificationCount: chat[index].notificationCount,
+                                lastMessageTime:
+                                    lastMessage == null || lastMessage.isEmpty
+                                        ? ''
+                                        : chat[index].lastMessageTime,
+                                notificationCount:
+                                    chat[index].notificationCount,
                                 userName: chat[index].receiverName ?? '',
                                 userProfileImage:
                                     chat[index].receiverProfileImage,
-                                // message
-                                // isAudio: false,
-                                // isContact: false,
-                                // isDocument: false,
-                                // isIncomingMessage: false,
-                                // isPhoto: false,
-                                // isRecordedAudio: false,
-                                // isTyping: false,
-                                // isVoiceRecoding: false,
                               );
                             },
                             separatorBuilder: (context, index) => kHeight5,

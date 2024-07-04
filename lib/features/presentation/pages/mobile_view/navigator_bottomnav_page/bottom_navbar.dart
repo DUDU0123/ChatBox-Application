@@ -1,6 +1,7 @@
 import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/bottom_nav/bottom_nav_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,9 @@ class BottomNavBar extends StatelessWidget {
           currentIndex: state.currentIndex,
           onTap: (currentIndex) {
             pageController.jumpToPage(currentIndex);
+            if (currentIndex==0) {
+              context.read<ChatBloc>().add(GetAllChatsEvent());
+            }
             bottomNavBloc.add(
               BottomNavIconClickedEvent(
                 currentIndex: currentIndex,

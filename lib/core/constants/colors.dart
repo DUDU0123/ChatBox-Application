@@ -79,7 +79,7 @@ const theme = "assets/theme.svg";
 const clearIcon = "assets/clearIcon.svg";
 const bgImage = "assets/chatBoxBg.png";
 const settingsLottie = "https://lottie.host/13f9dae6-a998-4e91-82d1-a505b5aacd64/mI4P96e8ll.json";
-
+const noChatText = "No Chats\nStart a chat by selecting a contact by click on above chat icon";
 
 // styles
 TextStyle fieldStyle({required BuildContext context}) => TextStyle(

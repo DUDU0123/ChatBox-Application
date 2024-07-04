@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/invite_app_function.dart';
@@ -11,15 +10,13 @@ import 'package:chatbox/features/presentation/pages/mobile_view/chat/messaging_p
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/user_tile_name_about_profile_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:share_plus/share_plus.dart';
 
 class SelectContactToChat extends StatelessWidget {
   const SelectContactToChat({super.key});
 
-  chatOpen(
+  void chatOpen(
       {required ContactModel contactModel, required BuildContext context}) {
     context
         .read<ChatBloc>()
@@ -29,7 +26,8 @@ class SelectContactToChat extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => MessagingPage(
           isGroup: false,
-          userName: contactModel.userContactName ?? '',
+          userName: contactModel.userContactName ??
+              contactModel.userContactNumber.toString(),
         ),
       ),
     );
@@ -69,10 +67,26 @@ class SelectContactToChat extends StatelessWidget {
                     fontSize: 12.sp,
                   );
                 }
+                state.contactList.sort((a, b) {
+                  if (a.isChatBoxUser! && !b.isChatBoxUser!) {
+                    return -1; // a comes before b
+                  } else if (!a.isChatBoxUser! && b.isChatBoxUser!) {
+                    return 1; // b comes before a
+                  } else {
+                    return 0; // a and b are equivalent
+                  }
+                });
                 return state.contactList.isEmpty
                     ? emptyShowWidget(context: context, text: "No Contacts")
                     : ListView.separated(
                         itemBuilder: (context, index) {
+                          if (state.contactList[index].isChatBoxUser != null) {
+                            state.contactList[index].isChatBoxUser!
+                                ? log(
+                                    "Id: ${state.contactList[index].chatBoxUserId} \n name: ${state.contactList[index].userContactName} \n Imageee: ${state.contactList[index].userProfilePhotoOnChatBox}",
+                                  )
+                                : null;
+                          }
                           return UserTileWithNameAndAboutAndProfileImage(
                             onTap: () {
                               if (state.contactList[index].isChatBoxUser !=

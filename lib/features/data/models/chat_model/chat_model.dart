@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/domain/entities/chat_entity/chat_entity.dart';
@@ -18,6 +20,7 @@ class ChatModel extends ChatEntity {
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> map) {
+    log("Map Data: $map");
     return ChatModel(
       chatID: map[chatId],
       receiverID: map[receiverId],

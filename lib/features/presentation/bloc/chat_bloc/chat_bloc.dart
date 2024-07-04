@@ -40,9 +40,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       GetAllChatsEvent event, Emitter<ChatState> emit) {
         emit(ChatLoadingState());
          try {
+          log("Get all chats event called");
      Stream<List<ChatModel>> chatList =  chatRepo.getAllChats();
     //  log("Chat List: ${}");
-     chatList.listen((vl)=>log(vl.length.toString())
+     chatList.listen((vl)=>log(vl[0].receiverProfileImage!)
      );
       emit(ChatSuccessState(chatList: chatList));
     } catch (e) {
