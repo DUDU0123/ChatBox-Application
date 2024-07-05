@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
@@ -28,7 +29,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   FutureOr<void> createANewChatEvent(
       CreateANewChatEvent event, Emitter<ChatState> emit) async{
     try {
-      await chatRepo.createNewChat(contactModel: event.contactModel);
+      // await chatRepo.createNewChat(contactModel: event.contactModel);
+      await chatRepo.createNewChat(receiverId: event.receiverId, recieverContactName: event.recieverContactName,);
       add(GetAllChatsEvent());
     } catch (e) {
       log("Create chat: e ${e.toString()}");

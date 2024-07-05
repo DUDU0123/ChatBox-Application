@@ -50,4 +50,31 @@ class ChatModel extends ChatEntity {
       receiverNameInChatList: receiverName,
     };
   }
+
+  ChatModel copyWith({
+    String? chatID,
+    String? senderID,
+    String? receiverID,
+    String? lastMessage,
+    String? lastMessageTime,
+    MessageStatus? lastMessageStatus,
+    MessageType? lastMessageType,
+    int? notificationCount,
+    String? receiverProfileImage,
+    String? receiverName,
+    bool? isMuted,
+  }) {
+    return ChatModel(
+      chatID: chatID ?? this.chatID,
+      senderID: senderID ?? this.senderID,
+      receiverID: receiverID ?? this.receiverID,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageTime: lastMessageTime ?? this.lastMessageTime,
+      lastMessageStatus: lastMessageStatus ?? this.lastMessageStatus,
+      lastMessageType: lastMessageType ?? this.lastMessageType,
+      notificationCount: notificationCount ?? this.notificationCount,
+      receiverProfileImage: receiverProfileImage ?? this.receiverProfileImage,
+      receiverName: receiverName ?? this.receiverName,
+      isMuted: isMuted ?? this.isMuted,
+    );}
 }

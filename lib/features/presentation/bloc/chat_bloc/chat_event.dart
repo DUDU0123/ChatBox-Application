@@ -8,12 +8,15 @@ sealed class ChatEvent extends Equatable {
 }
 
 class CreateANewChatEvent extends ChatEvent {
-  final ContactModel contactModel;
+  final String recieverContactName;
+  final String receiverId;
+  // final ContactModel contactModel;
   const CreateANewChatEvent({
-    required this.contactModel,
+    required this.recieverContactName,
+    required this.receiverId,
   });
   @override
-  List<Object> get props => [contactModel,];
+  List<Object> get props => [receiverId,recieverContactName,];
 }
 class GetAllChatsEvent extends ChatEvent{}
 class MessageSentEvent extends ChatEvent{}

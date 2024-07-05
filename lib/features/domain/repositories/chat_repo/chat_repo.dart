@@ -1,6 +1,7 @@
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
 
 abstract class ChatRepo {
   // if chat not exists create a chat
@@ -15,8 +16,12 @@ abstract class ChatRepo {
      isMuted: false;
      senderID: currentUserID,
      );*/
+  // Future<void> createNewChat({
+  //   required ContactModel contactModel,
+  // });
   Future<void> createNewChat({
-    required ContactModel contactModel,
+    required String receiverId,
+    required String recieverContactName,
   });
   Stream<List<ChatModel>> getAllChats();
   Stream<List<MessageModel>> getAllMessages({

@@ -1,22 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
-import 'package:chatbox/core/constants/app_constants.dart';
-import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/splash_screen/splash_screen.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserData {
   final FirebaseFirestore firestore;
@@ -29,6 +22,8 @@ class UserData {
     required this.firebaseAuth,
     required this.authenticationRepo,
   });
+
+ 
 
   // Method to get all users
   Future<List<UserModel>> getAllUsersFromDataBase() async {
@@ -161,29 +156,6 @@ class UserData {
     }
   }
 
-  // Future<void> deleteUserFilesInDB({required String fullPathToFile}) async {
-  //   log(name: "FilePath", fullPathToFile);
-  //   try {
-  //     Reference fileReference = firebaseStorage.ref(fullPathToFile);
-  //     final FullMetadata metaDataInLocation = await fileReference.getMetadata();
-  //     if (metaDataInLocation.size! > 0) {
-  //       await fileReference.delete();
-  //     } else {
-  //       return;
-  //     }
-  //     // await fileReference.delete();
-  //   } on FirebaseAuthException catch (e) {
-  //     log(
-  //       'Firebase Auth exception: $e',
-  //     );
-  //     throw Exception("Error while deleting user data: $e");
-  //   } catch (e) {
-  //     log(
-  //       'Error while deleting user file: $e',
-  //     );
-  //     throw Exception("Error while deleting user data: $e");
-  //   }
-  // }
   Future<void> deleteUserFilesInDB({required String fullPathToFile}) async {
     log(name: "FilePath", fullPathToFile);
     try {

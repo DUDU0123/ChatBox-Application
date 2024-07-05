@@ -1,9 +1,7 @@
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
-import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
 
 class ChatRepoImpl extends ChatRepo {
@@ -13,18 +11,18 @@ class ChatRepoImpl extends ChatRepo {
     required this.chatData,
     required this.firebaseAuth,
   });
-  @override
+   @override
   Future<void> createNewChat({
-    required ContactModel contactModel,
+    required String receiverId,
+    required String recieverContactName,
   }) async {
-    if (firebaseAuth.currentUser != null &&
-        contactModel.chatBoxUserId != null) {
+    if (firebaseAuth.currentUser != null) {
       final isChatExists = await chatData.checkIfChatExistAlready(
         firebaseAuth.currentUser!.uid,
-        contactModel.chatBoxUserId!,
+        receiverId,
       );
       if (!isChatExists) {
-        await chatData.createANewChat(contactModel: contactModel);
+        await chatData.createANewChat(receiverId: receiverId, receiverContactName: recieverContactName,);
       } else {
         return;
       }

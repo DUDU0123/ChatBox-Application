@@ -149,20 +149,27 @@
 //   }
 // }
 import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:chatbox/core/constants/database_name_constants.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
+import 'package:chatbox/features/domain/repositories/user_repo/user_repository.dart';
+
 class ChatData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;
+  //final UserRepository userRepository;
 
   ChatData({
     required this.firestore,
     required this.firebaseAuth,
+    // required this.userRepository,
   });
 
   // Method to generate a chat ID by combining the IDs of receiver and sender
@@ -200,46 +207,145 @@ class ChatData {
     }
   }
 
-  Future<void> createANewChat({required ContactModel contactModel}) async {
+  // Future<void> createANewChat({required ContactModel contactModel}) async {
+  //   try {
+  //     log("Contact Model User Id: ${contactModel.chatBoxUserId}");
+  //     String currentUserId = firebaseAuth.currentUser!.uid;
+  //     String chatId = _generateChatId(
+  //       currentUserId: currentUserId,
+  //       receiverId: contactModel.chatBoxUserId!,
+  //     );
+  //     ChatModel chat = ChatModel(
+  //       chatID: chatId,
+  //       senderID: currentUserId,
+  //       receiverID: contactModel.chatBoxUserId,
+  //       lastMessage: null,
+  //       lastMessageTime: DateTime.now().toString(),
+  //       lastMessageStatus: MessageStatus.none,
+  //       lastMessageType: MessageType.none,
+  //       notificationCount: 0,
+  //       receiverName: contactModel.userContactName,
+  //       receiverProfileImage: contactModel.userProfilePhotoOnChatBox,
+  //       isMuted: false,
+  //     );
+
+  //     await firestore
+  //         .collection(usersCollection)
+  //         .doc(currentUserId)
+  //         .collection(chatsCollection)
+  //         .doc(chatId)
+  //         .set(chat.toJson());
+  //     await firestore
+  //         .collection(usersCollection)
+  //         .doc(contactModel.chatBoxUserId)
+  //         .collection(chatsCollection)
+  //         .doc(chatId)
+  //         .set(chat.toJson());
+  //   } on FirebaseAuthException catch (e) {
+  //     log("From Chat Data: 82: ${e.message}");
+  //     throw Exception(e.message);
+  //   } catch (e) {
+  //     log(e.toString());
+  //     throw Exception(e.toString());
+  //   }
+  // }
+
+  Stream<UserModel?> getOneUserDataFromDataBaseAsStream(
+      {required String userId}) {
     try {
-      log("Contact Model User Id: ${contactModel.chatBoxUserId}");
+      return firestore.collection(usersCollection).doc(userId).snapshots().map(
+            (event) => UserModel.fromJson(
+              map: event.data()!,
+            ),
+          );
+    } on FirebaseAuthException catch (e) {
+      log(
+        'Firebase Auth exception: $e',
+      );
+      throw Exception("Error while fetching user data: $e");
+    } catch (e, stackTrace) {
+      log('Error while fetching user data: $e', stackTrace: stackTrace);
+      throw Exception("Error while fetching user data: $e");
+    }
+  }
+
+  Future<void> createANewChat({
+    required String receiverId,
+    required String receiverContactName,
+  }) async {
+    try {
       String currentUserId = firebaseAuth.currentUser!.uid;
       String chatId = _generateChatId(
         currentUserId: currentUserId,
-        receiverId: contactModel.chatBoxUserId!,
-      );
-      ChatModel chat = ChatModel(
-        chatID: chatId,
-        senderID: currentUserId,
-        receiverID: contactModel.chatBoxUserId,
-        lastMessage: null,
-        lastMessageTime: DateTime.now().toString(),
-        lastMessageStatus: MessageStatus.none,
-        lastMessageType: MessageType.none,
-        notificationCount: 0,
-        receiverName: contactModel.userContactName,
-        receiverProfileImage: contactModel.userProfilePhotoOnChatBox,
-        isMuted: false,
+        receiverId: receiverId,
       );
 
-      await firestore
-          .collection(usersCollection)
-          .doc(currentUserId)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .set(chat.toJson());
-      await firestore
-          .collection(usersCollection)
-          .doc(contactModel.chatBoxUserId)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .set(chat.toJson());
+      final Stream<UserModel?> receiverDataStream =
+          getOneUserDataFromDataBaseAsStream(userId: receiverId);
+      final Stream<UserModel?> currentUserDataStream =
+          getOneUserDataFromDataBaseAsStream(userId: currentUserId);
+
+      receiverDataStream.listen((UserModel? data) async {
+        if (data != null) {
+          ChatModel chat = ChatModel(
+            chatID: chatId,
+            senderID: currentUserId,
+            receiverID: data.id,
+            lastMessage: null,
+            lastMessageTime: DateTime.now().toString(),
+            lastMessageStatus: MessageStatus.none,
+            lastMessageType: MessageType.none,
+            notificationCount: 0,
+            receiverName: receiverContactName,
+            receiverProfileImage: data.userProfileImage,
+            isMuted: false,
+          );
+
+          await firestore
+              .collection(usersCollection)
+              .doc(currentUserId)
+              .collection(chatsCollection)
+              .doc(chatId)
+              .set(chat.toJson());
+        } else {
+          throw Exception("User data is null");
+        }
+      });
+
+      currentUserDataStream.listen((UserModel? data) async {
+        if (data != null) {
+          ChatModel chat = ChatModel(
+            chatID: chatId,
+            senderID: receiverId,
+            receiverID: currentUserId,
+            lastMessage: null,
+            lastMessageTime: DateTime.now().toString(),
+            lastMessageStatus: MessageStatus.none,
+            lastMessageType: MessageType.none,
+            notificationCount: 0,
+            receiverName: data.userName,
+            receiverProfileImage: data.userProfileImage,
+            isMuted: false,
+          );
+
+          await firestore
+              .collection(usersCollection)
+              .doc(receiverId)
+              .collection(chatsCollection)
+              .doc(chatId)
+              .set(chat.toJson());
+
+          
+        } else {
+          throw Exception("User data is null");
+        }
+      });
     } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 82: ${e.message}");
-      throw Exception(e.message);
-    } catch (e) {
-      log(e.toString());
-      throw Exception(e.toString());
+      log("Firebase Auth exception: ${e.message}");
+      throw Exception("Error while creating chat: ${e.message}");
+    } catch (e, stackTrace) {
+      log("Error while creating chat: $e", stackTrace: stackTrace);
+      throw Exception("Error while creating chat: $e");
     }
   }
 
@@ -247,17 +353,17 @@ class ChatData {
     try {
       String currentUserId = firebaseAuth.currentUser!.uid;
       log("CurrentID: ${currentUserId}");
-        
-         final val =  firestore
+
+      final val = firestore
           .collection(usersCollection)
           .doc(currentUserId)
           .collection(chatsCollection)
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map((doc) => ChatModel.fromJson(doc.data()))
-
               .toList());
-              val.listen((data)=>log("Id: ${data[0].chatID} name: ${data[0].receiverName} Imageee: ${data[0].receiverProfileImage}"));
+      val.listen((data) => log(
+          "Id: ${data[0].chatID} name: ${data[0].receiverName} Imageee: ${data[0].receiverProfileImage}"));
       return firestore
           .collection(usersCollection)
           .doc(currentUserId)

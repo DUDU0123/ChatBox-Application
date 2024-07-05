@@ -1,9 +1,11 @@
 import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/invite_app_function.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/messaging_page.dart';
@@ -16,19 +18,35 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class SelectContactToChat extends StatelessWidget {
   const SelectContactToChat({super.key});
 
+  // void chatOpen(
+  //     {required ContactModel contactModel, required BuildContext context}) {
+  //   context
+  //       .read<ChatBloc>()
+  //       .add(CreateANewChatEvent(contactModel: contactModel));
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => MessagingPage(
+  //         isGroup: false,
+  //         userName: contactModel.userContactName ??
+  //             contactModel.userContactNumber.toString(),
+  //       ),
+  //     ),
+  //   );
+  // }
   void chatOpen(
-      {required ContactModel contactModel, required BuildContext context}) {
-    context
-        .read<ChatBloc>()
-        .add(CreateANewChatEvent(contactModel: contactModel));
+      {required String receiverId,
+      required String recieverContactName,
+      required BuildContext context}) {
+    context.read<ChatBloc>().add(CreateANewChatEvent(
+          receiverId: receiverId,
+          recieverContactName: recieverContactName,
+        ));
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MessagingPage(
-          isGroup: false,
-          userName: contactModel.userContactName ??
-              contactModel.userContactNumber.toString(),
-        ),
+        builder: (context) =>
+            MessagingPage(isGroup: false, userName: recieverContactName),
       ),
     );
   }
@@ -93,7 +111,12 @@ class SelectContactToChat extends StatelessWidget {
                                   null) {
                                 state.contactList[index].isChatBoxUser!
                                     ? chatOpen(
-                                        contactModel: state.contactList[index],
+                                        receiverId: state
+                                            .contactList[index].chatBoxUserId
+                                            .toString(),
+                                        recieverContactName: state
+                                            .contactList[index].userContactName
+                                            .toString(),
                                         context: context,
                                       )
                                     : null;

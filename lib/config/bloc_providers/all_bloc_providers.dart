@@ -1,4 +1,3 @@
-import 'package:chatbox/core/service/locator.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/data_sources/contact_data/contact_data.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
