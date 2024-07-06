@@ -2,6 +2,7 @@ import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/attachment_list_container_vertical.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chatbar_widget.dart';
@@ -14,8 +15,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class ChatRoomPage extends StatelessWidget {
-  ChatRoomPage({super.key, required this.userName, required this.isGroup});
+  ChatRoomPage({super.key, required this.userName, required this.isGroup, required this.chatModel,});
   final String userName;
+  final ChatModel chatModel;
   final bool isGroup;
   TextEditingController messageController = TextEditingController();
 
@@ -25,6 +27,7 @@ class ChatRoomPage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: CommonAppBar(
+          
           userStatus: "Online",
           appBarTitle: userName,
           pageType: isGroup

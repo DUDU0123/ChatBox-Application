@@ -1,6 +1,9 @@
+import 'dart:developer';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
+import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
 import 'package:flutter/material.dart';
 
 class ChatListTileWidget extends StatelessWidget {
@@ -23,7 +26,8 @@ class ChatListTileWidget extends StatelessWidget {
     this.isAudio,
     this.isContact,
     this.isOutgoing,
-    required this.isGroup, required this.messageStatus,
+    required this.isGroup,
+    required this.messageStatus, required this.chatModel,
   });
 
   final String userName;
@@ -44,27 +48,18 @@ class ChatListTileWidget extends StatelessWidget {
   final bool? isContact;
   final bool? isOutgoing;
   final bool isGroup;
+  final ChatModel chatModel;
   final MessageStatus messageStatus;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        // Navigator.pushNamed(context, "/messaging_page");
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => MessagingPage(
-        //       userName: userName,
-        //       isGroup: isGroup,
-        //       isReadedMessage: isSeen,
-        //     ),
-        //   ),
-        // );
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChatRoomPage(
+              chatModel: chatModel,
               userName: userName,
               isGroup: isGroup,
               //isReadedMessage: isSeen,
@@ -72,7 +67,19 @@ class ChatListTileWidget extends StatelessWidget {
           ),
         );
       },
-      leading: buildProfileImage(userProfileImage: userProfileImage,context: context,),
+      leading: GestureDetector(
+        onTap: () {
+          log("Tapped image");
+          userProfileShowDialog(
+            context: context,
+            userProfileImage: userProfileImage,
+          );
+        },
+        child: buildProfileImage(
+          userProfileImage: userProfileImage,
+          context: context,
+        ),
+      ),
       title: buildUserName(userName: userName),
       subtitle: buildSubtitle(
         messageStatus: messageStatus,

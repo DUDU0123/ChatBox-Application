@@ -5,17 +5,19 @@ import 'package:chatbox/features/presentation/widgets/common_widgets/app_bar_ico
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CommonAppBar extends StatelessWidget {
   const CommonAppBar({
     super.key,
     required this.pageType,
     required this.appBarTitle,
-    this.userStatus,
+    this.userStatus, this.userProfileImage,
   });
   final PageTypeEnum pageType;
   final String appBarTitle;
   final String? userStatus;
+  final String? userProfileImage;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class CommonAppBar extends StatelessWidget {
                 kWidth5,
                 CircleAvatar(
                   backgroundColor: kBlack,
+                  backgroundImage:userProfileImage!=null? NetworkImage(userProfileImage!):AssetImage(contact),
                 ),
                 kWidth5,
                 Expanded(

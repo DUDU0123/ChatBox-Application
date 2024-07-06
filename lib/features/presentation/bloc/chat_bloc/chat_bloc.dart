@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
-import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
-import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:equatable/equatable.dart';
-
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
-
 part 'chat_event.dart';
 part 'chat_state.dart';
 
@@ -27,10 +22,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   FutureOr<void> createANewChatEvent(
-      CreateANewChatEvent event, Emitter<ChatState> emit) async{
+      CreateANewChatEvent event, Emitter<ChatState> emit) async {
     try {
       // await chatRepo.createNewChat(contactModel: event.contactModel);
-      await chatRepo.createNewChat(receiverId: event.receiverId, recieverContactName: event.recieverContactName,);
+      await chatRepo.createNewChat(
+        receiverId: event.receiverId,
+        recieverContactName: event.recieverContactName,
+      );
       add(GetAllChatsEvent());
     } catch (e) {
       log("Create chat: e ${e.toString()}");
@@ -40,19 +38,18 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> getAllChatsEvent(
       GetAllChatsEvent event, Emitter<ChatState> emit) {
-        emit(ChatLoadingState());
-         try {
-          log("Get all chats event called");
-     Stream<List<ChatModel>> chatList =  chatRepo.getAllChats();
-    //  log("Chat List: ${}");
-     chatList.listen((vl)=>log(vl[0].receiverProfileImage!)
-     );
+    emit(ChatLoadingState());
+    try {
+      log("Get all chats event called");
+      Stream<List<ChatModel>> chatList = chatRepo.getAllChats();
+      //  log("Chat List: ${}");
+      chatList.listen((vl) => log(vl[0].receiverProfileImage!));
       emit(ChatSuccessState(chatList: chatList));
     } catch (e) {
       log("Create chat: e ${e.toString()}");
       emit(ChatErrorState(message: e.toString()));
     }
-      }
+  }
 
   FutureOr<void> messageSentEvent(
       MessageSentEvent event, Emitter<ChatState> emit) {}

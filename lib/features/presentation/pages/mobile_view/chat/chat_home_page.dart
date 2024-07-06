@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -42,9 +41,7 @@ class ChatHomePage extends StatelessWidget {
                     }
                     if (state is ChatSuccessState) {
                       log("Length: ${state.chatList.length}");
-
-                      return
-                       StreamBuilder<List<ChatModel>>(
+                      return StreamBuilder<List<ChatModel>>(
                         stream: state.chatList,
                         builder: (context, snapshot) {
                           if (snapshot.data != null) {
@@ -73,6 +70,7 @@ class ChatHomePage extends StatelessWidget {
                               log("Image : ${chat[index].receiverProfileImage}$index");
                               final lastMessage = chat[index].lastMessage;
                               return ChatListTileWidget(
+                                chatModel: chat[index],
                                 messageStatus: chat[index].lastMessageStatus ??
                                     MessageStatus.none,
                                 isGroup: false,

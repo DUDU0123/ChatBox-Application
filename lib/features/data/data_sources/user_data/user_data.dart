@@ -23,8 +23,6 @@ class UserData {
     required this.authenticationRepo,
   });
 
- 
-
   // Method to get all users
   Future<List<UserModel>> getAllUsersFromDataBase() async {
     try {
@@ -115,8 +113,10 @@ class UserData {
   }
 
   // Method to update user in DB
-  Future<void> updateUserInDB(
-      {required UserModel userData, File? profileImage}) async {
+  Future<void> updateUserInDB({
+    required UserModel userData,
+    File? profileImage,
+  }) async {
     try {
       if (profileImage != null) {
         final userProfileImage = await saveUserFileToDataBaseStorage(
@@ -125,10 +125,15 @@ class UserData {
       }
       log("User data updating...");
 
+      // Update user profile in users collection
       await firestore
           .collection(usersCollection)
-          .doc(firebaseAuth.currentUser?.uid)
+          .doc(userData.id)
           .update(userData.toJson());
+
+      // Update chat details where this user is a receiver
+      await updateChatsWithNewReceiverInfo(userData);
+
       log("User data updated");
     } on FirebaseAuthException catch (e) {
       log(
@@ -138,6 +143,36 @@ class UserData {
     } catch (e, stackTrace) {
       log('Error while updating user data: $e', stackTrace: stackTrace);
       throw Exception("Error while updating user data: $e");
+    }
+  }
+
+  // Method to update chat details with new receiver info
+  Future<void> updateChatsWithNewReceiverInfo(UserModel updatedUser) async {
+    try {
+      // Fetch all users
+      QuerySnapshot<Map<String, dynamic>> usersSnapshot =
+          await firestore.collection(usersCollection).get();
+
+      for (var userDoc in usersSnapshot.docs) {
+        // Fetch chats for each user where the updatedUser is the receiver
+        QuerySnapshot<Map<String, dynamic>> chatSnapshots = await firestore
+            .collection(usersCollection)
+            .doc(userDoc.id)
+            .collection(chatsCollection)
+            .where(receiverId, isEqualTo: updatedUser.id)
+            .get();
+
+        // Update each chat document with the new receiver info
+        for (var chatDoc in chatSnapshots.docs) {
+          await chatDoc.reference.update({
+            receiverProfilePhoto: updatedUser.userProfileImage,
+          });
+        }
+      }
+    } catch (e, stackTrace) {
+      log('Error while updating chats with new receiver info: $e',
+          stackTrace: stackTrace);
+      throw Exception("Error while updating chats with new receiver info: $e");
     }
   }
 
@@ -309,6 +344,7 @@ class UserData {
         await firestore.collection(usersCollection).doc(currentUser.id).update({
           'profileImage': userProfileImage,
         });
+        await updateChatsWithNewReceiverInfo(currentUser);
       } else {
         log('Current user or profile image is null');
       }

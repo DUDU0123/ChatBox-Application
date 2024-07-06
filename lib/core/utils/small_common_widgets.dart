@@ -43,7 +43,7 @@ Widget commonAnimationWidget({required BuildContext context, bool? isTextNeeded 
     return Center(
       child: SizedBox(
         width: 200.w,
-        height: screenHeight(context: context) / 2.8,
+        // height: screenHeight(context: context) / 2.8,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
