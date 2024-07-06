@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-
 class ChatBarWidget extends StatefulWidget {
   ChatBarWidget({
     super.key,
@@ -101,7 +100,9 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  context.read<MessageBloc>().add(AttachmentIconClickedEvent());
+                                  context
+                                      .read<MessageBloc>()
+                                      .add(AttachmentIconClickedEvent());
                                 },
                                 icon: Icon(
                                   Icons.attach_file,
@@ -114,7 +115,9 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                   width: 25.w,
                                   height: 25.h,
                                   colorFilter: ColorFilter.mode(
-                                      iconGreyColor, BlendMode.srcIn),
+                                    iconGreyColor,
+                                    BlendMode.srcIn,
+                                  ),
                                   cameraIcon,
                                 ),
                               ),
@@ -138,7 +141,8 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             // send message functionality if user try to send message
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(
-                            buildWhen: (previous, current) => previous != current,
+                            buildWhen: (previous, current) =>
+                                previous != current,
                             builder: (context, state) {
                               return SvgPicture.asset(
                                   width: 24.w,

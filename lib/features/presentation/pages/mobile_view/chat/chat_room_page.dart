@@ -27,7 +27,7 @@ class ChatRoomPage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: CommonAppBar(
-          
+          userProfileImage: chatModel.receiverProfileImage,
           userStatus: "Online",
           appBarTitle: userName,
           pageType: isGroup

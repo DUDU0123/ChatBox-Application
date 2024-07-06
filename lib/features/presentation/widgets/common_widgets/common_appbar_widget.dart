@@ -5,7 +5,6 @@ import 'package:chatbox/features/presentation/widgets/common_widgets/app_bar_ico
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CommonAppBar extends StatelessWidget {
   const CommonAppBar({

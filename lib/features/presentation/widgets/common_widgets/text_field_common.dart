@@ -65,7 +65,7 @@ class TextFieldCommon extends StatelessWidget {
         hintText: hintText,
         hintStyle: theme.textTheme.labelSmall?.copyWith(
           color: iconGreyColor,
-          fontSize: 17.sp,
+          fontSize: 16.sp,
           fontWeight: FontWeight.normal,
         ),
       ),
