@@ -175,7 +175,6 @@ class UserData {
       throw Exception("Error while updating chats with new receiver info: $e");
     }
   }
-
   // Method to delete user in DB
   Future<void> deleteUserInFireStoreDB({required String userId}) async {
     try {

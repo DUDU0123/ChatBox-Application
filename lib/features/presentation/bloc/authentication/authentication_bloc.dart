@@ -5,6 +5,7 @@ import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:chatbox/features/domain/repositories/user_repo/user_repository.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/splash_screen/splash_screen.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,6 +50,13 @@ class AuthenticationBloc
           );
           final bool userAuthStatus =
               await authenticationRepo.getUserAthStatus();
+          Navigator.pushAndRemoveUntil(
+            event.context,
+            MaterialPageRoute(
+              builder: (context) => SplashScreen(),
+            ),
+            (route) => false,
+          );
           emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
         } else {
           emit(AuthenticationErrorState(

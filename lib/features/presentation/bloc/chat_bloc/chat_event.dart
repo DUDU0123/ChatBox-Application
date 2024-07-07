@@ -19,6 +19,14 @@ class CreateANewChatEvent extends ChatEvent {
   List<Object> get props => [receiverId,recieverContactName,];
 }
 class GetAllChatsEvent extends ChatEvent{}
+class DeletAChatEvent extends ChatEvent {
+  final ChatModel chatModel;
+  const DeletAChatEvent({
+    required this.chatModel,
+  });
+  @override
+  List<Object> get props => [chatModel,];
+}
 class MessageSentEvent extends ChatEvent{}
 class GetOneMessageEvent extends ChatEvent{}
 class GetAllMessageEvent extends ChatEvent{}

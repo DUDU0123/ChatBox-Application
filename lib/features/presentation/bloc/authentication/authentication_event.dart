@@ -31,13 +31,15 @@ class CreateUserEvent extends AuthenticationEvent {
   final BuildContext context;
   final String otpCode;
   final String verificationId;
+  final String phoneNumber;
   const CreateUserEvent({
     required this.context,
     required this.otpCode,
     required this.verificationId,
+    required this.phoneNumber,
   });
   @override
-  List<Object> get props => [context, verificationId, otpCode];
+  List<Object> get props => [context, verificationId, otpCode, phoneNumber,];
 }
 
 class ResendOtpEvent extends AuthenticationEvent {

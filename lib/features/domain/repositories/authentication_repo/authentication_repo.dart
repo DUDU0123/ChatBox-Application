@@ -17,7 +17,6 @@ abstract class AuthenticationRepo {
     required String phoneNumber,
     required int? forceResendingToken,
   });
-  void signOutUser({required userId});
   Future<void> setUserAuthStatus({required bool isSignedIn});
   Future<bool> getUserAthStatus();
 }

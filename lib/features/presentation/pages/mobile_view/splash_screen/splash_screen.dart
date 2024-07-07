@@ -6,19 +6,9 @@ import 'package:chatbox/features/presentation/widgets/common_widgets/app_icon_ho
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<AuthenticationBloc>().add(CheckUserLoggedInEvent());
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +33,8 @@ class _SplashScreenState extends State<SplashScreen> {
           }
           if (state is AuthenticationErrorState) {
             log("Auth status error: splash : ${state.message}");
-            return commonSnackBarWidget(context: context, contentText: "${state.message}");
+            return commonSnackBarWidget(
+                context: context, contentText: state.message);
           }
         },
         child: const Center(

@@ -164,7 +164,7 @@ class ChatData {
       log("From Chat Data: 107: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
-      log(e.toString());
+      log("Status error: ${e.toString()}");
       throw Exception(e.toString());
     }
   }
@@ -183,7 +183,7 @@ class ChatData {
               .map((doc) => MessageModel.fromJson(map: doc.data()))
               .toList());
     } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 129: ${e.message}");
+      log("From Chat Data: 186: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());
@@ -205,7 +205,19 @@ class ChatData {
           .get();
       return MessageModel.fromJson(map: doc.data() as Map<String, dynamic>);
     } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 155: ${e.message}");
+      log("From Chat Data: 208: ${e.message}");
+      throw Exception(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  void deleteOneChat({required ChatModel chatModel}) async{
+    try {
+      await firestore.collection(usersCollection).doc(chatModel.senderID).collection(chatsCollection).doc(chatModel.chatID).delete();
+    } on FirebaseAuthException catch (e) {
+      log("From Chat Data: 220: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());
@@ -226,7 +238,7 @@ class ChatData {
           .doc(message.messageId)
           .set(message.toJson());
     } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 174: ${e.message}");
+      log("From Chat Data: 241: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());
@@ -247,7 +259,7 @@ class ChatData {
           .doc(messageId)
           .delete();
     } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 193: ${e.message}");
+      log("From Chat Data: 262: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());
@@ -271,7 +283,7 @@ class ChatData {
           .doc(messageId)
           .update(updatedData.toJson());
     } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 214: ${e.message}");
+      log("From Chat Data: 286: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());

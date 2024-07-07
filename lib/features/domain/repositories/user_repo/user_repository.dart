@@ -30,9 +30,6 @@ abstract class UserRepository {
     required File? profileImage,
     required UserModel currentUser,
   });
-  // Future<void> deleteUserFilesInDB({
-  //   required String fullPathToFile,
-  // });
 
   // void userChangeNumber();
   // void blockUser();

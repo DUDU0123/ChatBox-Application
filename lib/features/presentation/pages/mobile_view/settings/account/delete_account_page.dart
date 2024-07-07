@@ -29,7 +29,7 @@ class DeleteAccountPage extends StatelessWidget {
       ),
       body: BlocConsumer<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
-        if (state is AuthenticationInitial) {
+            if (state is AuthenticationInitial) {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -52,43 +52,43 @@ class DeleteAccountPage extends StatelessWidget {
           );
         }
         return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextWidgetCommon(
-                    text:
-                        "To delete your account, confirm your country code and enter your phone number.",
-                    fontSize: 16.sp,
-                  ),
-                  kHeight15,
-                  PhoneNumberRecieveField(
-                    phoneNumberController: phoneNumberController,
-                  ),
-                  kHeight15,
-                  CommonButtonContainer(
-                    horizontalMarginOfButton: 40,
-                    text: "Delete Number",
-                    onTap: () {
-                      final authBloc = context.read<AuthenticationBloc>();
-                      final String? countryCode =
-                          authBloc.state.country?.phoneCode;
-                      final mobileNumber = phoneNumberController.text.trim();
-                      final String phoneNumber =
-                          countryCode != null && countryCode.isNotEmpty
-                              ? "+$countryCode$mobileNumber"
-                              : "+91 $mobileNumber";
-                      authBloc.add(
-                        UserPermanentDeleteEvent(
-                            context: context,
-                            phoneNumberWithCountryCode: phoneNumber),
-                      );
-                    },
-                  ),
-                ],
-              ),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextWidgetCommon(
+                  text:
+                      "To delete your account, confirm your country code and enter your phone number.",
+                  fontSize: 16.sp,
+                ),
+                kHeight15,
+                PhoneNumberRecieveField(
+                  phoneNumberController: phoneNumberController,
+                ),
+                kHeight15,
+                CommonButtonContainer(
+                  horizontalMarginOfButton: 40,
+                  text: "Delete Number",
+                  onTap: () {
+                    final authBloc = context.read<AuthenticationBloc>();
+                    final String? countryCode =
+                        authBloc.state.country?.phoneCode;
+                    final mobileNumber = phoneNumberController.text.trim();
+                    final String phoneNumber =
+                        countryCode != null && countryCode.isNotEmpty
+                            ? "+$countryCode$mobileNumber"
+                            : "+91 $mobileNumber";
+                    authBloc.add(
+                      UserPermanentDeleteEvent(
+                          context: context,
+                          phoneNumberWithCountryCode: phoneNumber),
+                    );
+                  },
+                ),
+              ],
             ),
-          );
+          ),
+        );
       }),
     );
   }

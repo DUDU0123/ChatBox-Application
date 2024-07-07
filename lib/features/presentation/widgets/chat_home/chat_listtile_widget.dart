@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
+import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,8 @@ class ChatListTileWidget extends StatelessWidget {
     this.isContact,
     this.isOutgoing,
     required this.isGroup,
-    required this.messageStatus, required this.chatModel,
+    required this.messageStatus,
+    required this.chatModel,
   });
 
   final String userName;
@@ -53,55 +55,63 @@ class ChatListTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatRoomPage(
-              chatModel: chatModel,
-              userName: userName,
-              isGroup: isGroup,
-              //isReadedMessage: isSeen,
-            ),
-          ),
+    return GestureDetector(
+      onLongPress: () {
+        chatTileActionsOnLongPressMethod(
+          context: context,
+          chatModel: chatModel,
         );
       },
-      leading: GestureDetector(
+      child: ListTile(
         onTap: () {
-          log("Tapped image");
-          userProfileShowDialog(
-            context: context,
-            userProfileImage: userProfileImage,
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatRoomPage(
+                chatModel: chatModel,
+                userName: userName,
+                isGroup: isGroup,
+                //isReadedMessage: isSeen,
+              ),
+            ),
           );
         },
-        child: buildProfileImage(
-          userProfileImage: userProfileImage,
-          context: context,
+        leading: GestureDetector(
+          onTap: () {
+            log("Tapped image");
+            userProfileShowDialog(
+              context: context,
+              userProfileImage: userProfileImage,
+            );
+          },
+          child: buildProfileImage(
+            userProfileImage: userProfileImage,
+            context: context,
+          ),
         ),
-      ),
-      title: buildUserName(userName: userName),
-      subtitle: buildSubtitle(
-        messageStatus: messageStatus,
-        isOutgoing: isOutgoing,
-        isIncomingMessage: isIncomingMessage,
-        isGroup: isGroup,
-        isTyping: isTyping,
-        isVoiceRecoding: isVoiceRecoding,
-        isGone: isGone,
-        isSeen: isSeen,
-        lastMessage: lastMessage,
-        isAudio: isAudio,
-        isDocument: isDocument,
-        isPhoto: isPhoto,
-        isRecordedAudio: isRecordedAudio,
-        isContact: isContact,
-      ),
-      trailing: buildTrailing(
-        context: context,
-        notificationCount: notificationCount,
-        isMutedChat: isMutedChat,
-        lastMessageTime: lastMessageTime,
+        title: buildUserName(userName: userName),
+        subtitle: buildSubtitle(
+          messageStatus: messageStatus,
+          isOutgoing: isOutgoing,
+          isIncomingMessage: isIncomingMessage,
+          isGroup: isGroup,
+          isTyping: isTyping,
+          isVoiceRecoding: isVoiceRecoding,
+          isGone: isGone,
+          isSeen: isSeen,
+          lastMessage: lastMessage,
+          isAudio: isAudio,
+          isDocument: isDocument,
+          isPhoto: isPhoto,
+          isRecordedAudio: isRecordedAudio,
+          isContact: isContact,
+        ),
+        trailing: buildTrailing(
+          context: context,
+          notificationCount: notificationCount,
+          isMutedChat: isMutedChat,
+          lastMessageTime: lastMessageTime,
+        ),
       ),
     );
   }

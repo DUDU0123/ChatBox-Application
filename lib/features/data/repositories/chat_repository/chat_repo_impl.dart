@@ -78,4 +78,9 @@ class ChatRepoImpl extends ChatRepo {
   }) async {
     await chatData.sendMessageToAChat(chatId: chatId, message: message);
   }
+  
+  @override
+  void deleteAChat({required ChatModel chatModel,}) async{
+    chatData.deleteOneChat(chatModel: chatModel,);
+  }
 }

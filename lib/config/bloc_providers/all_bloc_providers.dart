@@ -120,8 +120,9 @@ class AppBlocProvider {
         firebaseAuth: FirebaseAuth.instance,
         userRepository: UserRepositoryImpl(
           userData: UserData(
-            authenticationRepo:
-                AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
+            authenticationRepo: AuthenticationRepoImpl(
+              firebaseAuth: firebaseAuth,
+            ),
             firebaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,

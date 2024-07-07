@@ -96,6 +96,7 @@ class NumberVerifyPage extends StatelessWidget {
                             context: context,
                             otpCode: numberVerifyController.text,
                             verificationId: data.verifyId,
+                            phoneNumber: data.phoneNumber,
                           ),
                         );
                     numberVerifyController.text = '';

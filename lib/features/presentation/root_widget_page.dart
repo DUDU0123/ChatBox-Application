@@ -29,10 +29,6 @@ class RootWidgetPage extends StatelessWidget {
             themeMode: themeManager.themeMode,
             theme: ThemeConstants.lightTheme,
             darkTheme: ThemeConstants.darkTheme,
-            // home: const MainPage(
-            //   mobileScreenLayout: ChatboxWelcomePage(),
-            //   webScreenLayout: ChatboxWebAuthenticationPage(),
-            // ),
             initialRoute: "/",
             routes: routes(context: context),
             // {

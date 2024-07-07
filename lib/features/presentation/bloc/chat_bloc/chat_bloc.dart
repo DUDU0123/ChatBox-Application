@@ -14,6 +14,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }) : super(ChatInitial()) {
     on<CreateANewChatEvent>(createANewChatEvent);
     on<GetAllChatsEvent>(getAllChatsEvent);
+    on<DeletAChatEvent>(deleteAChatEvent);
     on<MessageSentEvent>(messageSentEvent);
     on<GetAllMessageEvent>(getAllMessageEvent);
     on<GetOneMessageEvent>(getOneMessageEvent);
@@ -24,7 +25,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   FutureOr<void> createANewChatEvent(
       CreateANewChatEvent event, Emitter<ChatState> emit) async {
     try {
-      // await chatRepo.createNewChat(contactModel: event.contactModel);
       await chatRepo.createNewChat(
         receiverId: event.receiverId,
         recieverContactName: event.recieverContactName,
@@ -42,11 +42,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       log("Get all chats event called");
       Stream<List<ChatModel>> chatList = chatRepo.getAllChats();
-      //  log("Chat List: ${}");
-      chatList.listen((vl) => log(vl[0].receiverProfileImage!));
       emit(ChatSuccessState(chatList: chatList));
     } catch (e) {
       log("Create chat: e ${e.toString()}");
+      emit(ChatErrorState(message: e.toString()));
+    }
+  }
+  Future<FutureOr<void>> deleteAChatEvent(DeletAChatEvent event, Emitter<ChatState> emit) async {
+    emit(ChatLoadingState());
+    try {
+       chatRepo.deleteAChat(chatModel: event.chatModel,);
+      add(GetAllChatsEvent());
+    } catch (e) {
+      log("Delete chat: e ${e.toString()}");
       emit(ChatErrorState(message: e.toString()));
     }
   }
@@ -65,4 +73,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> messageDeleteEvent(
       MessageDeleteEvent event, Emitter<ChatState> emit) {}
+
+  
 }
