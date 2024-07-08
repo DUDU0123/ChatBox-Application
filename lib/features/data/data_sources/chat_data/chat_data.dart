@@ -179,7 +179,7 @@ class ChatData {
           .doc(currentUserId)
           .collection(chatsCollection)
           .doc(chatId)
-          .collection(messagesCollection)
+          .collection(messagesCollection).orderBy(dbMessageSendTime, descending: false)
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map((doc) => MessageModel.fromJson(map: doc.data()))
@@ -279,15 +279,6 @@ class ChatData {
           .collection(messagesCollection)
           .doc(message.messageId)
           .set(message.toJson());
-
-      // await firestore
-      //     .collection(usersCollection)
-      //     .doc(currentUserId)
-      //     .collection(chatsCollection)
-      //     .doc(chatId)
-      //     .collection(messagesCollection)
-      //     .doc(message.messageId)
-      //     .set(message.toJson());
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 241: ${e.message}");
       throw Exception(e.message);

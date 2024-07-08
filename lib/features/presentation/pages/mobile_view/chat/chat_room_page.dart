@@ -88,13 +88,14 @@ class ChatRoomPage extends StatelessWidget {
                                 (v) => log("Lengthyy: ${v.length.toString()}"));
                             return ListView.separated(
                                 separatorBuilder: (context, index) =>
-                                    index % 3 == 0
-                                        ? const Center(
-                                            child: MessagePageDateShowWidget(
-                                              date: "10 June, 2024",
-                                            ),
-                                          )
-                                        : kHeight2,
+                                    // index % 3 == 0
+                                    //     ? const Center(
+                                    //         child: MessagePageDateShowWidget(
+                                    //           date: "10 June, 2024",
+                                    //         ),
+                                    //       )
+                                    //     : 
+                                        kHeight2,
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
                                   log("Inside listview builder");

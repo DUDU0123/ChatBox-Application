@@ -159,6 +159,7 @@ class ChatBarWidget extends StatelessWidget {
                                       message: message,
                                     ),
                                   );
+                                  messageController.text = '';
                             }
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(
