@@ -151,8 +151,14 @@ class ChatBarWidget extends StatelessWidget {
                               messageType: MessageType.text,
                               messageStatus: MessageStatus.sent,
                             );
-                            if (chatModel.chatID!=null) {
-                               context.read<MessageBloc>().add(MessageSentEvent(chatId: chatModel.chatID!, message: message));
+                            if (chatModel.chatID != null &&
+                                messageController.text.isNotEmpty) {
+                              context.read<MessageBloc>().add(
+                                    MessageSentEvent(
+                                      chatId: chatModel.chatID!,
+                                      message: message,
+                                    ),
+                                  );
                             }
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(

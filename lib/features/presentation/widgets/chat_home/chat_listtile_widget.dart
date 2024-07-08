@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatListTileWidget extends StatelessWidget {
   const ChatListTileWidget({
@@ -75,6 +77,11 @@ class ChatListTileWidget extends StatelessWidget {
               ),
             ),
           );
+          if (chatModel.chatID != null) {
+            context
+                .read<MessageBloc>()
+                .add(GetAllMessageEvent(chatId: chatModel.chatID!));
+          }
         },
         leading: GestureDetector(
           onTap: () {

@@ -95,17 +95,17 @@ class ChatRoomPage extends StatelessWidget {
                                             ),
                                           )
                                         : kHeight2,
-                                itemCount: 1,
+                                itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
                                   log("Inside listview builder");
                                   log(snapshot.data!.length.toString());
                                   final message = snapshot.data![index];
                                   return Align(
                                     alignment:
-                                        //  firebaseAuth.currentUser?.uid ==
-                                        //         snapshot.data?[index].receiverID
-                                        //     ? Alignment.centerLeft
-                                        //     :
+                                         firebaseAuth.currentUser?.uid ==
+                                                snapshot.data?[index].receiverID
+                                            ? Alignment.centerLeft
+                                            :
                                         Alignment.centerRight,
                                     child: Container(
                                       width:

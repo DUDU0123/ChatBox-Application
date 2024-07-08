@@ -1,4 +1,5 @@
 import 'package:chatbox/core/constants/database_name_constants.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/domain/entities/message_entity/message_entity.dart';
 
 class MessageModel extends MessageEntity {
@@ -25,8 +26,8 @@ class MessageModel extends MessageEntity {
       senderID: map[dbMessageSenderID],
       receiverID: map[dbMessageRecieverID],
       messageContent: map[dbMessageContent],
-      messageType: map[dbMessageType],
-      messageStatus: map[dbMessageStatus],
+      messageType: MessageType.values.byName(map[dbMessageType]),
+      messageStatus: MessageStatus.values.byName(map[dbMessageStatus]),
       messageTime: map[dbMessageSendTime],
       attachmentsWithMessage: map[dbAttachmentsWithMessage],
       isEditedMessage: map[dbIsMessageEdited],

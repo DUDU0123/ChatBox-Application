@@ -18,8 +18,8 @@ class MessageInitial extends MessageState {
 class MessageLoadingState extends MessageState {}
 
 class MessageSucessState extends MessageState {
-  Stream<List<MessageModel>> messages;
-  MessageSucessState({
+  final Stream<List<MessageModel>> messages;
+  const MessageSucessState({
     required this.messages,
   });
   @override
