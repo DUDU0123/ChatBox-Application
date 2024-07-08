@@ -10,6 +10,7 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
+
 class ChatData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;
@@ -53,6 +54,7 @@ class ChatData {
       throw Exception(e.toString());
     }
   }
+
   Stream<UserModel?> getOneUserDataFromDataBaseAsStream(
       {required String userId}) {
     try {
@@ -182,6 +184,7 @@ class ChatData {
           .map((snapshot) => snapshot.docs
               .map((doc) => MessageModel.fromJson(map: doc.data()))
               .toList());
+              
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 186: ${e.message}");
       throw Exception(e.message);
@@ -213,9 +216,14 @@ class ChatData {
     }
   }
 
-  void deleteOneChat({required ChatModel chatModel}) async{
+  void deleteOneChat({required ChatModel chatModel}) async {
     try {
-      await firestore.collection(usersCollection).doc(chatModel.senderID).collection(chatsCollection).doc(chatModel.chatID).delete();
+      await firestore
+          .collection(usersCollection)
+          .doc(chatModel.senderID)
+          .collection(chatsCollection)
+          .doc(chatModel.chatID)
+          .delete();
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 220: ${e.message}");
       throw Exception(e.message);
@@ -229,14 +237,57 @@ class ChatData {
       {required String chatId, required MessageModel message}) async {
     try {
       String currentUserId = firebaseAuth.currentUser!.uid;
+
+      var messageTypePrefix = '';
+
+      switch (message.messageType) {
+        case MessageType.audio:
+          messageTypePrefix = '🎧Audio';
+          break;
+        case MessageType.video:
+          messageTypePrefix = '🎥Video';
+          break;
+        case MessageType.photo:
+          messageTypePrefix = '📷Photo';
+          break;
+        case MessageType.contact:
+          messageTypePrefix = '📞Contact';
+          break;
+        case MessageType.document:
+          messageTypePrefix = '📄Document';
+          break;
+        case MessageType.location:
+          messageTypePrefix = '📌Location';
+          break;
+        default:
+          messageTypePrefix = '';
+      }
+
       await firestore
           .collection(usersCollection)
-          .doc(currentUserId)
+          .doc(message.senderID)
           .collection(chatsCollection)
           .doc(chatId)
           .collection(messagesCollection)
           .doc(message.messageId)
           .set(message.toJson());
+      await firestore
+          .collection(usersCollection)
+          .doc(message.receiverID)
+          .collection(chatsCollection)
+          .doc(chatId)
+          .collection(messagesCollection)
+          .doc(message.messageId)
+          .set(message.toJson());
+
+      // await firestore
+      //     .collection(usersCollection)
+      //     .doc(currentUserId)
+      //     .collection(chatsCollection)
+      //     .doc(chatId)
+      //     .collection(messagesCollection)
+      //     .doc(message.messageId)
+      //     .set(message.toJson());
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 241: ${e.message}");
       throw Exception(e.message);

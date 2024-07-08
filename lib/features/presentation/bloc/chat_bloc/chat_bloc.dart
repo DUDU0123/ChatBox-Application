@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
 part 'chat_event.dart';
@@ -15,11 +16,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<CreateANewChatEvent>(createANewChatEvent);
     on<GetAllChatsEvent>(getAllChatsEvent);
     on<DeletAChatEvent>(deleteAChatEvent);
-    on<MessageSentEvent>(messageSentEvent);
-    on<GetAllMessageEvent>(getAllMessageEvent);
-    on<GetOneMessageEvent>(getOneMessageEvent);
-    on<MessageEditEvent>(messageEditEvent);
-    on<MessageDeleteEvent>(messageDeleteEvent);
+    
   }
 
   FutureOr<void> createANewChatEvent(
@@ -48,10 +45,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatErrorState(message: e.toString()));
     }
   }
-  Future<FutureOr<void>> deleteAChatEvent(DeletAChatEvent event, Emitter<ChatState> emit) async {
+
+  Future<FutureOr<void>> deleteAChatEvent(
+      DeletAChatEvent event, Emitter<ChatState> emit) async {
     emit(ChatLoadingState());
     try {
-       chatRepo.deleteAChat(chatModel: event.chatModel,);
+      chatRepo.deleteAChat(
+        chatModel: event.chatModel,
+      );
       add(GetAllChatsEvent());
     } catch (e) {
       log("Delete chat: e ${e.toString()}");
@@ -59,11 +60,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
-  FutureOr<void> messageSentEvent(
-      MessageSentEvent event, Emitter<ChatState> emit) {}
+  Future<FutureOr<void>> messageSentEvent(
+      MessageSentEvent event, Emitter<ChatState> emit) async {
+    try {
+      await chatRepo.sendMessage(
+        chatId: event.chatId,
+        message: event.message,
+      );
+    } catch (e) {
+      log("Send message error: ${e.toString()}");
+      emit(ChatErrorState(message: e.toString()));
+    }
+  }
 
   FutureOr<void> getAllMessageEvent(
-      GetAllMessageEvent event, Emitter<ChatState> emit) {}
+      GetAllMessageEvent event, Emitter<ChatState> emit) async {
+    try {
+      final messages = chatRepo.getAllMessages(
+        chatId: event.chatId,
+      );
+    } catch (e) {
+      log("Send message error: ${e.toString()}");
+      emit(ChatErrorState(message: e.toString()));
+    }
+  }
 
   FutureOr<void> getOneMessageEvent(
       GetOneMessageEvent event, Emitter<ChatState> emit) {}
@@ -73,6 +93,4 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   FutureOr<void> messageDeleteEvent(
       MessageDeleteEvent event, Emitter<ChatState> emit) {}
-
-  
 }

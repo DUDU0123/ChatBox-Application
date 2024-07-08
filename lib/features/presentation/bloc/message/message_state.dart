@@ -8,16 +8,29 @@ class MessageState extends Equatable {
   final bool? isTyped;
   final bool? isAttachmentListOpened;
   @override
-  List<Object> get props => [isTyped??false, isAttachmentListOpened??false];
+  List<Object> get props => [isTyped ?? false, isAttachmentListOpened ?? false];
 }
 
 class MessageInitial extends MessageState {
   const MessageInitial();
 }
 
+class MessageLoadingState extends MessageState {}
+
+class MessageSucessState extends MessageState {
+  Stream<List<MessageModel>> messages;
+  MessageSucessState({
+    required this.messages,
+  });
+  @override
+  List<Object> get props => [messages,];
+}
+
 class MessageErrorState extends MessageState {
   final String message;
- const MessageErrorState({
+  const MessageErrorState({
     required this.message,
   });
+  @override
+  List<Object> get props => [message,];
 }

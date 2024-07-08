@@ -1,7 +1,10 @@
 import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:flutter/material.dart';
@@ -9,20 +12,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ChatBarWidget extends StatefulWidget {
+class ChatBarWidget extends StatelessWidget {
   ChatBarWidget({
     super.key,
     required this.messageController,
     required this.isImojiButtonClicked,
+    required this.chatModel,
   });
   final TextEditingController messageController;
+  final ChatModel chatModel;
   bool isImojiButtonClicked;
 
-  @override
-  State<ChatBarWidget> createState() => _ChatBarWidgetState();
-}
-
-class _ChatBarWidgetState extends State<ChatBarWidget> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -60,10 +60,10 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                         children: [
                           IconButton(
                             onPressed: () {
-                              setState(() {
-                                widget.isImojiButtonClicked =
-                                    !widget.isImojiButtonClicked;
-                              });
+                              // setState(() {
+                              //   widget.isImojiButtonClicked =
+                              //       !widget.isImojiButtonClicked;
+                              // });
                             },
                             icon: SvgPicture.asset(
                               width: 25.w,
@@ -80,7 +80,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                 color: kWhite,
                               ),
                               onChanged: (value) {
-                                log(widget.messageController.text);
+                                log(messageController.text);
                                 context.read<MessageBloc>().add(
                                       MessageTypedEvent(
                                         textLength: value.length,
@@ -89,7 +89,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                               },
                               hintText: "Type message...",
                               maxLines: 5,
-                              controller: widget.messageController,
+                              controller: messageController,
                               textAlign: TextAlign.start,
                               border: InputBorder.none,
                               cursorColor: buttonSmallTextColor,
@@ -139,6 +139,21 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                           onPressed: () {
                             // voice record functionationality if user try to record voice
                             // send message functionality if user try to send message
+                            MessageModel message = MessageModel(
+                              senderID: chatModel.senderID,
+                              receiverID: chatModel.receiverID,
+                              messageTime: DateTime.now().toString(),
+                              isPinnedMessage: false,
+                              isStarredMessage: false,
+                              isDeletedMessage: false,
+                              isEditedMessage: false,
+                              messageContent: messageController.text,
+                              messageType: MessageType.text,
+                              messageStatus: MessageStatus.sent,
+                            );
+                            if (chatModel.chatID!=null) {
+                               context.read<MessageBloc>().add(MessageSentEvent(chatId: chatModel.chatID!, message: message));
+                            }
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(
                             buildWhen: (previous, current) =>
@@ -160,8 +175,8 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                   ],
                 ),
               ),
-              widget.isImojiButtonClicked
-                  ? emojiSelect(textEditingController: widget.messageController)
+              isImojiButtonClicked
+                  ? emojiSelect(textEditingController: messageController)
                   : zeroMeasureWidget,
             ],
           ),

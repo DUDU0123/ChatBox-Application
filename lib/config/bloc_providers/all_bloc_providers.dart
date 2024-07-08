@@ -113,7 +113,15 @@ class AppBlocProvider {
       ),
     ),
     BlocProvider(
-      create: (context) => MessageBloc(),
+      create: (context) => MessageBloc(
+        chatRepo: ChatRepoImpl(
+          chatData: ChatData(
+            firestore: fireStore,
+            firebaseAuth: firebaseAuth,
+          ),
+          firebaseAuth: firebaseAuth,
+        ),
+      ),
     ),
     BlocProvider(
       create: (context) => UserBloc(
