@@ -51,3 +51,4 @@ const receiverNameInChatList = 'receiver_name';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
+const chatAssetFolder = "chatsAsset/";

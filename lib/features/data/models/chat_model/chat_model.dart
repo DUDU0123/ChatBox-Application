@@ -15,6 +15,7 @@ class ChatModel extends ChatEntity {
     super.lastMessageType,
     super.notificationCount,
     super.receiverProfileImage,
+    super.attachmentsWithMessage,
     super.receiverName,
     super.isMuted,
   });
@@ -22,6 +23,7 @@ class ChatModel extends ChatEntity {
   factory ChatModel.fromJson(Map<String, dynamic> map) {
     log("Map Data: $map");
     return ChatModel(
+      attachmentsWithMessage: map['attachments'],
       chatID: map[chatId],
       receiverID: map[receiverId],
       senderID: map[senderId],
@@ -48,6 +50,7 @@ class ChatModel extends ChatEntity {
       lastChatType: lastMessageType?.name,
       lastChatStatus: lastMessageStatus?.name,
       receiverNameInChatList: receiverName,
+      'attachments': attachmentsWithMessage,
     };
   }
 

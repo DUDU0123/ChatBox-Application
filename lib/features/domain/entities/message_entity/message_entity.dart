@@ -5,11 +5,10 @@ class MessageEntity extends Equatable {
   final String? messageId;
   final String? senderID;
   final String? receiverID;
-  final String? messageContent;
+  final String? message;
   final String? messageTime;
   final MessageStatus? messageStatus;
   final MessageType? messageType;
-  final List<MessageAttachmentModel>? attachmentsWithMessage;
   final bool? isEditedMessage;
   final bool? isDeletedMessage;
   final bool? isStarredMessage;
@@ -18,11 +17,10 @@ class MessageEntity extends Equatable {
     this.messageId,
     this.senderID,
     this.receiverID,
-    this.messageContent,
+    this.message,
     this.messageTime,
     this.messageStatus,
     this.messageType,
-    this.attachmentsWithMessage,
     this.isEditedMessage,
     this.isDeletedMessage,
     this.isStarredMessage,
@@ -35,11 +33,10 @@ class MessageEntity extends Equatable {
       messageId,
       senderID,
       receiverID,
-      messageContent,
+      message,
       messageTime,
       messageStatus,
       messageType,
-      attachmentsWithMessage,
       isEditedMessage,
       isDeletedMessage,
       isStarredMessage,

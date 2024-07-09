@@ -8,10 +8,12 @@ class AttachmentModel extends Equatable {
   final Color colorOne;
   final Color colorTwo;
   final String icon;
+  final MediaType mediaType;
   const AttachmentModel({
     required this.colorOne,
     required this.colorTwo,
     required this.icon,
+    required this.mediaType,
   });
 
   @override
@@ -62,30 +64,36 @@ List<AttachmentModel> attachmentIcons = [
     colorOne: documentColorOne,
     colorTwo: documentColorTwo,
     icon: document,
+    mediaType: MediaType.document,
   ),
   AttachmentModel(
     colorOne: cameraColorOne,
     colorTwo: cameraColorTwo,
     icon: cameraIcon,
+    mediaType: MediaType.camera,
   ),
   AttachmentModel(
     colorOne: galleryColorOne,
     colorTwo: galleryColorTwo,
     icon: gallery,
+    mediaType: MediaType.gallery,
   ),
   AttachmentModel(
     colorOne: audioColorOne,
     colorTwo: audioColorTwo,
     icon: headphone,
+    mediaType: MediaType.audio,
   ),
   AttachmentModel(
     colorOne: locationColorOne,
     colorTwo: locationColorTwo,
     icon: location,
+    mediaType: MediaType.location,
   ),
   AttachmentModel(
     colorOne: contactColorOne,
     colorTwo: contactColorTwo,
     icon: contact,
+    mediaType: MediaType.contact,
   ),
 ];

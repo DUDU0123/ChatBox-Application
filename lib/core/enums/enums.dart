@@ -44,25 +44,17 @@ enum MessageType {
   none,
 }
 
-extension Converter on String{
-  MessageType toEnum (){
-    switch (this) {
-      case 'text':
-        return MessageType.text;
-      case 'audio':
-        return MessageType.audio;
-      case 'video':
-        return MessageType.video;
-      case 'photo':
-        return MessageType.photo;
-      case 'document':
-        return MessageType.document;
-      case 'location':
-        return MessageType.location;
-      case 'contact':
-        return MessageType.contact;
-      default:
-        return MessageType.text;
-    }
-  }
+enum MediaType {
+  document,
+  camera,
+  gallery,
+  audio,
+  location,
+  contact,
+  none,
+}
+
+enum AssetSelected {
+  video,
+  photo,
 }

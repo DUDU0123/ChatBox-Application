@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
@@ -30,9 +32,14 @@ class ChatRoomPage extends StatelessWidget {
   final ChatModel chatModel;
   final bool isGroup;
   TextEditingController messageController = TextEditingController();
+  ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
+    context
+        .read<MessageBloc>()
+        .add(GetAllMessageEvent(chatId: chatModel.chatID ?? ''));
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -87,6 +94,7 @@ class ChatRoomPage extends StatelessWidget {
                             state.messages.listen(
                                 (v) => log("Lengthyy: ${v.length.toString()}"));
                             return ListView.separated(
+                                controller: scrollController,
                                 separatorBuilder: (context, index) =>
                                     // index % 3 == 0
                                     //     ? const Center(
@@ -94,46 +102,149 @@ class ChatRoomPage extends StatelessWidget {
                                     //           date: "10 June, 2024",
                                     //         ),
                                     //       )
-                                    //     : 
-                                        kHeight2,
+                                    //     :
+                                    kHeight2,
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
+                                  log("Inside stream builder ${snapshot.data![index].messageTime}");
                                   log("Inside listview builder");
                                   log(snapshot.data!.length.toString());
                                   final message = snapshot.data![index];
                                   return Align(
-                                    alignment:
-                                         firebaseAuth.currentUser?.uid ==
-                                                snapshot.data?[index].receiverID
-                                            ? Alignment.centerLeft
-                                            :
-                                        Alignment.centerRight,
-                                    child: Container(
-                                      width:
-                                          screenWidth(context: context) / 1.6,
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: 10.w, vertical: 4.h),
-                                      padding: EdgeInsets.only(
-                                          left: 10.w,
-                                          right: 10.w,
-                                          top: 5.h,
-                                          bottom: 5.h),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.sp),
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            lightLinearGradientColorOne,
-                                            lightLinearGradientColorTwo,
-                                          ],
+                                    alignment: firebaseAuth.currentUser?.uid ==
+                                            snapshot.data?[index].receiverID
+                                        ? Alignment.centerLeft
+                                        : Alignment.centerRight,
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          height: message.messageType ==
+                                                      MessageType.photo ||
+                                                  message.messageType ==
+                                                      MessageType.video
+                                              ? 250.h
+                                              : null,
+                                          width: message.message!.length <= 8
+                                              ? screenWidth(context: context) /
+                                                  4
+                                              : screenWidth(context: context) /
+                                                  1.6,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 10.w, vertical: 4.h),
+                                          padding: message.messageType ==
+                                                      MessageType.photo ||
+                                                  message.messageType ==
+                                                      MessageType.video
+                                              ? EdgeInsets.symmetric(
+                                                  horizontal: 5.w,
+                                                  vertical: 5.h)
+                                              : EdgeInsets.only(
+                                                  left: 10.w,
+                                                  right: 10.w,
+                                                  top: 10.h,
+                                                  bottom: 15.h,
+                                                ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.sp),
+                                            gradient: message.messageType ==
+                                                        MessageType.photo ||
+                                                    message.messageType ==
+                                                        MessageType.video
+                                                ? LinearGradient(
+                                                    colors: [
+                                                      // Color.fromARGB(
+                                                      //     255, 27, 7, 68),
+                                                      // Color.fromARGB(
+                                                      //     255, 26, 28, 64),
+                                                      lightLinearGradientColorOne,
+                                                      lightLinearGradientColorTwo,
+                                                    ],
+                                                  )
+                                                : LinearGradient(
+                                                    colors: [
+                                                      lightLinearGradientColorOne,
+                                                      lightLinearGradientColorTwo,
+                                                    ],
+                                                  ),
+                                          ),
+                                          child: message.messageType ==
+                                                  MessageType.text
+                                              ? TextWidgetCommon(
+                                                  fontSize: 16.sp,
+                                                  maxLines: null,
+                                                  text: message.message ?? '',
+                                                  textColor: kWhite,
+                                                )
+                                              : message.messageType ==
+                                                      MessageType.photo
+                                                  ? ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.sp),
+                                                      child: CachedNetworkImage(
+                                                          fit: BoxFit.cover,
+                                                          placeholder: (context,
+                                                                  url) =>
+                                                              commonAnimationWidget(
+                                                                  context:
+                                                                      context,
+                                                                  isTextNeeded:
+                                                                      false),
+                                                          imageUrl:
+                                                              message.message ??
+                                                                  ''),
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl:
+                                                          message.message ?? '',
+                                                    ),
                                         ),
-                                      ),
-                                      child: TextWidgetCommon(
-                                        fontSize: 16.sp,
-                                        maxLines: null,
-                                        text: message.messageContent ?? '',
-                                        textColor: kWhite,
-                                      ),
+                                        Positioned(
+                                          bottom: 6.h,
+                                          right: 18.w,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              TextWidgetCommon(
+                                                text:
+                                                    take24HourTimeFromTimeStamp(
+                                                  timeStamp: snapshot
+                                                      .data![index].messageTime
+                                                      .toString(),
+                                                ),
+                                                fontSize: 10.sp,
+                                                textColor: kBlack,
+                                              ),
+                                              kWidth2,
+                                              Icon(
+                                                Icons.done,
+                                                color: kBlack,
+                                                size: 12.sp,
+                                              ),
+                                              kWidth2,
+                                              Icon(
+                                                Icons.push_pin_rounded,
+                                                color: kBlack,
+                                                size: 12.sp,
+                                              ),
+                                              kWidth2,
+                                              Icon(
+                                                Icons.star,
+                                                color: kBlack,
+                                                size: 12.sp,
+                                              ),
+                                              kWidth2,
+                                              Icon(
+                                                Icons.done_all,
+                                                color: kBlack,
+                                                size: 12.sp,
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   );
                                 });
@@ -144,6 +255,7 @@ class ChatRoomPage extends StatelessWidget {
                 ),
               ),
               ChatBarWidget(
+                scrollController: scrollController,
                 chatModel: chatModel,
                 isImojiButtonClicked: false,
                 messageController: messageController,
@@ -158,7 +270,9 @@ class ChatRoomPage extends StatelessWidget {
                 return Visibility(
                   visible: state.isAttachmentListOpened ?? false,
                   replacement: zeroMeasureWidget,
-                  child: const AttachmentListContainerVertical(),
+                  child: AttachmentListContainerVertical(
+                    chatModel: chatModel,
+                  ),
                 );
               },
             ),

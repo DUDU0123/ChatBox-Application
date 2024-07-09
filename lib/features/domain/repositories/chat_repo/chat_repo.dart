@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 
@@ -20,6 +22,14 @@ abstract class ChatRepo {
   Future<void> sendMessage({
     required String chatId,
     required MessageModel message,
+  });
+  Future<String> sendPhotoMessage({
+    required String chatID,
+    required File file,
+  });
+  Future<String> sendAssetMessage({
+    required String chatID,
+    required File file,
   });
   Future<void> deleteMessage({
     required String chatId,

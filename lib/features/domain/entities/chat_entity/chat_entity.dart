@@ -1,4 +1,5 @@
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/features/domain/entities/message_entity/message_entity.dart';
 import 'package:equatable/equatable.dart';
 
 class ChatEntity extends Equatable {
@@ -10,11 +11,13 @@ class ChatEntity extends Equatable {
   final String? receiverProfileImage;
   final bool? isMuted;
   final MessageStatus? lastMessageStatus;
+  final List<MessageAttachmentModel>? attachmentsWithMessage;
   final MessageType? lastMessageType;
   final int? notificationCount;
   final String? senderID;
   const ChatEntity({
     this.receiverName,
+    this.attachmentsWithMessage,
     this.chatID,
     this.receiverID,
     this.lastMessage,
@@ -40,7 +43,8 @@ class ChatEntity extends Equatable {
       senderID,
       lastMessageStatus,
       lastMessageType,
-      receiverName
+      receiverName,
+      attachmentsWithMessage,
     ];
   }
 }

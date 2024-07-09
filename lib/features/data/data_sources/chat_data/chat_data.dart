@@ -3,6 +3,8 @@
 // message participants => sender, reciever
 
 import 'dart:developer';
+import 'dart:io';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
@@ -10,6 +12,7 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatData {
   final FirebaseFirestore firestore;
@@ -179,12 +182,12 @@ class ChatData {
           .doc(currentUserId)
           .collection(chatsCollection)
           .doc(chatId)
-          .collection(messagesCollection).orderBy(dbMessageSendTime, descending: false)
+          .collection(messagesCollection)
+          .orderBy(dbMessageSendTime, descending: false)
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map((doc) => MessageModel.fromJson(map: doc.data()))
               .toList());
-              
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 186: ${e.message}");
       throw Exception(e.message);
@@ -236,34 +239,18 @@ class ChatData {
   Future<void> sendMessageToAChat(
       {required String chatId, required MessageModel message}) async {
     try {
-      String currentUserId = firebaseAuth.currentUser!.uid;
-
-      var messageTypePrefix = '';
-
-      switch (message.messageType) {
-        case MessageType.audio:
-          messageTypePrefix = '🎧Audio';
-          break;
-        case MessageType.video:
-          messageTypePrefix = '🎥Video';
-          break;
-        case MessageType.photo:
-          messageTypePrefix = '📷Photo';
-          break;
-        case MessageType.contact:
-          messageTypePrefix = '📞Contact';
-          break;
-        case MessageType.document:
-          messageTypePrefix = '📄Document';
-          break;
-        case MessageType.location:
-          messageTypePrefix = '📌Location';
-          break;
-        default:
-          messageTypePrefix = '';
+      if(message.senderID==message.receiverID){
+        await firestore
+          .collection(usersCollection)
+          .doc(message.senderID)
+          .collection(chatsCollection)
+          .doc(chatId)
+          .collection(messagesCollection)
+          .doc(message.messageId)
+          .set(message.toJson());
       }
-
-      await firestore
+      else{
+        await firestore
           .collection(usersCollection)
           .doc(message.senderID)
           .collection(chatsCollection)
@@ -279,12 +266,72 @@ class ChatData {
           .collection(messagesCollection)
           .doc(message.messageId)
           .set(message.toJson());
+      }
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 241: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());
       throw Exception(e.toString());
+    }
+  }
+
+  Future<String> sendPhotoMessage({
+    required String chatID,
+    required File file,
+  }) async {
+    try {
+      final assetUrl =
+          await saveUserFileToDataBaseStorage(ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
+      return assetUrl;
+    } on FirebaseAuthException catch (e) {
+      log("Photo send error chat data: ${e.message}");
+      throw Exception(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<String> sendAssetMessage({
+    required String chatID,
+    required File file,
+  }) async {
+    try {
+      final assetUrl =
+          await saveUserFileToDataBaseStorage(ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
+      return assetUrl;
+    } on FirebaseAuthException catch (e) {
+      log("Photo send error chat data: ${e.message}");
+      throw Exception(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  sendVideoMessage() {}
+  sendAudioMessage() {}
+  sendDocumentMessage() {}
+  sendContactMessage() {}
+  sendLocationMessage() {}
+
+  Future<String> saveUserFileToDataBaseStorage({
+    required String ref,
+    required File file,
+  }) async {
+    try {
+      UploadTask uploadTask = firebaseStorage.ref().child(ref).putFile(file);
+      TaskSnapshot taskSnapshot = await uploadTask;
+      return await taskSnapshot.ref.getDownloadURL();
+    } on FirebaseAuthException catch (e) {
+      log(
+        'Firebase Auth exception: $e',
+      );
+      throw Exception("Error while saving file to storage: $e");
+    } catch (e, stackTrace) {
+      log('Error while saving file to storage: $e', stackTrace: stackTrace);
+      throw Exception("Error while saving file to storage: $e");
     }
   }
 

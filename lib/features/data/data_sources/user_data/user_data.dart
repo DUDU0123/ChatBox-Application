@@ -175,6 +175,7 @@ class UserData {
       throw Exception("Error while updating chats with new receiver info: $e");
     }
   }
+
   // Method to delete user in DB
   Future<void> deleteUserInFireStoreDB({required String userId}) async {
     try {
@@ -338,8 +339,9 @@ class UserData {
     try {
       if (currentUser != null && profileImage != null) {
         final userProfileImage = await saveUserFileToDataBaseStorage(
-            ref: "$usersProfileImageFolder${currentUser.id}",
-            file: profileImage);
+          ref: "$usersProfileImageFolder${currentUser.id}",
+          file: profileImage,
+        );
         await firestore.collection(usersCollection).doc(currentUser.id).update({
           'profileImage': userProfileImage,
         });

@@ -3,14 +3,24 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
+import 'package:chatbox/core/utils/image_picker_method.dart';
+import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/data/repositories/user_repository/user_repository_impl.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_loaded_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/camera_view_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'icon_container_widget_gradient_color.dart';
 
 class ChatBarWidget extends StatelessWidget {
   ChatBarWidget({
@@ -18,10 +28,12 @@ class ChatBarWidget extends StatelessWidget {
     required this.messageController,
     required this.isImojiButtonClicked,
     required this.chatModel,
+    required this.scrollController,
   });
   final TextEditingController messageController;
   final ChatModel chatModel;
   bool isImojiButtonClicked;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +93,15 @@ class ChatBarWidget extends StatelessWidget {
                               ),
                               onChanged: (value) {
                                 log(messageController.text);
+
                                 context.read<MessageBloc>().add(
                                       MessageTypedEvent(
                                         textLength: value.length,
                                       ),
                                     );
+                                context.read<MessageBloc>().add(
+                                    GetAllMessageEvent(
+                                        chatId: chatModel.chatID ?? ''));
                               },
                               hintText: "Type message...",
                               maxLines: 5,
@@ -110,7 +126,12 @@ class ChatBarWidget extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  videoOrPhotoTakeFromCameraSourceMethod(
+                                    chatModel: chatModel,
+                                    context: context,
+                                  );
+                                },
                                 icon: SvgPicture.asset(
                                   width: 25.w,
                                   height: 25.h,
@@ -147,19 +168,25 @@ class ChatBarWidget extends StatelessWidget {
                               isStarredMessage: false,
                               isDeletedMessage: false,
                               isEditedMessage: false,
-                              messageContent: messageController.text,
+                              message: messageController.text,
                               messageType: MessageType.text,
                               messageStatus: MessageStatus.sent,
                             );
                             if (chatModel.chatID != null &&
                                 messageController.text.isNotEmpty) {
+                              scrollController.animateTo(
+                                scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOut,
+                              );
                               context.read<MessageBloc>().add(
                                     MessageSentEvent(
                                       chatId: chatModel.chatID!,
                                       message: message,
                                     ),
                                   );
-                                  messageController.text = '';
+
+                              messageController.text = '';
                             }
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(

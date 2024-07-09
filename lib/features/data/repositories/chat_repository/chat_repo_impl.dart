@@ -1,8 +1,13 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatRepoImpl extends ChatRepo {
   final ChatData chatData;
@@ -11,7 +16,7 @@ class ChatRepoImpl extends ChatRepo {
     required this.chatData,
     required this.firebaseAuth,
   });
-   @override
+  @override
   Future<void> createNewChat({
     required String receiverId,
     required String recieverContactName,
@@ -22,7 +27,10 @@ class ChatRepoImpl extends ChatRepo {
         receiverId,
       );
       if (!isChatExists) {
-        await chatData.createANewChat(receiverId: receiverId, receiverContactName: recieverContactName,);
+        await chatData.createANewChat(
+          receiverId: receiverId,
+          receiverContactName: recieverContactName,
+        );
       } else {
         return;
       }
@@ -78,9 +86,22 @@ class ChatRepoImpl extends ChatRepo {
   }) async {
     await chatData.sendMessageToAChat(chatId: chatId, message: message);
   }
+
+  @override
+  void deleteAChat({
+    required ChatModel chatModel,
+  }) async {
+    chatData.deleteOneChat(
+      chatModel: chatModel,
+    );
+  }
   
   @override
-  void deleteAChat({required ChatModel chatModel,}) async{
-    chatData.deleteOneChat(chatModel: chatModel,);
+  Future<String> sendPhotoMessage({required String chatID, required File file}) {
+   return chatData.sendPhotoMessage(chatID: chatID, file: file);
+  }
+  @override
+  Future<String> sendAssetMessage({required String chatID, required File file}) {
+   return chatData.sendAssetMessage(chatID: chatID, file: file);
   }
 }
