@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/config/theme/theme_manager.dart';
@@ -10,19 +9,23 @@ import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_show_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat/attachment_list_container_vertical.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chatbar_widget.dart';
-import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/divider_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 
-class ChatRoomPage extends StatelessWidget {
-  ChatRoomPage({
+class ChatRoomPage extends StatefulWidget {
+  const ChatRoomPage({
     super.key,
     required this.userName,
     required this.isGroup,
@@ -31,23 +34,37 @@ class ChatRoomPage extends StatelessWidget {
   final String userName;
   final ChatModel chatModel;
   final bool isGroup;
+
+  @override
+  State<ChatRoomPage> createState() => _ChatRoomPageState();
+}
+
+class _ChatRoomPageState extends State<ChatRoomPage> {
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
+  final Map<String, VideoPlayerController> _videoControllers = {};
+  @override
+  void dispose() {
+    _videoControllers.forEach((key, controller) => controller.dispose());
+    messageController.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     context
         .read<MessageBloc>()
-        .add(GetAllMessageEvent(chatId: chatModel.chatID ?? ''));
+        .add(GetAllMessageEvent(chatId: widget.chatModel.chatID ?? ''));
 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: CommonAppBar(
-          userProfileImage: chatModel.receiverProfileImage,
+          userProfileImage: widget.chatModel.receiverProfileImage,
           userStatus: "Online",
-          appBarTitle: userName,
-          pageType: isGroup
+          appBarTitle: widget.userName,
+          pageType: widget.isGroup
               ? PageTypeEnum.groupMessageInsidePage
               : PageTypeEnum.oneToOneChatInsidePage,
         ),
@@ -59,12 +76,7 @@ class ChatRoomPage extends StatelessWidget {
             height: screenHeight(context: context),
             child: Image.asset(
                 fit: BoxFit.cover,
-                Provider.of<ThemeManager>(context).isDark
-                    ? bgImage
-                    // bgImageDark
-                    : bgImage
-                // bgImageLight,
-                ),
+                Provider.of<ThemeManager>(context).isDark ? bgImage : bgImage),
           ),
           Column(
             children: [
@@ -95,21 +107,25 @@ class ChatRoomPage extends StatelessWidget {
                                 (v) => log("Lengthyy: ${v.length.toString()}"));
                             return ListView.separated(
                                 controller: scrollController,
-                                separatorBuilder: (context, index) =>
-                                    // index % 3 == 0
-                                    //     ? const Center(
-                                    //         child: MessagePageDateShowWidget(
-                                    //           date: "10 June, 2024",
-                                    //         ),
-                                    //       )
-                                    //     :
-                                    kHeight2,
+                                separatorBuilder: (context, index) => kHeight2,
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
-                                  log("Inside stream builder ${snapshot.data![index].messageTime}");
                                   log("Inside listview builder");
                                   log(snapshot.data!.length.toString());
                                   final message = snapshot.data![index];
+
+                                  if (message.messageType ==
+                                          MessageType.video &&
+                                      !_videoControllers
+                                          .containsKey(message.message)) {
+                                    _videoControllers[message.message!] =
+                                        VideoPlayerController.networkUrl(
+                                      Uri.parse(message.message!),
+                                    )..initialize().then((_) {
+                                            setState(() {});
+                                          });
+                                  }
+
                                   return Align(
                                     alignment: firebaseAuth.currentUser?.uid ==
                                             snapshot.data?[index].receiverID
@@ -153,10 +169,6 @@ class ChatRoomPage extends StatelessWidget {
                                                         MessageType.video
                                                 ? LinearGradient(
                                                     colors: [
-                                                      // Color.fromARGB(
-                                                      //     255, 27, 7, 68),
-                                                      // Color.fromARGB(
-                                                      //     255, 26, 28, 64),
                                                       lightLinearGradientColorOne,
                                                       lightLinearGradientColorTwo,
                                                     ],
@@ -195,10 +207,222 @@ class ChatRoomPage extends StatelessWidget {
                                                               message.message ??
                                                                   ''),
                                                     )
-                                                  : CachedNetworkImage(
-                                                      imageUrl:
-                                                          message.message ?? '',
-                                                    ),
+                                                  : _videoControllers[message
+                                                              .message!] !=
+                                                          null
+                                                      ? GestureDetector(
+                                                          onTap: () {
+                                                            log(
+                                                              _videoControllers[
+                                                                      message
+                                                                          .message!]!
+                                                                  .value
+                                                                  .duration
+                                                                  .toString(),
+                                                            );
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        AssetShowPage(
+                                                                  chatID: widget
+                                                                          .chatModel
+                                                                          .chatID ??
+                                                                      '',
+                                                                  controllers:
+                                                                      _videoControllers,
+                                                                  message:
+                                                                      message,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Stack(
+                                                            children: [
+                                                              VideoPlayer(
+                                                                _videoControllers[
+                                                                    message
+                                                                        .message!]!,
+                                                              ),
+                                                              Positioned(
+                                                                bottom: 3,
+                                                                left: 5,
+                                                                child:
+                                                                    TextWidgetCommon(
+                                                                  text: DateProvider
+                                                                      .parseDuration(
+                                                                    _videoControllers[
+                                                                            message.message!]!
+                                                                        .value
+                                                                        .duration
+                                                                        .toString(),
+                                                                  ),
+                                                                  textColor:
+                                                                      kWhite,
+                                                                  fontSize:
+                                                                      10.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                              Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child:
+                                                                    CircleAvatar(
+                                                                  radius: 30.sp,
+                                                                  backgroundColor:
+                                                                      iconGreyColor
+                                                                          .withOpacity(
+                                                                              0.5),
+                                                                  child: Icon(
+                                                                    !_videoControllers[message.message!]!
+                                                                            .value
+                                                                            .isPlaying
+                                                                        ? Icons
+                                                                            .play_arrow
+                                                                        : Icons
+                                                                            .pause,
+                                                                    size: 30.sp,
+                                                                    color:
+                                                                        kBlack,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      : message.messageType ==
+                                                              MessageType
+                                                                  .contact
+                                                          ? Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                BlocBuilder<
+                                                                    ContactBloc,
+                                                                    ContactState>(
+                                                                  builder:
+                                                                      (context,
+                                                                          state) {
+                                                                    if (state
+                                                                            .contactList ==
+                                                                        null) {
+                                                                      return zeroMeasureWidget;
+                                                                    }
+                                                                    return TextWidgetCommon(
+                                                                      text: state
+                                                                              .contactList![
+                                                                                  index]
+                                                                              .userContactName!
+                                                                              .isEmpty
+                                                                          ? state
+                                                                              .contactList![
+                                                                                  index]
+                                                                              .userContactNumber!
+                                                                          : state
+                                                                              .contactList![index]
+                                                                              .userContactName!,
+                                                                    );
+                                                                  },
+                                                                ),
+                                                                const CommonDivider(),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {},
+                                                                    child: BlocBuilder<
+                                                                        ContactBloc,
+                                                                        ContactState>(
+                                                                      builder:
+                                                                          (context,
+                                                                              state) {
+                                                                        if (state.contactList ==
+                                                                            null) {
+                                                                          return zeroMeasureWidget;
+                                                                        }
+                                                                        
+                                                                        return Text(
+                                                                          state.contactList![index].isChatBoxUser!
+                                                                              ? "Add to contact"
+                                                                              : "Invite",
+                                                                        );
+                                                                      },
+                                                                    ))
+                                                              ],
+                                                            )
+                                                          : message.messageType ==
+                                                                  MessageType
+                                                                      .audio
+                                                              ? Row(
+                                                                  children: [
+                                                                    Container(
+                                                                      width:
+                                                                          100.w,
+                                                                      height:
+                                                                          100.h,
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        color:
+                                                                            kBlack,
+                                                                        shape: BoxShape
+                                                                            .circle,
+                                                                      ),
+                                                                    ),
+                                                                    IconButton(
+                                                                      onPressed:
+                                                                          () {},
+                                                                      icon:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .play_arrow,
+                                                                        size: 26
+                                                                            .sp,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                              : message.messageType ==
+                                                                      MessageType
+                                                                          .document
+                                                                  ? Row(
+                                                                      children: [
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                          document,
+                                                                          width:
+                                                                              60.w,
+                                                                          height:
+                                                                              60.h,
+                                                                          colorFilter:
+                                                                              ColorFilter.mode(
+                                                                            kWhite,
+                                                                            BlendMode.srcIn,
+                                                                          ),
+                                                                        ),
+                                                                        TextWidgetCommon(
+                                                                            text:
+                                                                                "Document")
+                                                                      ],
+                                                                    )
+                                                                  : message.messageType ==
+                                                                          MessageType
+                                                                              .location
+                                                                      ? Column(
+                                                                          children: [],
+                                                                        )
+                                                                      : commonAnimationWidget(
+                                                                          context:
+                                                                              context,
+                                                                          isTextNeeded:
+                                                                              false,
+                                                                        ),
                                         ),
                                         Positioned(
                                           bottom: 6.h,
@@ -208,8 +432,8 @@ class ChatRoomPage extends StatelessWidget {
                                                 MainAxisAlignment.end,
                                             children: [
                                               TextWidgetCommon(
-                                                text:
-                                                    take24HourTimeFromTimeStamp(
+                                                text: DateProvider
+                                                    .take24HourTimeFromTimeStamp(
                                                   timeStamp: snapshot
                                                       .data![index].messageTime
                                                       .toString(),
@@ -256,7 +480,7 @@ class ChatRoomPage extends StatelessWidget {
               ),
               ChatBarWidget(
                 scrollController: scrollController,
-                chatModel: chatModel,
+                chatModel: widget.chatModel,
                 isImojiButtonClicked: false,
                 messageController: messageController,
               ),
@@ -271,7 +495,7 @@ class ChatRoomPage extends StatelessWidget {
                   visible: state.isAttachmentListOpened ?? false,
                   replacement: zeroMeasureWidget,
                   child: AttachmentListContainerVertical(
-                    chatModel: chatModel,
+                    chatModel: widget.chatModel,
                   ),
                 );
               },

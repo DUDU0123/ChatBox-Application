@@ -64,6 +64,8 @@ Widget commonAnimationWidget({required BuildContext context, bool? isTextNeeded 
     );
   }
 
+  Widget commonErrorWidget({String? message}) => Center(child: Text(message??'Unexpected error occured'));
+
   Widget searchButton(
     {required ThemeData theme, required void Function()? onPressed}) {
   return CommonIconButtonWidget(
@@ -142,3 +144,20 @@ Widget emptyShowWidget(
       ),
     );
   }
+
+Widget commonProfileDefaultIconCircularCotainer(
+    {required BuildContext context, double? containerConstraint}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Theme.of(context).popupMenuTheme.color,
+      shape: BoxShape.circle,
+    ),
+    width: containerConstraint?.w ?? 50.w,
+    height: containerConstraint?.w ?? 50.h,
+    child: const Center(
+      child: Icon(
+        Icons.person,
+      ),
+    ),
+  );
+}

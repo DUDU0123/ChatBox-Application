@@ -1,11 +1,12 @@
 part of 'contact_bloc.dart';
 
 class ContactState extends Equatable {
-  final List<ContactModel> contactList;
-  const ContactState({required this.contactList});
+  final List<ContactModel>? contactList;
+  final List<ContactModel>? selectedContactList;
+  ContactState({this.contactList, this.selectedContactList = const [],});
 
   @override
-  List<Object> get props => [contactList];
+  List<Object> get props => [contactList??[], selectedContactList??[]];
 }
 
 class ContactInitial extends ContactState {
@@ -17,9 +18,9 @@ class ContactsLoadingState extends ContactState {
   ContactsLoadingState() : super(contactList: []);
 }
 
-class ContactsFetchErrorState extends ContactState {
+class ContactsErrorState extends ContactState {
   final String message;
-  ContactsFetchErrorState({
+  ContactsErrorState({
     required this.message,
   }) : super(contactList: []);
   @override

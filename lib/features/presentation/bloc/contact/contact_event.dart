@@ -8,3 +8,12 @@ sealed class ContactEvent extends Equatable {
 }
 
 class GetContactsEvent extends ContactEvent {}
+
+class SelectUserEvent extends ContactEvent {
+  final ContactModel contact;
+  const SelectUserEvent({
+    required this.contact,
+  });
+   @override
+  List<Object> get props => [contact];
+}

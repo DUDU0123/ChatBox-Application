@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,10 +47,10 @@ class UserData {
     }
   }
 
-  Stream<UserModel?> getOneUserDataFromDataBaseAsStream(
+ static Stream<UserModel?> getOneUserDataFromDataBaseAsStream(
       {required String userId}) {
     try {
-      return firestore.collection(usersCollection).doc(userId).snapshots().map(
+      return fireStore.collection(usersCollection).doc(userId).snapshots().map(
             (event) => UserModel.fromJson(
               map: event.data()!,
             ),
@@ -167,6 +168,7 @@ class UserData {
           await chatDoc.reference.update({
             receiverProfilePhoto: updatedUser.userProfileImage,
           });
+          
         }
       }
     } catch (e, stackTrace) {

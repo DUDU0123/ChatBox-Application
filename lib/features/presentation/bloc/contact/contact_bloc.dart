@@ -12,20 +12,46 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
   final ContactRepository contactRepository;
   ContactBloc({required this.contactRepository}) : super(ContactInitial()) {
     on<GetContactsEvent>(getContactsEvent);
+    on<SelectUserEvent>(selectUserEvent);
   }
 
   Future<FutureOr<void>> getContactsEvent(
       GetContactsEvent event, Emitter<ContactState> emit) async {
-        emit(ContactsLoadingState());
+    emit(ContactsLoadingState());
     try {
       log("Hello");
       final List<ContactModel> contacts =
           await contactRepository.getAccessToUserContacts();
-          log(contacts.length.toString());
+      log(contacts.length.toString());
       emit(ContactState(contactList: contacts));
     } catch (e) {
       log("Error $e");
-      emit(ContactsFetchErrorState(message: e.toString()));
+      emit(ContactsErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> selectUserEvent(
+      SelectUserEvent event, Emitter<ContactState> emit) {
+    try {
+      if (state.selectedContactList==null) {
+        return null;
+      }
+      List<ContactModel> selectedContactList = [...state.selectedContactList!];
+      if (selectedContactList.contains(event.contact)) {
+        selectedContactList.remove(event.contact);
+      } else {
+        selectedContactList.add(event.contact);
+      }
+    
+      emit(
+        ContactState(
+          contactList: state.contactList,
+          selectedContactList: selectedContactList,
+        ),
+      );
+    } catch (e) {
+      log("Error $e");
+      emit(ContactsErrorState(message: e.toString()));
     }
   }
 }

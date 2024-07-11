@@ -3,25 +3,15 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
-import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
-import 'package:chatbox/features/data/repositories/user_repository/user_repository_impl.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_loaded_page.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/camera_view_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
-
-import 'icon_container_widget_gradient_color.dart';
-
 class ChatBarWidget extends StatelessWidget {
   ChatBarWidget({
     super.key,

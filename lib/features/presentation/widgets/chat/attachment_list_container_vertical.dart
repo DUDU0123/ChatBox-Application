@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chatbox/core/constants/app_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
@@ -5,7 +7,9 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,15 +58,25 @@ class AttachmentListContainerVertical extends StatelessWidget {
                       break;
                     case MediaType.gallery:
                       context.read<MessageBloc>().add(
-                        PhotoMessageSendEvent(
-                          chatModel: chatModel,
-                          imageSource: ImageSource.gallery
-                        ),
-                      );
+                            PhotoMessageSendEvent(
+                                chatModel: chatModel,
+                                imageSource: ImageSource.gallery),
+                          );
                       break;
                     case MediaType.document:
                       break;
                     case MediaType.contact:
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+    //                         if (context.watch<ContactBloc>().state.contactList?.length == 0 || context.watch<ContactBloc>().state.contactList?.length==null) {
+    //   context.read<ContactBloc>().add(GetContactsEvent());
+    // }
+                            return SelectContactPage();
+                          } 
+                        ),
+                      );
                       break;
                     case MediaType.location:
                       break;
@@ -70,7 +84,6 @@ class AttachmentListContainerVertical extends StatelessWidget {
                       break;
                     default:
                   }
-                  
                 },
                 icon: SvgPicture.asset(
                   attachmentIcons[index].icon,

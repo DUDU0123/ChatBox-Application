@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SelectContactToChat extends StatelessWidget {
-  const SelectContactToChat({super.key});
+class ContactListPage extends StatelessWidget {
+  const ContactListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class SelectContactToChat extends StatelessWidget {
             const TextWidgetCommon(text: "Select Contact"),
             TextWidgetCommon(
               text:
-                  "${context.watch<ContactBloc>().state.contactList.length} contacts",
+                  "${context.watch<ContactBloc>().state.contactList?.length} contacts",
               fontSize: 12.sp,
               textColor: iconGreyColor,
             ),
@@ -36,8 +36,11 @@ class SelectContactToChat extends StatelessWidget {
           Expanded(
             child: BlocBuilder<ContactBloc, ContactState>(
               builder: (context, state) {
-                log("Length: Contactpage: ${state.contactList.length}");
-                if (state is ContactsFetchErrorState) {
+                if (state.contactList==null) {
+                  return zeroMeasureWidget;
+                }
+                log("Length: Contactpage: ${state.contactList?.length}");
+                if (state is ContactsErrorState) {
                   return emptyShowWidget(context: context, text: "No contacts");
                 }
                 if (state is ContactsLoadingState) {
@@ -48,29 +51,29 @@ class SelectContactToChat extends StatelessWidget {
                     fontSize: 12.sp,
                   );
                 }
-                sortContactsToShowChatBoxUsersFirst(contactList: state.contactList,);
-                return state.contactList.isEmpty
+                sortContactsToShowChatBoxUsersFirst(contactList: state.contactList!,);
+                return state.contactList!.isEmpty
                     ? emptyShowWidget(context: context, text: "No Contacts")
                     : ListView.separated(
                         itemBuilder: (context, index) {
-                          if (state.contactList[index].isChatBoxUser != null) {
-                            state.contactList[index].isChatBoxUser!
+                          if (state.contactList![index].isChatBoxUser != null) {
+                            state.contactList![index].isChatBoxUser!
                                 ? log(
-                                    "Id: ${state.contactList[index].chatBoxUserId} \n name: ${state.contactList[index].userContactName} \n Imageee: ${state.contactList[index].userProfilePhotoOnChatBox}",
+                                    "Id: ${state.contactList![index].chatBoxUserId} \n name: ${state.contactList![index].userContactName} \n Imageee: ${state.contactList![index].userProfilePhotoOnChatBox}",
                                   )
                                 : null;
                           }
                           return UserTileWithNameAndAboutAndProfileImage(
                             onTap: () {
-                              if (state.contactList[index].isChatBoxUser !=
+                              if (state.contactList![index].isChatBoxUser !=
                                   null) {
-                                state.contactList[index].isChatBoxUser!
+                                state.contactList![index].isChatBoxUser!
                                     ? chatOpen(
                                         receiverId: state
-                                            .contactList[index].chatBoxUserId
+                                            .contactList![index].chatBoxUserId
                                             .toString(),
                                         recieverContactName: state
-                                            .contactList[index].userContactName
+                                            .contactList![index].userContactName
                                             .toString(),
                                         context: context,
                                       )
@@ -78,8 +81,8 @@ class SelectContactToChat extends StatelessWidget {
                               }
                             },
                             trailing:
-                                state.contactList[index].isChatBoxUser != null
-                                    ? !state.contactList[index].isChatBoxUser!
+                                state.contactList![index].isChatBoxUser != null
+                                    ? !state.contactList![index].isChatBoxUser!
                                         ? TextButton(
                                             onPressed: () async {
                                               //create the link to send as invitation
@@ -96,15 +99,15 @@ class SelectContactToChat extends StatelessWidget {
                                         : zeroMeasureWidget
                                     : zeroMeasureWidget,
                             userName:
-                                state.contactList[index].userContactName ?? '',
-                            userAbout: state.contactList[index].userAbout ??
-                                state.contactList[index].userContactNumber,
+                                state.contactList![index].userContactName ?? '',
+                            userAbout: state.contactList![index].userAbout ??
+                                state.contactList![index].userContactNumber,
                             userPicture: state
-                                .contactList[index].userProfilePhotoOnChatBox,
+                                .contactList![index].userProfilePhotoOnChatBox,
                           );
                         },
                         separatorBuilder: (context, index) => kHeight5,
-                        itemCount: state.contactList.length,
+                        itemCount: state.contactList!.length,
                       );
               },
             ),

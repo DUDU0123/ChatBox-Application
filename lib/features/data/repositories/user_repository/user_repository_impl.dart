@@ -47,12 +47,14 @@ class UserRepositoryImpl extends UserRepository {
     required BuildContext context,
     required String phoneNumber,
   }) async {
-    
     await userData.deleteUserInFireStoreDB(userId: userId);
     if (fullPathToFile != null) {
       await userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
     }
-    await userData.deleteUserAuthInDB(context: context, phoneNumber: phoneNumber,);
+    await userData.deleteUserAuthInDB(
+      context: context,
+      phoneNumber: phoneNumber,
+    );
   }
 
   @override

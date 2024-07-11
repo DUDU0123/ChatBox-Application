@@ -2,6 +2,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_loaded_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,8 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                       chatModel: chatModel,
                     ),
                   );
-              Navigator.pop(context);
+              // Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
           ),
           iconContainerWidgetGradientColor(
@@ -41,7 +43,8 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                       chatModel: chatModel,
                     ),
                   );
-              Navigator.pop(context);
+              // Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
           ),
         ],

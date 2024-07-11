@@ -26,6 +26,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   }) : super(MessageInitial()) {
     on<MessageTypedEvent>(messageTypedEvent);
     on<AttachmentIconClickedEvent>(attachmentIconClickedEvent);
+    on<VideoMessagePlayEvent>(videoMessagePlayEvent);
+    on<VideoMessageCompleteEvent>(videoMessageCompleteEvent);
+    on<VideoMessagePauseEvent>(videoMessagePauseEvent);
     on<MessageSentEvent>(messageSentEvent);
     on<GetAllMessageEvent>(getAllMessageEvent);
     on<GetOneMessageEvent>(getOneMessageEvent);
@@ -75,35 +78,18 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
+  FutureOr<void> getOneMessageEvent(
+      GetOneMessageEvent event, Emitter<MessageState> emit) {}
+
+  FutureOr<void> messageEditEvent(
+      MessageEditEvent event, Emitter<MessageState> emit) {}
+
+  FutureOr<void> messageDeleteEvent(
+      MessageDeleteEvent event, Emitter<MessageState> emit) {}
+
   Future<FutureOr<void>> messageSentEvent(
       MessageSentEvent event, Emitter<MessageState> emit) async {
     try {
-      // if (event.message.messageType != MessageType.text) {
-      //   if (event.file != null) {
-      //     final filePath = await userRepository.saveUserFileToDBStorage(
-      //         ref: "${event.chatId}/${DateTime.now()}", file: event.file!);
-      //     await chatRepo.sendMessage(
-      //       chatId: event.chatId,
-      //       message: MessageModel(
-      //         attachmentsWithMessage: event.message.attachmentsWithMessage,
-      //         isDeletedMessage: event.message.isDeletedMessage,
-      //         isEditedMessage: event.message.isEditedMessage,
-      //         isPinnedMessage: event.message.isPinnedMessage,
-      //         isStarredMessage: event.message.isStarredMessage,
-      //         messageContent: filePath,
-      //         messageId: event.message.messageId,
-      //         messageStatus: event.message.messageStatus,
-      //         messageTime: event.message.messageTime,
-      //         messageType: event.message.messageType,
-      //         receiverID: event.message.receiverID,
-      //         senderID: event.message.senderID,
-      //       ),
-      //     );
-      //     add(GetAllMessageEvent(chatId: event.chatId));
-      //   } else {
-      //     log("File is null message bloc");
-      //   }
-      // }
       await chatRepo.sendMessage(
         chatId: event.chatId,
         message: event.message,
@@ -115,17 +101,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
-  FutureOr<void> getOneMessageEvent(
-      GetOneMessageEvent event, Emitter<MessageState> emit) {}
-
-  FutureOr<void> messageEditEvent(
-      MessageEditEvent event, Emitter<MessageState> emit) {}
-
-  FutureOr<void> messageDeleteEvent(
-      MessageDeleteEvent event, Emitter<MessageState> emit) {}
-
   FutureOr<void> photoMessageSendEvent(
       PhotoMessageSendEvent event, Emitter<MessageState> emit) async {
+    emit(MessageLoadingState());
     try {
       final File? imageFile = await pickImage(imageSource: event.imageSource);
       final String chatID = event.chatModel.chatID.toString();
@@ -146,8 +124,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           receiverID: event.chatModel.receiverID,
           senderID: event.chatModel.senderID,
         );
-        chatRepo.sendMessage(chatId: chatID, message: photoMessage);
-        add(GetAllMessageEvent(chatId: chatID));
+       await chatRepo.sendMessage(chatId: chatID, message: photoMessage);
+        // add(GetAllMessageEvent(chatId: chatID, ));
+        final messages = chatRepo.getAllMessages(
+        chatId: chatID,
+      );
+      emit(MessageSucessState(messages: messages, messageModel: photoMessage));
       }
     } catch (e) {
       log("Send photo message error: ${e.toString()}");
@@ -157,8 +139,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> videoMessageSendEvent(
       VideoMessageSendEvent event, Emitter<MessageState> emit) async {
+    emit(MessageLoadingState());
     try {
-      final File? videoFile = await takeVideoAsset(imageSource: event.imageSource);
+      final File? videoFile =
+          await takeVideoAsset(imageSource: event.imageSource);
       final String chatID = event.chatModel.chatID.toString();
       if (videoFile != null) {
         final videoUrl = await chatRepo.sendAssetMessage(
@@ -178,7 +162,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           senderID: event.chatModel.senderID,
         );
         chatRepo.sendMessage(chatId: chatID, message: videoMessage);
-        add(GetAllMessageEvent(chatId: chatID));
+        // add(GetAllMessageEvent(chatId: chatID));
+        final messages = chatRepo.getAllMessages(
+        chatId: chatID,
+      );
+      emit(MessageSucessState(messages: messages, messageModel: videoMessage));
       }
     } catch (e) {
       log("Send photo message error: ${e.toString()}");
@@ -186,4 +174,34 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
+  FutureOr<void> videoMessagePlayEvent(
+      VideoMessagePlayEvent event, Emitter<MessageState> emit) {
+    try {
+      if (state.isVideoPlaying == null) {
+        log("State video playing null");
+        return null;
+      }
+      emit(MessageState(isVideoPlaying: !state.isVideoPlaying!));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> videoMessageCompleteEvent(
+      VideoMessageCompleteEvent event, Emitter<MessageState> emit) {
+    try {
+      emit(MessageState(isVideoPlaying: false));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> videoMessagePauseEvent(
+      VideoMessagePauseEvent event, Emitter<MessageState> emit) {
+    try {
+      emit(MessageState(isVideoPlaying: false));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
 }

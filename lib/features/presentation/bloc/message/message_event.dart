@@ -57,3 +57,7 @@ class GetAllMessageEvent extends MessageEvent {
 }
 class MessageDeleteEvent extends MessageEvent{}
 class MessageEditEvent extends MessageEvent{}
+class VideoMessagePlayEvent extends MessageEvent{}
+class VideoMessageCompleteEvent extends MessageEvent {}
+class VideoMessagePauseEvent extends MessageEvent {}
+class AssetMessageEvent extends MessageEvent{}
