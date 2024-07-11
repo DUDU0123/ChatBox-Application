@@ -13,6 +13,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
   ContactBloc({required this.contactRepository}) : super(ContactInitial()) {
     on<GetContactsEvent>(getContactsEvent);
     on<SelectUserEvent>(selectUserEvent);
+    on<ClearListEvent>(clearListEvent);
   }
 
   Future<FutureOr<void>> getContactsEvent(
@@ -33,7 +34,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
   FutureOr<void> selectUserEvent(
       SelectUserEvent event, Emitter<ContactState> emit) {
     try {
-      if (state.selectedContactList==null) {
+      if (state.selectedContactList == null) {
         return null;
       }
       List<ContactModel> selectedContactList = [...state.selectedContactList!];
@@ -42,7 +43,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       } else {
         selectedContactList.add(event.contact);
       }
-    
+
       emit(
         ContactState(
           contactList: state.contactList,
@@ -51,6 +52,16 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       );
     } catch (e) {
       log("Error $e");
+      emit(ContactsErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> clearListEvent(
+      ClearListEvent event, Emitter<ContactState> emit) {
+    try {
+      emit(ContactState(
+          contactList: state.contactList, selectedContactList: []));
+    } catch (e) {
       emit(ContactsErrorState(message: e.toString()));
     }
   }

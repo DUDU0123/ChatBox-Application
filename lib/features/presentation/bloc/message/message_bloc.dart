@@ -4,14 +4,15 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/chat_asset_send_methods.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
-import 'package:chatbox/features/data/repositories/user_repository/user_repository_impl.dart';
-import 'package:chatbox/features/domain/repositories/user_repo/user_repository.dart';
+import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:image_picker/image_picker.dart';
 
 part 'message_event.dart';
@@ -35,8 +36,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<MessageEditEvent>(messageEditEvent);
     on<MessageDeleteEvent>(messageDeleteEvent);
     on<PhotoMessageSendEvent>(photoMessageSendEvent);
-    // on<AssetMessageSendEvent>(assetMessageSendEvent);
     on<VideoMessageSendEvent>(videoMessageSendEvent);
+    on<ContactMessageSendEvent>(contactMessageSendEvent);
+    on<OpenDeviceFileAndSaveToDbEvent>(openDeviceFileAndSaveToDbEvent);
+    on<AudioMessageSendEvent>(audioMessageSendEvent);
+    on<AudioRecordToggleEvent>(audioRecordToggleEvent);
   }
 
   FutureOr<void> messageTypedEvent(
@@ -124,12 +128,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           receiverID: event.chatModel.receiverID,
           senderID: event.chatModel.senderID,
         );
-       await chatRepo.sendMessage(chatId: chatID, message: photoMessage);
+        await chatRepo.sendMessage(chatId: chatID, message: photoMessage);
         // add(GetAllMessageEvent(chatId: chatID, ));
         final messages = chatRepo.getAllMessages(
-        chatId: chatID,
-      );
-      emit(MessageSucessState(messages: messages, messageModel: photoMessage));
+          chatId: chatID,
+        );
+        emit(
+            MessageSucessState(messages: messages, messageModel: photoMessage));
       }
     } catch (e) {
       log("Send photo message error: ${e.toString()}");
@@ -161,12 +166,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           receiverID: event.chatModel.receiverID,
           senderID: event.chatModel.senderID,
         );
-        chatRepo.sendMessage(chatId: chatID, message: videoMessage);
+        await chatRepo.sendMessage(chatId: chatID, message: videoMessage);
         // add(GetAllMessageEvent(chatId: chatID));
         final messages = chatRepo.getAllMessages(
-        chatId: chatID,
-      );
-      emit(MessageSucessState(messages: messages, messageModel: videoMessage));
+          chatId: chatID,
+        );
+        emit(
+            MessageSucessState(messages: messages, messageModel: videoMessage));
       }
     } catch (e) {
       log("Send photo message error: ${e.toString()}");
@@ -201,6 +207,121 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     try {
       emit(MessageState(isVideoPlaying: false));
     } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> contactMessageSendEvent(
+      ContactMessageSendEvent event, Emitter<MessageState> emit) async {
+    try {
+      final String? chatID = event.chatModel.chatID;
+      if (chatID == null) {
+        return null;
+      }
+      for (var contactModel in event.contactListToSend) {
+        MessageModel message = MessageModel(
+          message: contactModel.userContactNumber,
+          messageType: MessageType.contact,
+          messageTime: DateTime.now().toString(),
+          messageStatus: MessageStatus.sent,
+          isDeletedMessage: false,
+          isEditedMessage: false,
+          isPinnedMessage: false,
+          isStarredMessage: false,
+          receiverID: event.chatModel.receiverID,
+          senderID: event.chatModel.senderID,
+        );
+        await chatRepo.sendMessage(chatId: chatID, message: message);
+      }
+    } catch (e) {
+      log("Contact message send error");
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> openDeviceFileAndSaveToDbEvent(
+      OpenDeviceFileAndSaveToDbEvent event, Emitter<MessageState> emit) async {
+    try {
+      List<File?> filesPicked = await pickMultipleFileWithAnyExtension();
+      final String? chatID = event.chatModel.chatID;
+      if (chatID == null) {
+        return null;
+      }
+      for (var file in filesPicked) {
+        if (file != null) {
+          final fileUrl = await chatRepo.sendAssetMessage(
+            chatID: chatID,
+            file: file,
+          );
+          String fileName = file.path.split('/').last;
+          MessageModel message = MessageModel(
+            name: fileName,
+            message: fileUrl,
+            messageType: MessageType.document,
+            messageTime: DateTime.now().toString(),
+            messageStatus: MessageStatus.sent,
+            isDeletedMessage: false,
+            isEditedMessage: false,
+            isPinnedMessage: false,
+            isStarredMessage: false,
+            receiverID: event.chatModel.receiverID,
+            senderID: event.chatModel.senderID,
+          );
+          await chatRepo.sendMessage(chatId: chatID, message: message);
+        }
+      }
+    } catch (e) {
+      log("File pick document message send error");
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> audioRecordToggleEvent(
+      AudioRecordToggleEvent event, Emitter<MessageState> emit) async {
+    try {
+      if (event.recorder.isRecording) {
+        String? path = await event.recorder.stopRecorder();
+        if (path != null) {
+          File audioFile = File(path);
+          add(AudioMessageSendEvent(chatModel: event.chatModel, audioFile: audioFile,),);
+        }
+      } else {
+        await initRecorder(recorder: event.recorder);
+        await event.recorder.startRecorder(toFile: 'audio');
+      }
+    } catch (e) {
+      log("Audio record error");
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> audioMessageSendEvent(
+      AudioMessageSendEvent event, Emitter<MessageState> emit) async {
+    try {
+      final String? chatID = event.chatModel.chatID;
+      if (chatID == null) {
+        return null;
+      }
+
+      final fileUrl = await chatRepo.sendAssetMessage(
+        chatID: chatID,
+        file: event.audioFile,
+      );
+      MessageModel message = MessageModel(
+        message: fileUrl,
+        messageType: MessageType.audio,
+        messageTime: DateTime.now().toString(),
+        messageStatus: MessageStatus.sent,
+        isDeletedMessage: false,
+        isEditedMessage: false,
+        isPinnedMessage: false,
+        isStarredMessage: false,
+        receiverID: event.chatModel.receiverID,
+        senderID: event.chatModel.senderID,
+      );
+      await chatRepo.sendMessage(chatId: chatID, message: message);
+    } catch (e) {
+      log("Audio message send error");
       emit(MessageErrorState(message: e.toString()));
     }
   }

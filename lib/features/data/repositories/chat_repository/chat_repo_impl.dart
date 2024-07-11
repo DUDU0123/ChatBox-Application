@@ -95,11 +95,6 @@ class ChatRepoImpl extends ChatRepo {
       chatModel: chatModel,
     );
   }
-  
-  @override
-  Future<String> sendPhotoMessage({required String chatID, required File file}) {
-   return chatData.sendPhotoMessage(chatID: chatID, file: file);
-  }
   @override
   Future<String> sendAssetMessage({required String chatID, required File file}) {
    return chatData.sendAssetMessage(chatID: chatID, file: file);

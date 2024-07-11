@@ -5,6 +5,7 @@ import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/chat_asset_send_methods.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
@@ -20,8 +21,12 @@ import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 class ChatRoomPage extends StatefulWidget {
@@ -43,13 +48,26 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
   final Map<String, VideoPlayerController> _videoControllers = {};
+  final recorder = FlutterSoundRecorder();
+  final player = AudioPlayer();
+
+  @override
+  void initState() {
+    // initRecorder();
+    super.initState();
+  }
+
+
   @override
   void dispose() {
     _videoControllers.forEach((key, controller) => controller.dispose());
     messageController.dispose();
     scrollController.dispose();
+    recorder.closeRecorder();
     super.dispose();
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -306,110 +324,142 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                                                   CrossAxisAlignment
                                                                       .center,
                                                               children: [
-                                                                BlocBuilder<
-                                                                    ContactBloc,
-                                                                    ContactState>(
-                                                                  builder:
-                                                                      (context,
-                                                                          state) {
-                                                                    if (state
-                                                                            .contactList ==
-                                                                        null) {
-                                                                      return zeroMeasureWidget;
-                                                                    }
-                                                                    return TextWidgetCommon(
-                                                                      text: state
-                                                                              .contactList![
-                                                                                  index]
-                                                                              .userContactName!
-                                                                              .isEmpty
-                                                                          ? state
-                                                                              .contactList![
-                                                                                  index]
-                                                                              .userContactNumber!
-                                                                          : state
-                                                                              .contactList![index]
-                                                                              .userContactName!,
-                                                                    );
-                                                                  },
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceEvenly,
+                                                                  children: [
+                                                                    commonProfileDefaultIconCircularCotainer(
+                                                                      context:
+                                                                          context,
+                                                                      containerConstraint:
+                                                                          35,
+                                                                    ),
+                                                                    TextWidgetCommon(
+                                                                      text: message
+                                                                              .message ??
+                                                                          'User',
+                                                                      textColor:
+                                                                          kBlack,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontSize:
+                                                                          18.sp,
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                                const CommonDivider(),
+                                                                kHeight10,
+                                                                CommonDivider(
+                                                                  indent: 0,
+                                                                  thickness: 1,
+                                                                  color: kGrey
+                                                                      .withOpacity(
+                                                                          0.4),
+                                                                ),
                                                                 TextButton(
-                                                                    onPressed:
-                                                                        () {},
-                                                                    child: BlocBuilder<
-                                                                        ContactBloc,
-                                                                        ContactState>(
-                                                                      builder:
-                                                                          (context,
-                                                                              state) {
-                                                                        if (state.contactList ==
-                                                                            null) {
-                                                                          return zeroMeasureWidget;
-                                                                        }
-                                                                        
-                                                                        return Text(
-                                                                          state.contactList![index].isChatBoxUser!
-                                                                              ? "Add to contact"
-                                                                              : "Invite",
-                                                                        );
-                                                                      },
-                                                                    ))
+                                                                  onPressed:
+                                                                      () {
+                                                                    if (message
+                                                                            .message !=
+                                                                        null) {
+                                                                      addToContact(
+                                                                          contactNumber:
+                                                                              message.message!);
+                                                                    }
+                                                                  },
+                                                                  child:
+                                                                      TextWidgetCommon(
+                                                                    text:
+                                                                        "Add to contact",
+                                                                    textColor:
+                                                                        kWhite,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        15.sp,
+                                                                  ),
+                                                                ),
                                                               ],
                                                             )
                                                           : message.messageType ==
                                                                   MessageType
                                                                       .audio
-                                                              ? Row(
-                                                                  children: [
-                                                                    Container(
-                                                                      width:
-                                                                          100.w,
-                                                                      height:
-                                                                          100.h,
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        color:
-                                                                            kBlack,
-                                                                        shape: BoxShape
-                                                                            .circle,
+                                                              ? SizedBox(
+                                                                height: 40.h,
+                                                                child: Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                    children: [
+                                                                      // Container(
+                                                                      //   width:
+                                                                      //       200.w,
+                                                                      //   height:
+                                                                      //       200.h,
+                                                                      //   decoration:
+                                                                      //       BoxDecoration(
+                                                                      //     color:
+                                                                      //         kBlack,
+                                                                      //     shape: BoxShape
+                                                                      //         .circle,
+                                                                      //   ),
+                                                                      // ),
+                                                                      CircleAvatar(radius: 40.sp,),
+                                                                      IconButton(
+                                                                        onPressed:
+                                                                            () async{
+                                                                              message.message??'';
+                                                                              await player.setUrl(message.message??'');
+                                                                              await player.play();
+                                                                            },
+                                                                        icon:
+                                                                            Icon(
+                                                                          Icons
+                                                                              .play_arrow,
+                                                                          size: 26
+                                                                              .sp,
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    IconButton(
-                                                                      onPressed:
-                                                                          () {},
-                                                                      icon:
-                                                                          Icon(
-                                                                        Icons
-                                                                            .play_arrow,
-                                                                        size: 26
-                                                                            .sp,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                )
+                                                                    ],
+                                                                  ),
+                                                              )
                                                               : message.messageType ==
                                                                       MessageType
                                                                           .document
-                                                                  ? Row(
-                                                                      children: [
-                                                                        SvgPicture
-                                                                            .asset(
-                                                                          document,
-                                                                          width:
-                                                                              60.w,
-                                                                          height:
-                                                                              60.h,
-                                                                          colorFilter:
-                                                                              ColorFilter.mode(
-                                                                            kWhite,
-                                                                            BlendMode.srcIn,
+                                                                  ? GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        openDocument(
+                                                                            url:
+                                                                                message.message ?? '');
+                                                                      },
+                                                                      child:
+                                                                          Row(
+                                                                        children: [
+                                                                          SvgPicture
+                                                                              .asset(
+                                                                            document,
+                                                                            width:
+                                                                                30.w,
+                                                                            height:
+                                                                                30.h,
+                                                                            colorFilter:
+                                                                                ColorFilter.mode(
+                                                                              kWhite,
+                                                                              BlendMode.srcIn,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                        TextWidgetCommon(
-                                                                            text:
-                                                                                "Document")
-                                                                      ],
+                                                                          Expanded(
+                                                                            child:
+                                                                                TextWidgetCommon(
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                              text: message.name ?? '',
+                                                                              fontWeight: FontWeight.w400,
+                                                                              fontSize: 16.sp,
+                                                                            ),
+                                                                          )
+                                                                        ],
+                                                                      ),
                                                                     )
                                                                   : message.messageType ==
                                                                           MessageType
@@ -479,6 +529,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 ),
               ),
               ChatBarWidget(
+                recorder: recorder,
                 scrollController: scrollController,
                 chatModel: widget.chatModel,
                 isImojiButtonClicked: false,

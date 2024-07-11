@@ -276,22 +276,6 @@ class ChatData {
     }
   }
 
-  Future<String> sendPhotoMessage({
-    required String chatID,
-    required File file,
-  }) async {
-    try {
-      final assetUrl =
-          await saveUserFileToDataBaseStorage(ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
-      return assetUrl;
-    } on FirebaseAuthException catch (e) {
-      log("Photo send error chat data: ${e.message}");
-      throw Exception(e.message);
-    } catch (e) {
-      log(e.toString());
-      throw Exception(e.toString());
-    }
-  }
 
   Future<String> sendAssetMessage({
     required String chatID,
@@ -309,12 +293,6 @@ class ChatData {
       throw Exception(e.toString());
     }
   }
-
-  sendVideoMessage() {}
-  sendAudioMessage() {}
-  sendDocumentMessage() {}
-  sendContactMessage() {}
-  sendLocationMessage() {}
 
   Future<String> saveUserFileToDataBaseStorage({
     required String ref,

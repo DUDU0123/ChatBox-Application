@@ -17,3 +17,5 @@ class SelectUserEvent extends ContactEvent {
    @override
   List<Object> get props => [contact];
 }
+
+class ClearListEvent extends ContactEvent{}

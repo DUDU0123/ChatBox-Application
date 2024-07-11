@@ -4,17 +4,33 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SelectContactPage extends StatelessWidget {
-  const SelectContactPage({super.key});
+class SelectContactPage extends StatefulWidget {
+  const SelectContactPage({super.key, required this.chatModel});
+  final ChatModel chatModel;
+  @override
+  State<SelectContactPage> createState() => _SelectContactPageState();
+}
+
+class _SelectContactPageState extends State<SelectContactPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Clear the selected contacts when the page is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ContactBloc>().add(ClearListEvent());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +41,15 @@ class SelectContactPage extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,7 +68,13 @@ class SelectContactPage extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(
-            height: context.watch<ContactBloc>().state.selectedContactList!.isNotEmpty? 100.h:0.h,
+            height: context
+                    .watch<ContactBloc>()
+                    .state
+                    .selectedContactList!
+                    .isNotEmpty
+                ? 100.h
+                : 0.h,
             child: BlocBuilder<ContactBloc, ContactState>(
               builder: (context, state) {
                 if (state.selectedContactList == null) {
@@ -73,9 +104,7 @@ class SelectContactPage extends StatelessWidget {
                 }
                 if (state is ContactsLoadingState) {
                   return commonAnimationWidget(
-                    context: context,
-                    isTextNeeded: false,
-                  );
+                      context: context, isTextNeeded: true, text: "Loading");
                 }
                 if (state.contactList == null) {
                   return zeroMeasureWidget;
@@ -87,6 +116,7 @@ class SelectContactPage extends StatelessWidget {
                     final contact = state.contactList![index];
                     log("${state.selectedContactList?.length.toString()} SelectedList");
                     return ContactSingleWidget(
+                      key: ValueKey(contact.userContactNumber),
                       isSelected: state.selectedContactList != null
                           ? state.selectedContactList!.contains(contact)
                           : false,
@@ -102,6 +132,41 @@ class SelectContactPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
+        builder: (context, state) {
+          return GestureDetector(
+            onTap: () {
+              state.selectedContactList != null
+                  ? context.read<MessageBloc>().add(
+                        ContactMessageSendEvent(
+                          contactListToSend: state.selectedContactList!,
+                          chatModel: widget.chatModel,
+                        ),
+                      )
+                  : null;
+              Navigator.pop(context);
+            },
+            child: Container(
+              height: 50.h,
+              width: 60.w,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  darkLinearGradientColorOne,
+                  darkLinearGradientColorTwo,
+                ]),
+                borderRadius: BorderRadius.circular(15.sp),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 30.sp,
+                  color: kWhite,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -121,6 +186,7 @@ class ContactSingleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      key: ValueKey(contactModel.userContactNumber),
       onTap: () {
         context.read<ContactBloc>().add(SelectUserEvent(contact: contactModel));
       },
@@ -172,6 +238,7 @@ class SelectContactCircleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      key: ValueKey(contactModel.userContactNumber),
       children: [
         Stack(
           children: [
@@ -242,7 +309,7 @@ BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
       return StreamBuilder<UserModel?>(
         stream: userModel,
         builder: (context, snapshot) {
-          if (snapshot.data == null) {
+          if (!snapshot.hasData || snapshot.data == null) {
             commonProfileDefaultIconCircularCotainer(
               context: context,
             );
@@ -253,9 +320,10 @@ BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
                       color: Theme.of(context).popupMenuTheme.color,
                       shape: BoxShape.circle,
                       image: DecorationImage(
+                          fit: BoxFit.cover,
                           image: NetworkImage(
-                        snapshot.data!.userProfileImage!,
-                      ))),
+                            snapshot.data!.userProfileImage!,
+                          ))),
                   width: 50.w,
                   height: 50.h,
                 )

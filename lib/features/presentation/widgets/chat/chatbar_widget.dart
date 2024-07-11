@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/chat_asset_send_methods.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
@@ -9,9 +11,13 @@ import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 class ChatBarWidget extends StatelessWidget {
   ChatBarWidget({
     super.key,
@@ -19,11 +25,13 @@ class ChatBarWidget extends StatelessWidget {
     required this.isImojiButtonClicked,
     required this.chatModel,
     required this.scrollController,
+    required this.recorder,
   });
   final TextEditingController messageController;
   final ChatModel chatModel;
   bool isImojiButtonClicked;
   final ScrollController scrollController;
+  final FlutterSoundRecorder recorder;
 
   @override
   Widget build(BuildContext context) {
@@ -147,50 +155,61 @@ class ChatBarWidget extends StatelessWidget {
                         ),
                         child: Center(
                             child: IconButton(
-                          onPressed: () {
+                          onPressed: () async {
                             // voice record functionationality if user try to record voice
                             // send message functionality if user try to send message
-                            MessageModel message = MessageModel(
-                              senderID: chatModel.senderID,
-                              receiverID: chatModel.receiverID,
-                              messageTime: DateTime.now().toString(),
-                              isPinnedMessage: false,
-                              isStarredMessage: false,
-                              isDeletedMessage: false,
-                              isEditedMessage: false,
-                              message: messageController.text,
-                              messageType: MessageType.text,
-                              messageStatus: MessageStatus.sent,
-                            );
-                            if (chatModel.chatID != null &&
-                                messageController.text.isNotEmpty) {
-                              scrollController.animateTo(
-                                scrollController.position.maxScrollExtent,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeOut,
-                              );
-                              context.read<MessageBloc>().add(
-                                    MessageSentEvent(
-                                      chatId: chatModel.chatID!,
-                                      message: message,
-                                    ),
-                                  );
+                            // MessageModel message = MessageModel(
+                            //   senderID: chatModel.senderID,
+                            //   receiverID: chatModel.receiverID,
+                            //   messageTime: DateTime.now().toString(),
+                            //   isPinnedMessage: false,
+                            //   isStarredMessage: false,
+                            //   isDeletedMessage: false,
+                            //   isEditedMessage: false,
+                            //   message: messageController.text,
+                            //   messageType: MessageType.text,
+                            //   messageStatus: MessageStatus.sent,
+                            // );
+                            // if (chatModel.chatID != null &&
+                            //     messageController.text.isNotEmpty) {
+                            //   scrollController.animateTo(
+                            //     scrollController.position.maxScrollExtent,
+                            //     duration: const Duration(milliseconds: 300),
+                            //     curve: Curves.easeOut,
+                            //   );
+                            //   context.read<MessageBloc>().add(
+                            //         MessageSentEvent(
+                            //           chatId: chatModel.chatID!,
+                            //           message: message,
+                            //         ),
+                            //       );
 
-                              messageController.text = '';
-                            }
+                             
+                            // }
+                             if (messageController.text.isNotEmpty) {
+                                sendMessage(
+                                  chatModel: chatModel,
+                                  context: context,
+                                  messageController: messageController,
+                                  scrollController: scrollController,
+                                );
+                              } else {
+                                context.read<MessageBloc>().add(AudioRecordToggleEvent(chatModel: chatModel, recorder: recorder,),);
+                              }
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(
                             buildWhen: (previous, current) =>
                                 previous != current,
                             builder: (context, state) {
                               return SvgPicture.asset(
-                                  width: 24.w,
-                                  height: 24.h,
-                                  colorFilter:
-                                      ColorFilter.mode(kBlack, BlendMode.srcIn),
-                                  state.isTyped ?? false
-                                      ? sendIcon
-                                      : microphoneFilled);
+                                width: 24.w,
+                                height: 24.h,
+                                colorFilter:
+                                    ColorFilter.mode(kBlack, BlendMode.srcIn),
+                                state.isTyped ?? false
+                                    ? sendIcon
+                                    : microphoneFilled,
+                              );
                             },
                           ),
                         )),
@@ -207,5 +226,39 @@ class ChatBarWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+void sendMessage({
+  required BuildContext context,
+  required ChatModel chatModel,
+  required TextEditingController messageController,
+  required ScrollController scrollController,
+}) {
+  MessageModel message = MessageModel(
+    senderID: chatModel.senderID,
+    receiverID: chatModel.receiverID,
+    messageTime: DateTime.now().toString(),
+    isPinnedMessage: false,
+    isStarredMessage: false,
+    isDeletedMessage: false,
+    isEditedMessage: false,
+    message: messageController.text,
+    messageType: MessageType.text,
+    messageStatus: MessageStatus.sent,
+  );
+  if (chatModel.chatID != null) {
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+    context.read<MessageBloc>().add(
+          MessageSentEvent(
+            chatId: chatModel.chatID!,
+            message: message,
+          ),
+        );
+    messageController.clear();
   }
 }

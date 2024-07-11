@@ -59,38 +59,4 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatErrorState(message: e.toString()));
     }
   }
-
-  Future<FutureOr<void>> messageSentEvent(
-      MessageSentEvent event, Emitter<ChatState> emit) async {
-    try {
-      await chatRepo.sendMessage(
-        chatId: event.chatId,
-        message: event.message,
-      );
-    } catch (e) {
-      log("Send message error: ${e.toString()}");
-      emit(ChatErrorState(message: e.toString()));
-    }
-  }
-
-  FutureOr<void> getAllMessageEvent(
-      GetAllMessageEvent event, Emitter<ChatState> emit) async {
-    try {
-      final messages = chatRepo.getAllMessages(
-        chatId: event.chatId,
-      );
-    } catch (e) {
-      log("Send message error: ${e.toString()}");
-      emit(ChatErrorState(message: e.toString()));
-    }
-  }
-
-  FutureOr<void> getOneMessageEvent(
-      GetOneMessageEvent event, Emitter<ChatState> emit) {}
-
-  FutureOr<void> messageEditEvent(
-      MessageEditEvent event, Emitter<ChatState> emit) {}
-
-  FutureOr<void> messageDeleteEvent(
-      MessageDeleteEvent event, Emitter<ChatState> emit) {}
 }

@@ -13,7 +13,9 @@ class MessageEntity extends Equatable {
   final bool? isDeletedMessage;
   final bool? isStarredMessage;
   final bool? isPinnedMessage;
+  final String? name;
   const MessageEntity({
+    this.name,
     this.messageId,
     this.senderID,
     this.receiverID,
@@ -30,6 +32,7 @@ class MessageEntity extends Equatable {
   @override
   List<Object?> get props {
     return [
+      name,
       messageId,
       senderID,
       receiverID,

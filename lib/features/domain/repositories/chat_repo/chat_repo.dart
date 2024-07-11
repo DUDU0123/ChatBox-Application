@@ -23,10 +23,6 @@ abstract class ChatRepo {
     required String chatId,
     required MessageModel message,
   });
-  Future<String> sendPhotoMessage({
-    required String chatID,
-    required File file,
-  });
   Future<String> sendAssetMessage({
     required String chatID,
     required File file,

@@ -15,6 +15,7 @@ class MessageModel extends MessageEntity {
     super.isDeletedMessage,
     super.isStarredMessage,
     super.isPinnedMessage,
+    super.name,
   });
 
   factory MessageModel.fromJson({
@@ -32,6 +33,7 @@ class MessageModel extends MessageEntity {
       isDeletedMessage: map[dbIsMessageDeleted],
       isStarredMessage: map[dbIsMessageStarred],
       isPinnedMessage: map[dbIsMessagePinned],
+      name: map[nameOfMessage],
     );
   }
 
@@ -48,6 +50,7 @@ class MessageModel extends MessageEntity {
       dbIsMessageDeleted: isDeletedMessage,
       dbIsMessageStarred: isStarredMessage,
       dbIsMessagePinned: isPinnedMessage,
+      nameOfMessage :name,
     };
   }
 
@@ -63,6 +66,7 @@ class MessageModel extends MessageEntity {
     bool? isDeletedMessage,
     bool? isStarredMessage,
     bool? isPinnedMessage,
+    String? name,
   }) {
     return MessageModel(
       messageId: messageId ?? this.messageId,
@@ -76,6 +80,7 @@ class MessageModel extends MessageEntity {
       isDeletedMessage: isDeletedMessage ?? this.isDeletedMessage,
       isStarredMessage: isStarredMessage ?? this.isStarredMessage,
       isPinnedMessage: isPinnedMessage ?? this.isPinnedMessage,
+      name: name??this.name,
     );
   }
 }
