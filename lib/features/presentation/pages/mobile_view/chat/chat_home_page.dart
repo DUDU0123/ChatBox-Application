@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
@@ -68,6 +69,7 @@ class ChatHomePage extends StatelessWidget {
                                 return zeroMeasureWidget;
                               }
                               log("Image : ${chat[index].receiverProfileImage}$index");
+                              log(chat[index].lastMessageTime.toString());
                               final lastMessage = chat[index].lastMessage;
                               return ChatListTileWidget(
                                 chatModel: chat[index],
@@ -79,7 +81,7 @@ class ChatHomePage extends StatelessWidget {
                                 lastMessageTime:
                                     lastMessage == null || lastMessage.isEmpty
                                         ? ''
-                                        : chat[index].lastMessageTime,
+                                        : DateProvider.formatMessageDateTime(messageDateTimeString: chat[index].lastMessageTime.toString()),
                                 notificationCount:
                                     chat[index].notificationCount,
                                 userName: chat[index].receiverName ?? '',

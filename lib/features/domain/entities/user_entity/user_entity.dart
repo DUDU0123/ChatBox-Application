@@ -7,12 +7,12 @@ class UserEntity extends Equatable {
   String? userEmailId;
   String? userAbout;
   String? userProfileImage;
-  String? userNetworkStatus;
+  bool? userNetworkStatus;
   String? createdAt;
   String? tfaPin;
   bool? isBlockedUser;
   bool? isDisabled;
-  bool? isActive;
+  String? lastActiveTime;
   List<dynamic>? userGroupIdList;
   UserEntity({
     this.id,
@@ -27,7 +27,7 @@ class UserEntity extends Equatable {
     this.isBlockedUser,
     this.userGroupIdList,
     this.isDisabled,
-    this.isActive,
+    this.lastActiveTime,
   });
 
   @override
@@ -45,7 +45,7 @@ class UserEntity extends Equatable {
       isBlockedUser,
       userGroupIdList,
       isDisabled,
-      isActive,
+      lastActiveTime,
     ];
   }
 }

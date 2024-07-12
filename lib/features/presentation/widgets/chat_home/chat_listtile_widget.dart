@@ -6,6 +6,7 @@ import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_p
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -97,22 +98,7 @@ class ChatListTileWidget extends StatelessWidget {
           ),
         ),
         title: buildUserName(userName: userName),
-        subtitle: buildSubtitle(
-          messageStatus: messageStatus,
-          isOutgoing: isOutgoing,
-          isIncomingMessage: isIncomingMessage,
-          isGroup: isGroup,
-          isTyping: isTyping,
-          isVoiceRecoding: isVoiceRecoding,
-          isGone: isGone,
-          isSeen: isSeen,
-          lastMessage: lastMessage,
-          isAudio: isAudio,
-          isDocument: isDocument,
-          isPhoto: isPhoto,
-          isRecordedAudio: isRecordedAudio,
-          isContact: isContact,
-        ),
+        subtitle: TextWidgetCommon(text: lastMessage??''),
         trailing: buildTrailing(
           context: context,
           notificationCount: notificationCount,

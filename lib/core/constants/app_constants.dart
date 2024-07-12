@@ -97,3 +97,5 @@ List<AttachmentModel> attachmentIcons = [
     mediaType: MediaType.contact,
   ),
 ];
+
+const String apiKey = 'AIzaSyBXUYyQW_q_meUJlB0xl31Cf7kJRdDeO1Q';

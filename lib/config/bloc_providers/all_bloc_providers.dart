@@ -94,7 +94,7 @@ class AppBlocProvider {
           userData: UserData(
             authenticationRepo:
                 AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
-            firebaseAuth: firebaseAuth,
+            fireBaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,
           ),
@@ -131,7 +131,7 @@ class AppBlocProvider {
             authenticationRepo: AuthenticationRepoImpl(
               firebaseAuth: firebaseAuth,
             ),
-            firebaseAuth: firebaseAuth,
+            fireBaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,
           ),

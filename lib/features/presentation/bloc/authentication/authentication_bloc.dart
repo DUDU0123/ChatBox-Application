@@ -120,7 +120,7 @@ class AuthenticationBloc
           createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
           id: userCredential.user?.uid,
           phoneNumber: userCredential.user?.phoneNumber,
-          isActive: true,
+          lastActiveTime: "Online",
         );
         userRepository.saveUserDataToDataBase(userModel: userModel);
 

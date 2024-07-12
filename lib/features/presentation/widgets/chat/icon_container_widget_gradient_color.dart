@@ -29,21 +29,23 @@ Widget iconContainerWidgetGradientColor({
                 ],
               ),
             ),
-            child: Center(
-              child: Icon(
-                icon,
-                size: 45.sp,
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 30.sp,
+                ),
+                TextWidgetCommon(
+                  text: subtitle,
+                  fontSize: 16.sp,
+                  textColor: kWhite,
+                  fontWeight: FontWeight.w500,
+                ),
+              ],
             ),
           ),
         ),
-        kHeight10,
-        TextWidgetCommon(
-          text: subtitle,
-          fontSize: 16.sp,
-          textColor: kWhite,
-          fontWeight: FontWeight.w500,
-        )
       ],
     ),
   );

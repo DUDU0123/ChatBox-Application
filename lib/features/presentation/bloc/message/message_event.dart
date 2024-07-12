@@ -21,17 +21,17 @@ class MessageTypedEvent extends MessageEvent {
 class AttachmentIconClickedEvent extends MessageEvent {}
 
 class MessageSentEvent extends MessageEvent {
-  final String chatId;
+  final ChatModel chatModel;
   final File? file;
   final MessageModel message;
   const MessageSentEvent({
-    required this.chatId,
+    required this.chatModel,
     this.file,
     required this.message,
   });
   @override
   List<Object> get props => [
-        chatId,
+        chatModel,
         message,
       ];
 }
@@ -125,12 +125,14 @@ class ContactMessageSendEvent extends MessageEvent {
 
 class OpenDeviceFileAndSaveToDbEvent extends MessageEvent {
   final ChatModel chatModel;
+  final MessageType messageType;
   const OpenDeviceFileAndSaveToDbEvent({
     required this.chatModel,
+    required this.messageType,
   });
   @override
   List<Object> get props => [
-        chatModel,
+        chatModel,messageType,
       ];
 }
 
@@ -159,4 +161,31 @@ class AudioMessageSendEvent extends MessageEvent {
   List<Object> get props => [
         chatModel,
       ];
+}
+
+class AudioPlayerPositionChangedEvent extends MessageEvent {
+  final Duration position;
+  const AudioPlayerPositionChangedEvent(this.position);
+
+  @override
+  List<Object> get props => [position];
+}
+
+class AudioPlayerDurationChangedEvent extends MessageEvent {
+  final Duration duration;
+  const AudioPlayerDurationChangedEvent(this.duration);
+
+  @override
+  List<Object> get props => [duration];
+}
+class LocationPickEvent extends MessageEvent{}
+class LocationMessageSendEvent extends MessageEvent {
+  final ChatModel chatModel;
+  final String location;
+  const LocationMessageSendEvent({
+    required this.chatModel,
+    required this.location,
+  });
+  @override
+  List<Object> get props => [chatModel];
 }

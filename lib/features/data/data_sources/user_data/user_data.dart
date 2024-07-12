@@ -15,12 +15,12 @@ import 'package:flutter/material.dart';
 class UserData {
   final FirebaseFirestore firestore;
   final FirebaseStorage firebaseStorage;
-  final FirebaseAuth firebaseAuth;
+  final FirebaseAuth fireBaseAuth;
   final AuthenticationRepo authenticationRepo;
   UserData({
     required this.firestore,
     required this.firebaseStorage,
-    required this.firebaseAuth,
+    required this.fireBaseAuth,
     required this.authenticationRepo,
   });
 
@@ -47,7 +47,7 @@ class UserData {
     }
   }
 
- static Stream<UserModel?> getOneUserDataFromDataBaseAsStream(
+  static Stream<UserModel?> getOneUserDataFromDataBaseAsStream(
       {required String userId}) {
     try {
       return fireStore.collection(usersCollection).doc(userId).snapshots().map(
@@ -64,6 +64,16 @@ class UserData {
       log('Error while fetching user data: $e', stackTrace: stackTrace);
       throw Exception("Error while fetching user data: $e");
     }
+  }
+
+  static updateUserNetworkStatusInApp({required bool isOnline}) async{
+    await fireStore
+        .collection(usersCollection)
+        .doc(firebaseAuth.currentUser?.uid)
+        .update({
+      userDbLastActiveTime: DateTime.now().millisecondsSinceEpoch.toString(),
+      userDbNetworkStatus: isOnline,
+    });
   }
 
   // Method to get one user by ID
@@ -168,7 +178,6 @@ class UserData {
           await chatDoc.reference.update({
             receiverProfilePhoto: updatedUser.userProfileImage,
           });
-          
         }
       }
     } catch (e, stackTrace) {
@@ -251,7 +260,7 @@ class UserData {
     required String phoneNumber,
     required BuildContext context,
   }) async {
-    User? user = firebaseAuth.currentUser;
+    User? user = fireBaseAuth.currentUser;
 
     try {
       PhoneAuthCredential credential = await getPhoneAuthCredential(
@@ -276,7 +285,7 @@ class UserData {
     TextEditingController smsController = TextEditingController();
     Completer<PhoneAuthCredential> completer = Completer();
 
-    await firebaseAuth.verifyPhoneNumber(
+    await fireBaseAuth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) {
         completer.complete(credential);

@@ -11,7 +11,8 @@ class CommonAppBar extends StatelessWidget {
     super.key,
     required this.pageType,
     required this.appBarTitle,
-    this.userStatus, this.userProfileImage,
+    this.userStatus,
+    this.userProfileImage,
   });
   final PageTypeEnum pageType;
   final String appBarTitle;
@@ -41,7 +42,9 @@ class CommonAppBar extends StatelessWidget {
                 kWidth5,
                 CircleAvatar(
                   backgroundColor: kBlack,
-                  backgroundImage:userProfileImage!=null? NetworkImage(userProfileImage!):AssetImage(contact),
+                  backgroundImage: userProfileImage != null
+                      ? NetworkImage(userProfileImage!)
+                      : const AssetImage(contact),
                 ),
                 kWidth5,
                 Expanded(
@@ -53,10 +56,10 @@ class CommonAppBar extends StatelessWidget {
                         text: appBarTitle,
                         fontSize: 18.sp,
                       ),
-                       TextWidgetCommon(
+                      TextWidgetCommon(
                         overflow: TextOverflow.ellipsis,
-                        text: userStatus??'Last seen 10:00am',
-                        fontSize: 11.sp,
+                        text: userStatus ?? 'Last seen 10:00am',
+                        fontSize: 10.sp,
                       ),
                     ],
                   ),

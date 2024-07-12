@@ -15,7 +15,7 @@ class UserModel extends UserEntity {
     super.isBlockedUser,
     super.userGroupIdList,
     super.isDisabled,
-    super.isActive,
+    super.lastActiveTime,
   });
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
@@ -26,13 +26,13 @@ class UserModel extends UserEntity {
       phoneNumber: map[userDbPhoneNumber] ?? '',
       userAbout: map[userDbAbout] ?? 'chatbox about',
       userProfileImage: map[userDbProfileImage],
-      userNetworkStatus: map[userDbNetworkStatus] ?? '',
+      userNetworkStatus: map[userDbNetworkStatus] ?? false,
       createdAt: map[userDbCreatedAt] ?? '',
       tfaPin: map[userDbTFAPin] ?? '',
       isBlockedUser: map[userDbBlockedStatus] ?? false,
       userGroupIdList: map[userDbGroupIdList]??[],
       isDisabled: map[isUserDisabled]??false,
-      isActive: map[isActiverUser]??false,
+      lastActiveTime: map[userDbLastActiveTime]??'00:00',
     );
   }
 
@@ -50,7 +50,7 @@ class UserModel extends UserEntity {
       userDbBlockedStatus: isBlockedUser,
       userDbGroupIdList: userGroupIdList,
       isUserDisabled: isDisabled,
-      isActiverUser: isActive,
+      userDbLastActiveTime: lastActiveTime,
     };
   }
   
@@ -62,13 +62,13 @@ class UserModel extends UserEntity {
     String? phoneNumber,
     String? userAbout,
     String? userProfileImage,
-    String? userNetworkStatus,
+    bool? userNetworkStatus,
     String? createdAt,
     String? tfaPin,
     bool? isBlockedUser,
     List<dynamic>? userGroupIdList,
     bool? isDisabled,
-    bool? isActive,
+    String? lastActiveTime,
 
   }) {
     return UserModel(
@@ -84,7 +84,7 @@ class UserModel extends UserEntity {
       isBlockedUser: isBlockedUser ?? this.isBlockedUser,
       userGroupIdList: userGroupIdList??this.userGroupIdList,
       isDisabled: isDisabled??this.isDisabled,
-      isActive: isActive??this.isActive,
+      lastActiveTime: lastActiveTime??this.lastActiveTime,
     );
   }
 

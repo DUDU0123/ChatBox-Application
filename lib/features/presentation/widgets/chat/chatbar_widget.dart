@@ -156,36 +156,6 @@ class ChatBarWidget extends StatelessWidget {
                         child: Center(
                             child: IconButton(
                           onPressed: () async {
-                            // voice record functionationality if user try to record voice
-                            // send message functionality if user try to send message
-                            // MessageModel message = MessageModel(
-                            //   senderID: chatModel.senderID,
-                            //   receiverID: chatModel.receiverID,
-                            //   messageTime: DateTime.now().toString(),
-                            //   isPinnedMessage: false,
-                            //   isStarredMessage: false,
-                            //   isDeletedMessage: false,
-                            //   isEditedMessage: false,
-                            //   message: messageController.text,
-                            //   messageType: MessageType.text,
-                            //   messageStatus: MessageStatus.sent,
-                            // );
-                            // if (chatModel.chatID != null &&
-                            //     messageController.text.isNotEmpty) {
-                            //   scrollController.animateTo(
-                            //     scrollController.position.maxScrollExtent,
-                            //     duration: const Duration(milliseconds: 300),
-                            //     curve: Curves.easeOut,
-                            //   );
-                            //   context.read<MessageBloc>().add(
-                            //         MessageSentEvent(
-                            //           chatId: chatModel.chatID!,
-                            //           message: message,
-                            //         ),
-                            //       );
-
-                             
-                            // }
                              if (messageController.text.isNotEmpty) {
                                 sendMessage(
                                   chatModel: chatModel,
@@ -255,7 +225,7 @@ void sendMessage({
     );
     context.read<MessageBloc>().add(
           MessageSentEvent(
-            chatId: chatModel.chatID!,
+            chatModel: chatModel,
             message: message,
           ),
         );

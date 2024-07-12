@@ -101,7 +101,9 @@ class _AssetLoadedPageState extends State<AssetLoadedPage> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                           icon: SvgPicture.asset(
                             sendIcon,
                             width: 30.w,

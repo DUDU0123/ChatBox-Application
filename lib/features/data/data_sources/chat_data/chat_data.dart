@@ -5,6 +5,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
@@ -98,7 +99,7 @@ class ChatData {
             chatID: chatId,
             senderID: currentUserId,
             receiverID: data.id,
-            lastMessage: null,
+            lastMessage: "",
             lastMessageTime: DateTime.now().toString(),
             lastMessageStatus: MessageStatus.none,
             lastMessageType: MessageType.none,
@@ -125,7 +126,7 @@ class ChatData {
             chatID: chatId,
             senderID: receiverId,
             receiverID: currentUserId,
-            lastMessage: null,
+            lastMessage: "",
             lastMessageTime: DateTime.now().toString(),
             lastMessageStatus: MessageStatus.none,
             lastMessageType: MessageType.none,
@@ -152,6 +153,105 @@ class ChatData {
       log("Error while creating chat: $e", stackTrace: stackTrace);
       throw Exception("Error while creating chat: $e");
     }
+  }
+
+  static void updateChatMessageDataOfUser(
+      {required ChatModel chatModel, required MessageModel message}) {
+    if (chatModel.senderID == null || chatModel.receiverID == null) {
+      return;
+    }
+    String messageType = '';
+    String lastMessage = '';
+    String messageStatus = '';
+    final Stream<UserModel?> receiverDataStream =
+        UserData.getOneUserDataFromDataBaseAsStream(
+            userId: chatModel.receiverID!);
+    final Stream<UserModel?> senderDataStream =
+        UserData.getOneUserDataFromDataBaseAsStream(
+            userId: chatModel.senderID!);
+    receiverDataStream.listen((UserModel? data) async {
+      if (data != null) {
+        switch (message.messageStatus) {
+          case MessageStatus.delivered:
+            messageStatus = 'delivered';
+            break;
+          case MessageStatus.notDelivered:
+            messageStatus = 'not_delivered';
+            break;
+          case MessageStatus.read:
+            messageStatus = 'read';
+            break;
+          case MessageStatus.sent:
+            messageStatus = 'sent';
+            break;
+          case MessageStatus.none:
+            messageStatus = 'none';
+            break;
+          default:
+        }
+        switch (message.messageType) {
+          case MessageType.audio:
+            messageType = 'audio';
+            lastMessage = '🎧Audio';
+            break;
+          case MessageType.contact:
+            messageType = 'contact';
+            lastMessage = '📞Contact';
+            break;
+          case MessageType.document:
+            messageType = 'document';
+            lastMessage = '📄Doc';
+            break;
+          case MessageType.photo:
+            messageType = 'photo';
+            lastMessage = '📷Photo';
+            break;
+
+          case MessageType.video:
+            messageType = 'video';
+            lastMessage = '🎥Video';
+            break;
+          case MessageType.location:
+            messageType = 'location';
+            lastMessage = '📌Location';
+            break;
+          default:
+            lastMessage = message.message??'';
+            messageType = 'text';
+        }
+        await fireStore
+            .collection(usersCollection)
+            .doc(chatModel.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .update({
+          chatLastMessageTime: message.messageTime,
+          lastChatType: messageType,
+          chatLastMessage: lastMessage,
+          lastChatStatus: messageStatus,
+        });
+      } else {
+        throw Exception("User data is null");
+      }
+    });
+
+    senderDataStream.listen((UserModel? data) async {
+      if (data != null) {
+        await fireStore
+            .collection(usersCollection)
+            .doc(chatModel.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .update({
+          chatLastMessageTime: message.messageTime,
+          lastChatType: messageType,
+          chatLastMessage: lastMessage,
+          lastChatStatus: messageStatus,
+        });
+      } else {
+        throw Exception("User data is null");
+      }
+    });
   }
 
   Stream<List<ChatModel>> getAllChatsFromDB() {
@@ -239,33 +339,32 @@ class ChatData {
   Future<void> sendMessageToAChat(
       {required String chatId, required MessageModel message}) async {
     try {
-      if(message.senderID==message.receiverID){
+      if (message.senderID == message.receiverID) {
         await firestore
-          .collection(usersCollection)
-          .doc(message.senderID)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .doc(message.messageId)
-          .set(message.toJson());
-      }
-      else{
+            .collection(usersCollection)
+            .doc(message.senderID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .set(message.toJson());
+      } else {
         await firestore
-          .collection(usersCollection)
-          .doc(message.senderID)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .doc(message.messageId)
-          .set(message.toJson());
-      await firestore
-          .collection(usersCollection)
-          .doc(message.receiverID)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .doc(message.messageId)
-          .set(message.toJson());
+            .collection(usersCollection)
+            .doc(message.senderID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .set(message.toJson());
+        await firestore
+            .collection(usersCollection)
+            .doc(message.receiverID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .set(message.toJson());
       }
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 241: ${e.message}");
@@ -276,14 +375,13 @@ class ChatData {
     }
   }
 
-
   Future<String> sendAssetMessage({
     required String chatID,
     required File file,
   }) async {
     try {
-      final assetUrl =
-          await saveUserFileToDataBaseStorage(ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
+      final assetUrl = await saveUserFileToDataBaseStorage(
+          ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
       return assetUrl;
     } on FirebaseAuthException catch (e) {
       log("Photo send error chat data: ${e.message}");

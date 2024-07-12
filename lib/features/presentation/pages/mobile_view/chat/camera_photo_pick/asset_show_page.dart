@@ -1,4 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +11,14 @@ import 'package:video_player/video_player.dart';
 class AssetShowPage extends StatefulWidget {
   const AssetShowPage({
     super.key,
-    required this.controllers,
+    this.controllers = const {},
     required this.message,
     required this.chatID,
+    required this.messageType,
   });
   final Map<String, VideoPlayerController> controllers;
   final MessageModel message;
+  final MessageType messageType;
   final String chatID;
 
   @override
@@ -22,19 +26,23 @@ class AssetShowPage extends StatefulWidget {
 }
 
 class _AssetShowPageState extends State<AssetShowPage> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controllers[widget.message.message!]!;
-    _controller.addListener(_videoPlayerListener);
+
+    _controller = widget.controllers[widget.message.message];
+    _controller?.addListener(_videoPlayerListener);
   }
 
   void _videoPlayerListener() {
-    if (_controller.value.position == _controller.value.duration) {
+    if (_controller == null) {
+      return;
+    }
+    if (_controller?.value.position == _controller?.value.duration) {
       context.read<MessageBloc>().add(VideoMessageCompleteEvent());
-    } else if (_controller.value.isPlaying) {
+    } else if (_controller!.value.isPlaying) {
       context.read<MessageBloc>().add(VideoMessagePlayEvent());
     } else {
       context.read<MessageBloc>().add(VideoMessagePauseEvent());
@@ -43,73 +51,98 @@ class _AssetShowPageState extends State<AssetShowPage> {
 
   @override
   void dispose() {
-    _controller.removeListener(_videoPlayerListener);
+    _controller?.removeListener(_videoPlayerListener);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          onPressed: () {
-            
-            Navigator.pop(context);
-            
-            context.read<MessageBloc>().add(
-                  GetAllMessageEvent(
-                    chatId: widget.chatID,
-                  ),
-                );
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          VideoPlayer(_controller),
-          Align(
-            alignment: Alignment.center,
-            child: BlocBuilder<MessageBloc, MessageState>(
-              builder: (context, state) {
-                IconData icon;
-                if (_controller.value.position == _controller.value.duration) {
-                  icon = Icons.play_arrow;
-                } else {
-                  icon = _controller.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow;
-                }
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
 
-                return GestureDetector(
-                  onTap: () {
-                    if (_controller.value.isPlaying) {
-                      _controller.pause();
-                      context.read<MessageBloc>().add(VideoMessagePauseEvent());
-                    } else {
-                      _controller.play();
-                      context.read<MessageBloc>().add(VideoMessagePlayEvent());
-                    }
-                  },
-                  child: CircleAvatar(
-                    radius: 30.sp,
-                    backgroundColor: iconGreyColor.withOpacity(0.5),
-                    child: Icon(
-                      icon,
-                      size: 30.sp,
-                      color: kBlack,
+              context.read<MessageBloc>().add(
+                    GetAllMessageEvent(
+                      chatId: widget.chatID,
                     ),
-                  ),
-                );
-              },
+                  );
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
-        ],
-      ),
-    );
+        ),
+        body: _controller != null
+            ? widget.messageType == MessageType.video
+                ? Stack(
+                    children: [
+                      VideoPlayer(_controller!),
+                      Align(
+                        alignment: Alignment.center,
+                        child: BlocBuilder<MessageBloc, MessageState>(
+                          builder: (context, state) {
+                            IconData icon;
+                            if (_controller?.value.position ==
+                                _controller?.value.duration) {
+                              icon = Icons.play_arrow;
+                            } else {
+                              icon = _controller!.value.isPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow;
+                            }
+
+                            return GestureDetector(
+                              onTap: () {
+                                if (_controller!.value.isPlaying) {
+                                  _controller?.pause();
+                                  context
+                                      .read<MessageBloc>()
+                                      .add(VideoMessagePauseEvent());
+                                } else {
+                                  _controller?.play();
+                                  context
+                                      .read<MessageBloc>()
+                                      .add(VideoMessagePlayEvent());
+                                }
+                              },
+                              child: CircleAvatar(
+                                radius: 30.sp,
+                                backgroundColor: iconGreyColor.withOpacity(0.5),
+                                child: Icon(
+                                  icon,
+                                  size: 30.sp,
+                                  color: kBlack,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(
+                    width: screenWidth(context: context),
+                    height: screenHeight(context: context),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      image: NetworkImage(widget.message.message ?? ''),
+                      fit: BoxFit.cover,
+                    )),
+                  )
+            : Container(
+                width: screenWidth(context: context),
+                height: screenHeight(context: context),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: NetworkImage(widget.message.message ?? ''),
+                  fit: BoxFit.cover,
+                )),
+              )
+        //Container(color: Colors.amber,),
+        );
   }
 }

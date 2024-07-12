@@ -15,6 +15,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
   return showDialog(
     context: context,
     builder: (context) => AlertDialog(
+      
       backgroundColor: kBlack,
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
