@@ -72,6 +72,7 @@ class ChatHomePage extends StatelessWidget {
                               log(chat[index].lastMessageTime.toString());
                               final lastMessage = chat[index].lastMessage;
                               return ChatListTileWidget(
+                                isIncomingMessage: chat[index].isIncomingMessage,
                                 chatModel: chat[index],
                                 messageStatus: chat[index].lastMessageStatus ??
                                     MessageStatus.none,

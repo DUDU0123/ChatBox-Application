@@ -5,53 +5,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-messageStatusWidget(
-    {required bool isGone,
-    required bool isSeen,
-    required MessageStatus messageStatus}) {
+messageStatusWidget({
+  required MessageStatus messageStatus,
+  required bool isReceiverOnline,
+  required bool isSenderOnline,
+}) {
   return Padding(
-    padding: EdgeInsets.only(bottom: (isSeen) ? 0 : 2.h, top: isSeen ? 3.h : 0),
-    child: SvgPicture.asset(
-      // !isGone
-      //     ? timer
-      //     : isSeen
-      //         ? doubleTick
-      //         : singleTick,
-      // width: !isGone
-      //     ? 12.w
-      //     : isSeen
-      //         ? 20.w
-      //         : 15.w,
-      // height: !isGone
-      //     ? 12.h
-      //     : isSeen
-      //         ? 20.h
-      //         : 10.h,
-      messageStatus == MessageStatus.notDelivered
-          ? timer
-          : messageStatus == MessageStatus.read
-              ? doubleTick
-              : singleTick,
-
-      width: messageStatus == MessageStatus.notDelivered
-          ? 12.w
-          : messageStatus == MessageStatus.read
-              ? 20.w
-              : 15.w,
-      height: messageStatus == MessageStatus.notDelivered
-          ? 12.h
-          : messageStatus == MessageStatus.read
-              ? 20.h
-              : 10.h,
-      colorFilter: ColorFilter.mode(
-        darkSmallTextColor,
-        BlendMode.srcIn,
-      ),
+    padding: EdgeInsets.only(
+        bottom: messageStatus == MessageStatus.sent ? 0 : 2.h,
+        top: messageStatus == MessageStatus.sent ? 3.h : 0),
+    child: Icon(
+      messageStatus == MessageStatus.sent
+          ? messageStatus == MessageStatus.delivered
+              ? messageStatus == MessageStatus.read
+                  ? Icons.done_all
+                  : Icons.done_all
+              : Icons.done
+          : Icons.update,
+      color:  messageStatus == MessageStatus.sent
+          ? messageStatus == MessageStatus.delivered
+              ? messageStatus == MessageStatus.read
+                  ? buttonSmallTextColor
+                  : iconGreyColor
+              : iconGreyColor
+          : iconGreyColor,
+      size: 18.sp,
     ),
   );
 }
 
-Icon greyIconWidget({required iconName}) {
+Widget greyIconWidget({required iconName}) {
   return Icon(
     iconName,
     color: kGrey,
@@ -59,7 +42,7 @@ Icon greyIconWidget({required iconName}) {
   );
 }
 
-Image tileMuteIconWidget() {
+Widget tileMuteIconWidget() {
   return Image.asset(
     mute,
     width: 20.w,
@@ -80,7 +63,7 @@ ChatTileSmallTextWidget typingWidget({required bool isGroup}) {
   );
 }
 
-SvgPicture tileMicrophoneSvgIcon() {
+Widget tileMicrophoneSvgIcon() {
   //{required bool isReaded}
   return SvgPicture.asset(
     microphoneFilled,
@@ -95,7 +78,7 @@ SvgPicture tileMicrophoneSvgIcon() {
   );
 }
 
-SvgPicture tileDocumentSvgIcon() {
+Widget tileDocumentSvgIcon() {
   return SvgPicture.asset(
     document,
     width: 25.w,

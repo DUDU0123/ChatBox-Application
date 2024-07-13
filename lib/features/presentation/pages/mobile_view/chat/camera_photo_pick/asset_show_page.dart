@@ -1,6 +1,7 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +86,9 @@ class _AssetShowPageState extends State<AssetShowPage> {
                         alignment: Alignment.center,
                         child: BlocBuilder<MessageBloc, MessageState>(
                           builder: (context, state) {
+                            if (state is MessageLoadingState) {
+                              return commonAnimationWidget(context: context, isTextNeeded: false );
+                            }
                             IconData icon;
                             if (_controller?.value.position ==
                                 _controller?.value.duration) {
@@ -130,7 +134,7 @@ class _AssetShowPageState extends State<AssetShowPage> {
                     decoration: BoxDecoration(
                         image: DecorationImage(
                       image: NetworkImage(widget.message.message ?? ''),
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     )),
                   )
             : Container(
@@ -139,7 +143,7 @@ class _AssetShowPageState extends State<AssetShowPage> {
                 decoration: BoxDecoration(
                     image: DecorationImage(
                   image: NetworkImage(widget.message.message ?? ''),
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 )),
               )
         //Container(color: Colors.amber,),

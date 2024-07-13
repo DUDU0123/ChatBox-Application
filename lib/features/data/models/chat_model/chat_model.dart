@@ -18,6 +18,8 @@ class ChatModel extends ChatEntity {
     super.attachmentsWithMessage,
     super.receiverName,
     super.isMuted,
+    super.isIncomingMessage,
+    super.isChatOpen,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> map) {
@@ -35,6 +37,8 @@ class ChatModel extends ChatEntity {
       lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
       lastMessageType: MessageType.values.byName(map[lastChatType]),
       receiverName: map[receiverNameInChatList],
+      isIncomingMessage: map[isIncoming],
+      isChatOpen: map[isUserChatOpen]??false,
     );
   }
   Map<String, dynamic> toJson() {
@@ -51,6 +55,8 @@ class ChatModel extends ChatEntity {
       lastChatStatus: lastMessageStatus?.name,
       receiverNameInChatList: receiverName,
       'attachments': attachmentsWithMessage,
+      isIncoming :isIncomingMessage,
+      isUserChatOpen :isChatOpen,
     };
   }
 
@@ -66,6 +72,8 @@ class ChatModel extends ChatEntity {
     String? receiverProfileImage,
     String? receiverName,
     bool? isMuted,
+    bool? isIncomingMessage,
+    bool? isChatOpen,
   }) {
     return ChatModel(
       chatID: chatID ?? this.chatID,
@@ -79,5 +87,7 @@ class ChatModel extends ChatEntity {
       receiverProfileImage: receiverProfileImage ?? this.receiverProfileImage,
       receiverName: receiverName ?? this.receiverName,
       isMuted: isMuted ?? this.isMuted,
+      isIncomingMessage: isIncomingMessage??this.isIncomingMessage,
+      isChatOpen: isChatOpen??this.isChatOpen,
     );}
 }

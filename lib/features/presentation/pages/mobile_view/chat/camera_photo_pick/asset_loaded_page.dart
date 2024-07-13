@@ -48,13 +48,18 @@ class _AssetLoadedPageState extends State<AssetLoadedPage> {
             if (state is MessageErrorState) {
               return commonErrorWidget();
             }
-            if (state is MessageSucessState) {
-              VideoPlayerController.networkUrl(
-                      Uri.parse(state.messageModel!.message!))
-                  .initialize()
-                  .then((_) {
+            if (state is MessageState) {
+            state.messageModel?.messageType==MessageType.video?  VideoPlayerController.networkUrl(
+                Uri.parse(
+                  state.messageModel != null
+                      ? state.messageModel!.message != null
+                          ? state.messageModel!.message!
+                          : ''
+                      : '',
+                ),
+              ).initialize().then((_) {
                 videoPlayerController?.play();
-              });
+              }):null;
               if (state.messageModel == null) {
                 return zeroMeasureWidget;
               }
@@ -66,9 +71,13 @@ class _AssetLoadedPageState extends State<AssetLoadedPage> {
                     width: screenWidth(context: context),
                     child: state.messageModel?.message != null
                         ? state.messageModel?.messageType == MessageType.video
-                            ? videoPlayerController != null && videoPlayerController!.value.isInitialized
+                            ? videoPlayerController != null &&
+                                    videoPlayerController!.value.isInitialized
                                 ? VideoPlayer(videoPlayerController!)
-                                : commonAnimationWidget(context: context, isTextNeeded: false,)
+                                : commonAnimationWidget(
+                                    context: context,
+                                    isTextNeeded: false,
+                                  )
                             : Image.network(
                                 state.messageModel!.message!,
                                 fit: BoxFit.cover,

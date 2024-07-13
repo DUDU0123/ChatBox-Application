@@ -11,14 +11,13 @@ import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ChatBarWidget extends StatelessWidget {
+class ChatBarWidget extends StatefulWidget {
   ChatBarWidget({
     super.key,
     required this.messageController,
@@ -33,6 +32,11 @@ class ChatBarWidget extends StatelessWidget {
   final ScrollController scrollController;
   final FlutterSoundRecorder recorder;
 
+  @override
+  State<ChatBarWidget> createState() => _ChatBarWidgetState();
+}
+
+class _ChatBarWidgetState extends State<ChatBarWidget> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -90,20 +94,17 @@ class ChatBarWidget extends StatelessWidget {
                                 color: kWhite,
                               ),
                               onChanged: (value) {
-                                log(messageController.text);
+                                log(widget.messageController.text);
 
                                 context.read<MessageBloc>().add(
                                       MessageTypedEvent(
                                         textLength: value.length,
                                       ),
                                     );
-                                context.read<MessageBloc>().add(
-                                    GetAllMessageEvent(
-                                        chatId: chatModel.chatID ?? ''));
                               },
                               hintText: "Type message...",
                               maxLines: 5,
-                              controller: messageController,
+                              controller: widget.messageController,
                               textAlign: TextAlign.start,
                               border: InputBorder.none,
                               cursorColor: buttonSmallTextColor,
@@ -114,9 +115,11 @@ class ChatBarWidget extends StatelessWidget {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  context
-                                      .read<MessageBloc>()
-                                      .add(AttachmentIconClickedEvent());
+                                  widget.chatModel.chatID != null
+                                      ? context.read<MessageBloc>().add(
+                                          AttachmentIconClickedEvent(
+                                              chatID: widget.chatModel.chatID!))
+                                      : null;
                                 },
                                 icon: Icon(
                                   Icons.attach_file,
@@ -126,7 +129,7 @@ class ChatBarWidget extends StatelessWidget {
                               IconButton(
                                 onPressed: () async {
                                   videoOrPhotoTakeFromCameraSourceMethod(
-                                    chatModel: chatModel,
+                                    chatModel: widget.chatModel,
                                     context: context,
                                   );
                                 },
@@ -156,30 +159,34 @@ class ChatBarWidget extends StatelessWidget {
                         child: Center(
                             child: IconButton(
                           onPressed: () async {
-                             if (messageController.text.isNotEmpty) {
-                                sendMessage(
-                                  chatModel: chatModel,
-                                  context: context,
-                                  messageController: messageController,
-                                  scrollController: scrollController,
-                                );
-                              } else {
-                                context.read<MessageBloc>().add(AudioRecordToggleEvent(chatModel: chatModel, recorder: recorder,),);
-                              }
+                            if (widget.messageController.text.isNotEmpty) {
+                              sendMessage(
+                                chatModel: widget.chatModel,
+                                context: context,
+                                messageController: widget.messageController,
+                                scrollController: widget.scrollController,
+                              );
+                            } else {
+                              context.read<MessageBloc>().add(
+                                    AudioRecordToggleEvent(
+                                      chatModel: widget.chatModel,
+                                      recorder: widget.recorder,
+                                    ),
+                                  );
+                            }
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(
-                            buildWhen: (previous, current) =>
-                                previous != current,
                             builder: (context, state) {
-                              return SvgPicture.asset(
+
+                              return !state.isRecording!? SvgPicture.asset(
                                 width: 24.w,
                                 height: 24.h,
                                 colorFilter:
                                     ColorFilter.mode(kBlack, BlendMode.srcIn),
-                                state.isTyped ?? false
+                                state.isTyped ?? false||widget.messageController.text.isNotEmpty
                                     ? sendIcon
                                     : microphoneFilled,
-                              );
+                              ): Icon(Icons.stop, color: kBlack,);
                             },
                           ),
                         )),
@@ -188,8 +195,8 @@ class ChatBarWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              isImojiButtonClicked
-                  ? emojiSelect(textEditingController: messageController)
+              widget.isImojiButtonClicked
+                  ? emojiSelect(textEditingController: widget.messageController)
                   : zeroMeasureWidget,
             ],
           ),
@@ -206,6 +213,7 @@ void sendMessage({
   required ScrollController scrollController,
 }) {
   MessageModel message = MessageModel(
+    messageId: DateTime.now().millisecondsSinceEpoch.toString(),
     senderID: chatModel.senderID,
     receiverID: chatModel.receiverID,
     messageTime: DateTime.now().toString(),
@@ -232,3 +240,166 @@ void sendMessage({
     messageController.clear();
   }
 }
+
+
+// class ChatBarWidget extends StatelessWidget {
+//   ChatBarWidget({
+//     super.key,
+//     required this.messageController,
+//     required this.chatModel,
+//     required this.scrollController,
+//     required this.recorder,
+//     this.isImojiButtonClicked = false,
+//   });
+//   final TextEditingController messageController;
+//   final ChatModel chatModel;
+//   bool isImojiButtonClicked;
+//   final ScrollController scrollController;
+//   final FlutterSoundRecorder recorder;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ClipRRect(
+//       borderRadius: BorderRadius.circular(20.sp),
+//       child: Container(
+//         padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+//         decoration: BoxDecoration(
+//           color: kTransparent,
+//           // image: DecorationImage(
+//           //     image: AssetImage(
+//           //       Provider.of<ThemeManager>(context).isDark
+//           //           ? bgImageDark
+//           //           : bgImageLight,
+//           //     ),
+//           //     fit: BoxFit.cover),
+//         ),
+//         width: screenWidth(context: context),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             children: [
+//               Padding(
+//                 padding: EdgeInsets.only(bottom: 10, left: 4.w),
+//                 child: Row(
+//                   crossAxisAlignment: CrossAxisAlignment.end,
+//                   children: [
+//                     Container(
+//                       padding: EdgeInsets.only(left: 5.w, right: 5.w),
+//                       width: screenWidth(context: context) / 1.2,
+//                       decoration: BoxDecoration(
+//                         borderRadius: BorderRadius.circular(20.sp),
+//                         color: const Color.fromARGB(255, 39, 52, 78),
+//                       ),
+//                       child: Row(
+//                         crossAxisAlignment: CrossAxisAlignment.end,
+//                         children: [
+//                           IconButton(
+//                             onPressed: () {
+//                             },
+//                             icon: SvgPicture.asset(
+//                               width: 25.w,
+//                               height: 25.h,
+//                               colorFilter: ColorFilter.mode(
+//                                   iconGreyColor, BlendMode.srcIn),
+//                               smileIcon,
+//                             ),
+//                           ),
+//                           Expanded(
+//                             child: TextFieldCommon(
+//                               style: fieldStyle(context: context).copyWith(
+//                                 fontWeight: FontWeight.w400,
+//                                 color: kWhite,
+//                               ),
+//                               onChanged: (value) {
+//                                 log(messageController.text);
+
+//                                 context.read<MessageBloc>().add(
+//                                       MessageTypedEvent(
+//                                         textLength: value.length,
+//                                       ),
+//                                     );
+
+//                               },
+//                               hintText: "Type message...",
+//                               maxLines: 5,
+//                               controller: messageController,
+//                               textAlign: TextAlign.start,
+//                               border: InputBorder.none,
+//                               cursorColor: buttonSmallTextColor,
+//                             ),
+//                           ),
+//                           Row(
+//                             mainAxisAlignment: MainAxisAlignment.end,
+//                             children: [
+//                               IconButton(
+//                                 onPressed: () {
+//                                chatModel.chatID!=null?   context
+//                                       .read<MessageBloc>()
+//                                       .add(AttachmentIconClickedEvent(chatID: chatModel.chatID!)):null;
+
+//                                 },
+//                                 icon: Icon(
+//                                   Icons.attach_file,
+//                                   color: iconGreyColor,
+//                                 ),
+//                               ),
+//                               IconButton(
+//                                 onPressed: () async {
+//                                   videoOrPhotoTakeFromCameraSourceMethod(
+//                                     chatModel: chatModel,
+//                                     context: context,
+//                                   );
+//                                 },
+//                                 icon: SvgPicture.asset(
+//                                   width: 25.w,
+//                                   height: 25.h,
+//                                   colorFilter: ColorFilter.mode(
+//                                     iconGreyColor,
+//                                     BlendMode.srcIn,
+//                                   ),
+//                                   cameraIcon,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     //kWidth2,
+//                     Expanded(
+//                       child: Container(
+//                         height: 45.h,
+//                         decoration: BoxDecoration(
+//                           color: buttonSmallTextColor,
+//                           shape: BoxShape.circle,
+//                         ),
+//                         child: Center(
+//                             child: IconButton(
+//                           onPressed: () async {
+//                           },
+//                           icon: BlocBuilder<MessageBloc, MessageState>(
+//                             builder: (context, state) {
+//                               return SvgPicture.asset(
+//                                 width: 24.w,
+//                                 height: 24.h,
+//                                 colorFilter:
+//                                     ColorFilter.mode(kBlack, BlendMode.srcIn),
+//                                 state.isTyped ?? false
+//                                     ? sendIcon
+//                                     : microphoneFilled,
+//                               );
+//                             },
+//                           ),
+//                         )),
+//                       ),
+//                     )
+//                   ],
+//                 ),
+//               ),
+              
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

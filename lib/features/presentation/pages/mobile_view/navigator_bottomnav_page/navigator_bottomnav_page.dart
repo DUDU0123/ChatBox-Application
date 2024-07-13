@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/utils/get_appbar_title.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
+import 'package:chatbox/features/data/repositories/auth_repo/authentication_repo_impl.dart';
 import 'package:chatbox/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/calls/call_home_page.dart';
@@ -32,22 +33,49 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
   ];
 
   PageController pageController = PageController(initialPage: 0);
+  
 
   @override
   void initState() {
-
     super.initState();
     UserData.updateUserNetworkStatusInApp(isOnline: true);
-    SystemChannels.lifecycle.setMessageHandler((message) {
-      log(message.toString());
-      if(message.toString().contains("resume"))UserData.updateUserNetworkStatusInApp(isOnline: true);
-      if(message.toString().contains("pause"))UserData.updateUserNetworkStatusInApp(isOnline: false);
-      return Future.value(message);
-    },);
+    SystemChannels.lifecycle.setMessageHandler(
+      (message) async {
+        log(message.toString());
+        if (message.toString().contains("resume") &&
+            await AuthenticationRepoImpl.isConnected()) {
+          UserData.updateUserNetworkStatusInApp(isOnline: true);
+        } else if (message.toString().contains("pause") ||
+            (message.toString().contains("pause") &&
+                !await AuthenticationRepoImpl.isConnected()) ||
+            !await AuthenticationRepoImpl.isConnected()) {
+          UserData.updateUserNetworkStatusInApp(isOnline: false);
+        }
+        AuthenticationRepoImpl.isConnected().then((v) => log(v.toString()));
+        return Future.value(message);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    UserData.updateUserNetworkStatusInApp(isOnline: true);
+    SystemChannels.lifecycle.setMessageHandler(
+      (message) async {
+        log(message.toString());
+        if (message.toString().contains("resume") &&
+            await AuthenticationRepoImpl.isConnected()) {
+          UserData.updateUserNetworkStatusInApp(isOnline: true);
+        } else if (message.toString().contains("pause") ||
+            (message.toString().contains("pause") &&
+                !await AuthenticationRepoImpl.isConnected()) ||
+            !await AuthenticationRepoImpl.isConnected()) {
+          UserData.updateUserNetworkStatusInApp(isOnline: false);
+        }
+        AuthenticationRepoImpl.isConnected().then((v) => log(v.toString()));
+        return Future.value(message);
+      },
+    );
     final bottomNavBloc = BlocProvider.of<BottomNavBloc>(context);
     return Scaffold(
       body: NestedScrollView(
@@ -58,18 +86,19 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
                 return SliverAppBar(
                   expandedHeight: 0,
                   surfaceTintColor: kTransparent,
-                  floating: state.currentIndex == 0 ,
-                  pinned: state.currentIndex != 0 ,
+                  floating: state.currentIndex == 0,
+                  pinned: state.currentIndex != 0,
                   snap: state.currentIndex == 0,
                   automaticallyImplyLeading: false,
                   title: AppBarTitleHome(
-                    appBarTitle: getAppBarTitle(currentIndex: state.currentIndex),
+                    appBarTitle:
+                        getAppBarTitle(currentIndex: state.currentIndex),
                   ),
                   actions: appBarIconsHome(
                     context: context,
                     currentIndex: state.currentIndex,
                     theme: Theme.of(context),
-                    isSearchIconNeeded:state.currentIndex==2,
+                    isSearchIconNeeded: state.currentIndex == 2,
                   ),
                 );
               },
@@ -79,9 +108,8 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
         body: BlocBuilder<BottomNavBloc, BottomNavState>(
           builder: (context, state) {
             return PageView(
-
               onPageChanged: (index) {
-                if (index==0) {
+                if (index == 0) {
                   context.read<ChatBloc>().add(GetAllChatsEvent());
                 }
                 bottomNavBloc.add(

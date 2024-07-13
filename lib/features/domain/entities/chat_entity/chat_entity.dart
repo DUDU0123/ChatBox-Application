@@ -15,6 +15,8 @@ class ChatEntity extends Equatable {
   final MessageType? lastMessageType;
   final int? notificationCount;
   final String? senderID;
+  final bool? isIncomingMessage;
+  final bool? isChatOpen;
   const ChatEntity({
     this.receiverName,
     this.attachmentsWithMessage,
@@ -28,6 +30,8 @@ class ChatEntity extends Equatable {
     this.senderID,
     this.lastMessageStatus,
     this.lastMessageType,
+    this.isIncomingMessage,
+    this.isChatOpen,
   });
 
   @override
@@ -45,6 +49,8 @@ class ChatEntity extends Equatable {
       lastMessageType,
       receiverName,
       attachmentsWithMessage,
+      isIncomingMessage,
+      isChatOpen,
     ];
   }
 }

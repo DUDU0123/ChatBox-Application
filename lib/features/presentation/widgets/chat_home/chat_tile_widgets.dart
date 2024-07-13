@@ -55,7 +55,7 @@ Widget buildProfileImage({
             color: Theme.of(context).popupMenuTheme.color,
             shape: BoxShape.circle,
           ),
-          child:  Center(
+          child: Center(
             child: Icon(
               Icons.person,
               color: const Color.fromARGB(255, 134, 134, 134),
@@ -75,48 +75,32 @@ Widget buildUserName({required String userName}) {
 }
 
 Widget buildSubtitle(
-    {required bool? isOutgoing,
-    required bool? isIncomingMessage,
+    {required bool? isIncomingMessage,
     required bool isGroup,
     required bool? isTyping,
+    required bool isReceiverOnline, required bool isSenderOnline,
     required bool? isVoiceRecoding,
-    required bool? isGone,
-    required bool? isSeen,
     required String? lastMessage,
-    required bool? isAudio,
-    required bool? isDocument,
-    required bool? isPhoto,
-    required bool? isRecordedAudio,
-    required bool? isContact,
     required MessageStatus messageStatus}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.end,
     mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      if (isOutgoing ?? false)
+      if (isIncomingMessage == null) zeroMeasureWidget,
+      if (isIncomingMessage == false)
         buildOutgoingStatus(
+          isReceiverOnline: isReceiverOnline,
+          isSenderOnline: isSenderOnline,
           messageStatus: messageStatus,
           isTyping: isTyping,
           isVoiceRecoding: isVoiceRecoding,
-          isGone: isGone,
-          isSeen: isSeen,
         ),
-      if (isIncomingMessage ?? false)
+      if (isGroup && isIncomingMessage == true)
         buildIncomingPrefix(
           isTyping: isTyping,
           isVoiceRecoding: isVoiceRecoding,
         ),
-      buildMessageIcon(
-        isAudio: isAudio,
-        isContact: isContact,
-        isDocument: isDocument,
-        isPhoto: isPhoto,
-        isRecordedAudio: isRecordedAudio,
-        isGroup: isGroup,
-        isTyping: isTyping,
-        isVoiceRecoding: isVoiceRecoding,
-      ),
       buildMessageText(
         isTyping: isTyping,
         isVoiceRecoding: isVoiceRecoding,
@@ -129,14 +113,15 @@ Widget buildSubtitle(
 Widget buildOutgoingStatus(
     {required bool? isTyping,
     required bool? isVoiceRecoding,
-    required bool? isGone,
-    required bool? isSeen,
+    required bool isReceiverOnline,
+    required bool isSenderOnline,
     required MessageStatus messageStatus}) {
   if (!(isTyping ?? false) && !(isVoiceRecoding ?? false)) {
     return messageStatusWidget(
-        messageStatus: messageStatus,
-        isGone: isGone ?? false,
-        isSeen: isSeen ?? false);
+      isReceiverOnline: isReceiverOnline,
+      isSenderOnline: isSenderOnline,
+      messageStatus: messageStatus,
+    );
   }
   return zeroMeasureWidget;
 }
@@ -153,26 +138,6 @@ Widget buildIncomingPrefix({
       fontWeight: FontWeight.normal,
     );
   }
-  return zeroMeasureWidget;
-}
-
-Widget buildMessageIcon({
-  required bool isGroup,
-  required bool? isTyping,
-  required bool? isVoiceRecoding,
-  required bool? isAudio,
-  required bool? isDocument,
-  required bool? isPhoto,
-  required bool? isRecordedAudio,
-  required bool? isContact,
-}) {
-  if (isTyping ?? false) return typingWidget(isGroup: isGroup);
-  if (isVoiceRecoding ?? false) return recordingWidget(isGroup: isGroup);
-  if (isAudio ?? false) return greyIconWidget(iconName: Icons.headphones);
-  if (isPhoto ?? false) return greyIconWidget(iconName: Icons.photo);
-  if (isDocument ?? false) return tileDocumentSvgIcon();
-  if (isRecordedAudio ?? false) return tileMicrophoneSvgIcon();
-  if (isContact ?? false) return greyIconWidget(iconName: Icons.person);
   return zeroMeasureWidget;
 }
 
@@ -209,6 +174,7 @@ Widget buildTrailing(
           text: lastMessageTime ?? '',
           fontSize: 10.sp,
           fontWeight: FontWeight.normal,
+          textColor: kGrey,
         ),
         Row(
           mainAxisSize: MainAxisSize.min,

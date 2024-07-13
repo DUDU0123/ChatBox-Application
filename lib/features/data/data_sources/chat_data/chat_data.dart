@@ -154,7 +154,6 @@ class ChatData {
       throw Exception("Error while creating chat: $e");
     }
   }
-
   static void updateChatMessageDataOfUser(
       {required ChatModel chatModel, required MessageModel message}) {
     if (chatModel.senderID == null || chatModel.receiverID == null) {
@@ -174,9 +173,6 @@ class ChatData {
         switch (message.messageStatus) {
           case MessageStatus.delivered:
             messageStatus = 'delivered';
-            break;
-          case MessageStatus.notDelivered:
-            messageStatus = 'not_delivered';
             break;
           case MessageStatus.read:
             messageStatus = 'read';
@@ -229,6 +225,7 @@ class ChatData {
           lastChatType: messageType,
           chatLastMessage: lastMessage,
           lastChatStatus: messageStatus,
+          isIncoming: message.senderID == chatModel.receiverID,
         });
       } else {
         throw Exception("User data is null");
@@ -239,7 +236,7 @@ class ChatData {
       if (data != null) {
         await fireStore
             .collection(usersCollection)
-            .doc(chatModel.senderID)
+            .doc(chatModel.receiverID)
             .collection(chatsCollection)
             .doc(chatModel.chatID)
             .update({
@@ -247,6 +244,7 @@ class ChatData {
           lastChatType: messageType,
           chatLastMessage: lastMessage,
           lastChatStatus: messageStatus,
+          isIncoming: message.senderID != chatModel.receiverID,
         });
       } else {
         throw Exception("User data is null");

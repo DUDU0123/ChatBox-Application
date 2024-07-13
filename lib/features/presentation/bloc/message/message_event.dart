@@ -18,7 +18,16 @@ class MessageTypedEvent extends MessageEvent {
       ];
 }
 
-class AttachmentIconClickedEvent extends MessageEvent {}
+class AttachmentIconClickedEvent extends MessageEvent {
+  final String chatID;
+  const AttachmentIconClickedEvent({
+    required this.chatID,
+  });
+  @override
+  List<Object> get props => [
+        chatID,
+      ];
+}
 
 class MessageSentEvent extends MessageEvent {
   final ChatModel chatModel;
@@ -185,6 +194,22 @@ class LocationMessageSendEvent extends MessageEvent {
   const LocationMessageSendEvent({
     required this.chatModel,
     required this.location,
+  });
+  @override
+  List<Object> get props => [chatModel];
+}
+class ChatOpenedEvent extends MessageEvent {
+  final ChatModel chatModel;
+  const ChatOpenedEvent({
+    required this.chatModel,
+  });
+  @override
+  List<Object> get props => [chatModel];
+}
+class ChatClosedEvent extends MessageEvent{
+  final ChatModel chatModel;
+  const ChatClosedEvent({
+    required this.chatModel,
   });
   @override
   List<Object> get props => [chatModel];

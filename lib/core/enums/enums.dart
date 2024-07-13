@@ -29,7 +29,6 @@ enum MessageStatus {
   sent,
   delivered,
   read,
-  notDelivered,
   none,
 }
 

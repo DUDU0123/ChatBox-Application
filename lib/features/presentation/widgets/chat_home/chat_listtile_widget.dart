@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
@@ -56,9 +57,33 @@ class ChatListTileWidget extends StatelessWidget {
   final ChatModel chatModel;
   final MessageStatus messageStatus;
 
+  bool? getUserNetworkStatus({required String userID}) {
+    bool? isOnline = false;
+
+    UserData.getOneUserDataFromDataBaseAsStream(userId: userID).listen((user) {
+      if (user == null) {
+        return;
+      }
+      if (user.userNetworkStatus == null) {
+        return;
+      }
+      if (user.userNetworkStatus!) {
+        log("User Status: ${user.userNetworkStatus}");
+        isOnline = user.userNetworkStatus;
+      }
+    });
+
+    return isOnline;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+                  context
+              .read<MessageBloc>()
+              .add(GetAllMessageEvent(chatId: chatModel.chatID!));
+      },
       onLongPress: () {
         chatTileActionsOnLongPressMethod(
           context: context,
@@ -74,15 +99,9 @@ class ChatListTileWidget extends StatelessWidget {
                 chatModel: chatModel,
                 userName: userName,
                 isGroup: isGroup,
-                //isReadedMessage: isSeen,
               ),
             ),
           );
-          if (chatModel.chatID != null) {
-            context
-                .read<MessageBloc>()
-                .add(GetAllMessageEvent(chatId: chatModel.chatID!));
-          }
         },
         leading: GestureDetector(
           onTap: () {
@@ -98,7 +117,18 @@ class ChatListTileWidget extends StatelessWidget {
           ),
         ),
         title: buildUserName(userName: userName),
-        subtitle: TextWidgetCommon(text: lastMessage??''),
+        subtitle: buildSubtitle(
+          isReceiverOnline:
+              getUserNetworkStatus(userID: chatModel.receiverID ?? '') ?? false,
+          isSenderOnline:
+              getUserNetworkStatus(userID: chatModel.receiverID ?? '') ?? false,
+          messageStatus: messageStatus,
+          isGroup: false,
+          isIncomingMessage: isIncomingMessage,
+          isTyping: false,
+          isVoiceRecoding: false,
+          lastMessage: lastMessage,
+        ),
         trailing: buildTrailing(
           context: context,
           notificationCount: notificationCount,

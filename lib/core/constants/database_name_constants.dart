@@ -47,7 +47,9 @@ const receiverProfilePhoto = 'receiver_profile_image';
 const chatMuted = 'is_muted_chat';
 const lastChatStatus = 'last_message_status';
 const lastChatType = 'last_message_type';
+const isIncoming = 'is_incoming';
 const receiverNameInChatList = 'receiver_name';
+const isUserChatOpen = 'isChatOpen';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

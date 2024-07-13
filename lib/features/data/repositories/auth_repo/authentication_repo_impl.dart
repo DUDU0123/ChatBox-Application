@@ -164,7 +164,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required this.firebaseAuth,
   });
 
-  Future<bool> isConnected() async {
+  static Future<bool> isConnected() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     return connectivityResult != ConnectivityResult.none;
   }

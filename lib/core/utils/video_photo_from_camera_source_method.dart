@@ -30,8 +30,8 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                       chatModel: chatModel,
                     ),
                   );
-              // Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
+              Navigator.pop(context);
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
           ),
           iconContainerWidgetGradientColor(
@@ -44,7 +44,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                       chatModel: chatModel,
                     ),
                   );
-              // Navigator.pop(context);
+              Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
           ),
