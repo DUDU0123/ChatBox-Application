@@ -57,21 +57,3 @@ Future<File?> takeVideoAsset({required ImageSource imageSource}) async {
     throw Exception(e);
   }
 }
-
-// Future<File?> takeImageUsingCameraController({
-//   required CameraController cameraController,
-// }) async {
-//   File? file;
-//   try {
-//     XFile pickedXFile = await cameraController.takePicture();
-//     file = xFileToFileConverter(xfile: pickedXFile);
-//     if (file != null) {
-//       return file;
-//     } else {
-//       return null;
-//     }
-//   } catch (e) {
-//     log("takeImageUsingCameraController error");
-//     throw Exception(e);
-//   }
-// }

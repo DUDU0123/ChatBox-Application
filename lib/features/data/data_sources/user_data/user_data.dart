@@ -52,7 +52,7 @@ class UserData {
     try {
       return fireStore.collection(usersCollection).doc(userId).snapshots().map(
             (event) => UserModel.fromJson(
-              map: event.data()!,
+              map: event.data()??{},
             ),
           );
     } on FirebaseAuthException catch (e) {
@@ -66,7 +66,7 @@ class UserData {
     }
   }
 
-  static updateUserNetworkStatusInApp({required bool isOnline}) async{
+  static updateUserNetworkStatusInApp({required bool isOnline}) async {
     await fireStore
         .collection(usersCollection)
         .doc(firebaseAuth.currentUser?.uid)
@@ -188,13 +188,47 @@ class UserData {
   }
 
   // Method to delete user in DB
+  // Future<void> deleteUserInFireStoreDB({required String userId}) async {
+  //   try {
+  //     await firestore.collection(usersCollection).doc(userId).delete();
+  //     final userDoc = firestore.collection(usersCollection).doc(userId);
+  //     final userChats = userDoc.collection(chatsCollection);
+  //     final userChatDocs = await userChats.get();
+  //     for (final chatDocument in userChatDocs.docs) {
+  //       if (chatDocument.exists) {
+  //         await chatDocument.reference.delete();
+  //       }
+  //     }
+  //     await userDoc.delete();
+  //   } on FirebaseAuthException catch (e) {
+  //     log(
+  //       'Firebase Auth exception: $e',
+  //     );
+  //     throw Exception("Error while deleting user data: $e");
+  //   } catch (e, stackTrace) {
+  //     log('Error while deleting user data: $e', stackTrace: stackTrace);
+  //     throw Exception("Error while deleting user data: $e");
+  //   }
+  // }
+
+
   Future<void> deleteUserInFireStoreDB({required String userId}) async {
     try {
-      await firestore.collection(usersCollection).doc(userId).delete();
+      // Get the reference to the user's document
+      final userDocRef = firestore.collection(usersCollection).doc(userId);
+      // Get the reference to the user's chats collection
+      final userChatsCollectionRef = userDocRef.collection(chatsCollection);
+      // Get all the documents in the user's chats collection
+      final userChatsSnapshot = await userChatsCollectionRef.get();
+      // Delete each document in the user's chats collection
+      for (final chatDoc in userChatsSnapshot.docs) {
+        await chatDoc.reference.delete();
+      }
+
+      // Delete the user's document
+      await userDocRef.delete();
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      log('Firebase Auth exception: $e');
       throw Exception("Error while deleting user data: $e");
     } catch (e, stackTrace) {
       log('Error while deleting user data: $e', stackTrace: stackTrace);

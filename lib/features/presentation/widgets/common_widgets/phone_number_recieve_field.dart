@@ -73,6 +73,4 @@ class PhoneNumberRecieveField extends StatelessWidget {
       ),
     );
   }
-
-  
 }

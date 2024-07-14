@@ -14,20 +14,6 @@ class AppIconHoldWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.sp),
-        // boxShadow:  [
-          // BoxShadow(
-          //   offset: const Offset(0, 0),
-          //   blurRadius: 1,
-          //   spreadRadius: 0.5,
-          //   color: theme.shadowColor,
-          // ),
-          // BoxShadow(
-          //   offset: const Offset(0, 0),
-          //   blurRadius: 1,
-          //   spreadRadius: 0.5,
-          //   color: theme.shadowColor,
-          // )
-        // ]
       ),
       height: 150,width: 150,
       child: Image.asset(

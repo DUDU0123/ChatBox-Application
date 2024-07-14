@@ -11,7 +11,7 @@ Widget messageStatusShowWidget({
 }) {
   return Positioned(
     bottom: 6.h,
-    right: 18.w,
+    right: 8.w,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -20,32 +20,32 @@ Widget messageStatusShowWidget({
             timeStamp: message.messageTime.toString(),
           ),
           fontSize: 10.sp,
-          textColor: kBlack,
+          textColor: iconGreyColor,
         ),
         kWidth2,
         Icon(
           Icons.done,
-          color: kBlack,
+          color: iconGreyColor,
           size: 12.sp,
         ),
         kWidth2,
-        Icon(
-          Icons.push_pin_rounded,
-          color: kBlack,
-          size: 12.sp,
-        ),
-        kWidth2,
-        Icon(
-          Icons.star,
-          color: kBlack,
-          size: 12.sp,
-        ),
-        kWidth2,
-        Icon(
-          Icons.done_all,
-          color: kBlack,
-          size: 12.sp,
-        )
+        // Icon(
+        //   Icons.push_pin_rounded,
+        //   color: iconGreyColor,
+        //   size: 12.sp,
+        // ),
+        // kWidth2,
+        // Icon(
+        //   Icons.star,
+        //   color: iconGreyColor,
+        //   size: 12.sp,
+        // ),
+        // kWidth2,
+        // Icon(
+        //   Icons.done_all,
+        //   color: iconGreyColor,
+        //   size: 12.sp,
+        // )
       ],
     ),
   );

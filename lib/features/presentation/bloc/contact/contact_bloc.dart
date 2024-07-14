@@ -60,7 +60,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       ClearListEvent event, Emitter<ContactState> emit) {
     try {
       emit(ContactState(
-          contactList: state.contactList, selectedContactList: []));
+          contactList: state.contactList, selectedContactList: const[]));
     } catch (e) {
       emit(ContactsErrorState(message: e.toString()));
     }

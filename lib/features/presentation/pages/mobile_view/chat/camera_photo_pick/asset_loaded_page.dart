@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
@@ -49,28 +48,28 @@ class _AssetLoadedPageState extends State<AssetLoadedPage> {
               return commonErrorWidget();
             }
             if (state is MessageState) {
-            state.messageModel?.messageType==MessageType.video?  VideoPlayerController.networkUrl(
+            state.messagemodel?.messageType==MessageType.video?  VideoPlayerController.networkUrl(
                 Uri.parse(
-                  state.messageModel != null
-                      ? state.messageModel!.message != null
-                          ? state.messageModel!.message!
+                  state.messagemodel != null
+                      ? state.messagemodel!.message != null
+                          ? state.messagemodel!.message!
                           : ''
                       : '',
                 ),
               ).initialize().then((_) {
                 videoPlayerController?.play();
               }):null;
-              if (state.messageModel == null) {
+              if (state.messagemodel == null) {
                 return zeroMeasureWidget;
               }
               log("asset loaded");
               return Column(
                 children: [
-                  Container(
+                  SizedBox(
                     height: screenHeight(context: context) / 1.5,
                     width: screenWidth(context: context),
-                    child: state.messageModel?.message != null
-                        ? state.messageModel?.messageType == MessageType.video
+                    child: state.messagemodel?.message != null
+                        ? state.messagemodel?.messageType == MessageType.video
                             ? videoPlayerController != null &&
                                     videoPlayerController!.value.isInitialized
                                 ? VideoPlayer(videoPlayerController!)
@@ -79,7 +78,7 @@ class _AssetLoadedPageState extends State<AssetLoadedPage> {
                                     isTextNeeded: false,
                                   )
                             : Image.network(
-                                state.messageModel!.message!,
+                                state.messagemodel!.message!,
                                 fit: BoxFit.cover,
                               )
                         : zeroMeasureWidget,

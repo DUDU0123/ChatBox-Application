@@ -58,7 +58,7 @@ Future<List<File?>> pickMultipleFileWithAnyExtension() async {
     List<File?> files;
     if (result != null) {
       PlatformFile file = result.files.first;
-      print(file.extension);
+      log(file.extension.toString());
       files = result.paths.map((path) => File(path!)).toList();
       return files;
     } else {

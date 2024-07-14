@@ -1,56 +1,60 @@
 part of 'message_bloc.dart';
-
-class MessageState extends Equatable {
+class MessageState extends Equatable{
   final bool? isTyped;
   final bool? isAttachmentListOpened;
   final bool? isVideoPlaying;
-  final Duration audioPosition;
-  final Duration audioDuration;
   final Stream<List<MessageModel>>? messages;
-  final MessageModel? messageModel;
+  final MessageModel? messagemodel;
   final bool? isRecording;
+  final Map<String, Duration> audioPositions;
+  final Map<String, Duration> audioDurations;
+  final Map<String, bool> audioPlayingStates;
 
   const MessageState({
+    this.audioPositions = const {},
+    this.audioDurations = const {},
+    this.audioPlayingStates = const {},
     this.isRecording = false,
     this.messages,
     this.isTyped,
     this.isAttachmentListOpened = false,
     this.isVideoPlaying = false,
-    this.audioPosition = Duration.zero,
-    this.audioDuration = Duration.zero,
-    this.messageModel,
+    this.messagemodel,
   });
 
-  MessageState copyWith(
-      {bool? isTyped,
-      bool? isAttachmentListOpened,
-      bool? isVideoPlaying,
-      Duration? audioPosition,
-      bool? isRecording,
-      Duration? audioDuration,
-      Stream<List<MessageModel>>? messages,
-      MessageModel? messageModel}) {
+  MessageState copyWith({
+    bool? isTyped,
+    bool? isAttachmentListOpened,
+    bool? isVideoPlaying,
+    bool? isRecording,
+    Map<String, Duration>? audioPositions,
+    Map<String, Duration>? audioDurations,
+    Map<String, bool>? audioPlayingStates,
+    Stream<List<MessageModel>>? messages,
+    MessageModel? messagemodel,
+  }) {
     return MessageState(
       isTyped: isTyped ?? this.isTyped,
       isAttachmentListOpened:
           isAttachmentListOpened ?? this.isAttachmentListOpened,
       isVideoPlaying: isVideoPlaying ?? this.isVideoPlaying,
-      audioPosition: audioPosition ?? this.audioPosition,
-      audioDuration: audioDuration ?? this.audioDuration,
+      audioPositions: audioPositions ?? this.audioPositions,
+      audioDurations: audioDurations ?? this.audioDurations,
+      audioPlayingStates: audioPlayingStates ?? this.audioPlayingStates,
       messages: messages ?? this.messages,
-      messageModel: messageModel ?? this.messageModel,
-      isRecording: isRecording??this.isRecording,
+      messagemodel: messagemodel ?? this.messagemodel,
+      isRecording: isRecording ?? this.isRecording,
     );
   }
-
   @override
   List<Object> get props => [
         isTyped ?? false,
         isAttachmentListOpened ?? false,
         isVideoPlaying ?? false,
-        audioPosition,
-        audioDuration,
-        messageModel ?? const MessageModel(),
+        audioPositions,
+        audioDurations,
+        audioPlayingStates,
+        messagemodel ?? const MessageModel(),
         messages ?? [],
         isRecording??false,
       ];
@@ -62,22 +66,9 @@ class MessageInitial extends MessageState {
 
 class MessageLoadingState extends MessageState {}
 
-// class MessageSucessState extends MessageState {
-//   final Stream<List<MessageModel>> messages;
-//   final MessageModel? messageModel;
-//   const MessageSucessState({
-//     required this.messages,
-//     this.messageModel,
-//   }) : super(messages: messages);
-//   @override
-//   List<Object> get props => [
-//         messages,
-//       ];
-// }
-
 class MessageErrorState extends MessageState {
   final String message;
-  const MessageErrorState({
+   const MessageErrorState({
     required this.message,
   });
   @override
@@ -88,7 +79,7 @@ class MessageErrorState extends MessageState {
 
 class AssetMessageState extends MessageState {
   final MessageModel messageModel;
-  const AssetMessageState({
+   const AssetMessageState({
     required this.messageModel,
   });
   @override
@@ -97,12 +88,11 @@ class AssetMessageState extends MessageState {
       ];
 }
 
-
 class CurrentLocationState extends MessageState {
   final LatLng currentLocation;
   final double latitude;
   final double longitude;
-  const CurrentLocationState({
+   const CurrentLocationState({
     required this.currentLocation,
     required this.latitude,
     required this.longitude,

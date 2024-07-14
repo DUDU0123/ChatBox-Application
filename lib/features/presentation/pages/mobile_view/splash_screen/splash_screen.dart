@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/app_icon_hold_widget.dart';

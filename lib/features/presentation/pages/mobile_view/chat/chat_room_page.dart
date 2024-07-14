@@ -15,7 +15,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
-
 class ChatRoomPage extends StatefulWidget {
   const ChatRoomPage({
     super.key,
@@ -35,39 +34,20 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
   final Map<String, VideoPlayerController> videoControllers = {};
+  final Map<String, AudioPlayer> audioPlayers = {};
   final recorder = FlutterSoundRecorder();
-  final player = AudioPlayer();
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
-  @override
-  void initState() {
-    super.initState();
-    // Listen for duration changes
-    _durationSubscription = player.durationStream.listen((duration) {
-      if (duration == null) {
-        null;
-      }
-      context
-          .read<MessageBloc>()
-          .add(AudioPlayerDurationChangedEvent(duration!));
-    });
-    // Listen for position changes
-    _positionSubscription = player.positionStream.listen((position) {
-      context
-          .read<MessageBloc>()
-          .add(AudioPlayerPositionChangedEvent(position));
-    });
-  }
 
   @override
   void dispose() {
     videoControllers.forEach((key, controller) => controller.dispose());
+    audioPlayers.forEach((key, controller) => controller.dispose());
     messageController.dispose();
     scrollController.dispose();
     recorder.closeRecorder();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
-    player.dispose();
     super.dispose();
   }
 
@@ -105,7 +85,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     }
                     return messageListingWidget(
                       chatModel: widget.chatModel,
-                      player: player,
+                      audioPlayers: audioPlayers,
                       scrollController: scrollController,
                       videoControllers: videoControllers,
                       state: state,

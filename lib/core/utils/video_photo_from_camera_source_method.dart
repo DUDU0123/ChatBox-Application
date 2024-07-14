@@ -1,5 +1,4 @@
 import 'package:chatbox/core/constants/colors.dart';
-import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_loaded_page.dart';

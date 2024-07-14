@@ -171,22 +171,6 @@ class AudioMessageSendEvent extends MessageEvent {
         chatModel,
       ];
 }
-
-class AudioPlayerPositionChangedEvent extends MessageEvent {
-  final Duration position;
-  const AudioPlayerPositionChangedEvent(this.position);
-
-  @override
-  List<Object> get props => [position];
-}
-
-class AudioPlayerDurationChangedEvent extends MessageEvent {
-  final Duration duration;
-  const AudioPlayerDurationChangedEvent(this.duration);
-
-  @override
-  List<Object> get props => [duration];
-}
 class LocationPickEvent extends MessageEvent{}
 class LocationMessageSendEvent extends MessageEvent {
   final ChatModel chatModel;
@@ -213,4 +197,53 @@ class ChatClosedEvent extends MessageEvent{
   });
   @override
   List<Object> get props => [chatModel];
+}
+
+// class AudioPlayerPositionChangedEvent extends MessageEvent {
+//   final Duration position;
+//   const AudioPlayerPositionChangedEvent(this.position);
+
+//   @override
+//   List<Object> get props => [position];
+// }
+
+// class AudioPlayerDurationChangedEvent extends MessageEvent {
+//   final Duration duration;
+//   const AudioPlayerDurationChangedEvent(this.duration);
+
+  // @override
+  // List<Object> get props => [duration];
+// }
+class AudioPlayerPositionChangedEvent extends MessageEvent {
+  final String messageKey;
+  final Duration position;
+
+  const AudioPlayerPositionChangedEvent(this.messageKey, this.position);
+    @override
+  List<Object> get props => [messageKey,position];
+}
+
+class AudioPlayerDurationChangedEvent extends MessageEvent {
+  final String messageKey;
+  final Duration duration;
+
+  const AudioPlayerDurationChangedEvent(this.messageKey, this.duration);
+    @override
+  List<Object> get props => [duration, messageKey];
+}
+
+class AudioPlayerPlayStateChangedEvent extends MessageEvent {
+  final String messageKey;
+  final bool isPlaying;
+
+  const AudioPlayerPlayStateChangedEvent(this.messageKey, this.isPlaying);
+   @override
+  List<Object> get props => [isPlaying, messageKey];
+}
+class AudioPlayerCompletedEvent extends MessageEvent {
+  final String messageKey;
+
+  const AudioPlayerCompletedEvent(this.messageKey);
+   @override
+  List<Object> get props => [messageKey];
 }

@@ -1,5 +1,4 @@
 import 'package:chatbox/core/constants/colors.dart';
-import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -20,12 +20,12 @@ class MessageContainerWidget extends StatelessWidget {
     required this.message,
     required this.chatModel,
     required this.videoControllers,
-    required this.player,
+    required this.audioPlayers,
   });
   final MessageModel message;
   final ChatModel chatModel;
-  final AudioPlayer player;
   final Map<String, VideoPlayerController> videoControllers;
+  final Map<String, AudioPlayer> audioPlayers;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class MessageContainerWidget extends StatelessWidget {
           message.messageType == MessageType.audio
               ? audioMessageWidget(
                   context: context,
-                  player: player,
+                  audioPlayers: audioPlayers,
                   message: message,
                 )
               : Container(
@@ -46,11 +46,7 @@ class MessageContainerWidget extends StatelessWidget {
                           message.messageType == MessageType.video
                       ? 250.h
                       : null,
-                  width: message.messageType != MessageType.audio
-                      ? message.message!.length <= 8
-                          ? screenWidth(context: context) / 4
-                          : screenWidth(context: context) / 1.6
-                      : screenWidth(context: context) / 1.6,
+                  width:message.message!.length>20 || message.messageType==MessageType.contact? screenWidth(context: context) / 1.6: null,
                   margin: EdgeInsets.symmetric(vertical: 4.h),
                   padding: message.messageType == MessageType.photo ||
                           message.messageType == MessageType.video
@@ -63,8 +59,7 @@ class MessageContainerWidget extends StatelessWidget {
                         ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.sp),
-                    gradient: message.messageType == MessageType.photo ||
-                            message.messageType == MessageType.video
+                    gradient: message.messageType != MessageType.location
                         ? LinearGradient(
                             colors: [
                               lightLinearGradientColorOne,

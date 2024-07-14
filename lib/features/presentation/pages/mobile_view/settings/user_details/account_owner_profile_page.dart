@@ -30,15 +30,16 @@ class AccountOwnerProfilePage extends StatelessWidget {
             return commonAnimationWidget(
               context: context,
               isTextNeeded: false,
-              lottie:
-                  settingsLottie,
+              lottie: settingsLottie,
             );
           }
           if (state is CurrentUserLoadedState) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 SettingsProfileImageAvatarWidget(userProfileImage: state.currentUserData.userProfileImage,),
+                SettingsProfileImageAvatarWidget(
+                  userProfileImage: state.currentUserData.userProfileImage,
+                ),
                 // next
                 kHeight60,
                 Expanded(

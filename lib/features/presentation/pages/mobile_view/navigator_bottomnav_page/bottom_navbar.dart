@@ -34,21 +34,6 @@ class BottomNavBar extends StatelessWidget {
               ),
             );
           },
-          // type: BottomNavigationBarType.fixed,
-          // showSelectedLabels: true,
-          // showUnselectedLabels: true,
-          // selectedIconTheme: IconThemeData(color: kWhite),
-          // unselectedItemColor: theme.textTheme.titleMedium?.color,
-          // selectedItemColor: theme.textTheme.titleMedium?.color,
-          // selectedFontSize: 16.sp,
-          // unselectedFontSize: 16.sp,
-          // selectedLabelStyle: TextStyle(
-          //   fontWeight: FontWeight.bold,
-          //   color: theme.textTheme.titleMedium?.color,
-          // ),
-          // unselectedLabelStyle: const TextStyle(
-          //   fontWeight: FontWeight.bold,
-          // ),
           backgroundColor: theme.scaffoldBackgroundColor,
           items: [
             BottomNavigationBarItem(

@@ -10,21 +10,36 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 Widget audioMessageWidget({
   required MessageModel message,
-  required AudioPlayer player,
   required BuildContext context,
+  required Map<String, AudioPlayer> audioPlayers,
 }) {
+  
+   audioPlayers[message.message]?.durationStream.listen((duration) {
+      if (duration != null) {
+        context.read<MessageBloc>().add(AudioPlayerDurationChangedEvent(message.message!, duration));
+      }
+    });
+   audioPlayers[message.message]?.positionStream.listen((position) {
+      context.read<MessageBloc>().add(AudioPlayerPositionChangedEvent(message.message!, position));
+    });
+   audioPlayers[message.message]?.playerStateStream.listen((playerState) {
+      if (playerState.processingState == ProcessingState.completed) {
+        context.read<MessageBloc>().add(AudioPlayerCompletedEvent(message.message!));
+      }
+    });
   return Container(
     height: 75.h,
     width: screenWidth(context: context) / 1.26,
     padding: EdgeInsets.all(6.w),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.sp),
-        gradient: LinearGradient(
-          colors: [
-            lightLinearGradientColorOne,
-            lightLinearGradientColorTwo,
-          ],
-        )),
+      borderRadius: BorderRadius.circular(10.sp),
+      gradient: LinearGradient(
+        colors: [
+          lightLinearGradientColorOne,
+          lightLinearGradientColorTwo,
+        ],
+      ),
+    ),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,37 +55,45 @@ Widget audioMessageWidget({
         SizedBox(width: 10.w),
         GestureDetector(
           onTap: () async {
-            message.message ?? '';
-            await player.setUrl(message.message ?? '');
+            await audioPlayers[message.message]?.setUrl(message.message ?? '');
 
-            if (player.playing) {
-              await player.pause();
+            final isPlaying = audioPlayers[message.message]?.playing ?? false;
+            if (isPlaying) {
+              await audioPlayers[message.message]?.pause();
+              context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(message.message!, false));
             } else {
-              await player.play();
+              await audioPlayers[message.message]!.play();
+              context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(message.message!, true));
             }
           },
-          child: Icon(
-            !player.playing ? Icons.play_arrow : Icons.pause,
-            size: 40.sp,
-            color: kWhite,
+          child: BlocBuilder<MessageBloc, MessageState>(
+            builder: (context, state) {
+              final isPlaying = state.audioPlayingStates[message.message] ?? false;
+              return Icon(
+                isPlaying ? Icons.pause : Icons.play_arrow,
+                size: 40.sp,
+                color: kWhite,
+              );
+            },
           ),
         ),
         Expanded(
           child: BlocBuilder<MessageBloc, MessageState>(
             builder: (context, state) {
+              final currentPosition = state.audioPositions[message.message] ?? Duration.zero;
+              final duration = state.audioDurations[message.message] ?? Duration.zero;
+
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Slider(
-                    value: state.audioPosition.inSeconds.toDouble(),
-                    max: state.audioDuration.inSeconds.toDouble(),
+                    value: currentPosition.inSeconds.toDouble(),
+                    max: duration.inSeconds.toDouble(),
                     onChanged: (value) {
                       final newPosition = Duration(seconds: value.toInt());
-                      player.seek(newPosition);
-                      context
-                          .read<MessageBloc>()
-                          .add(AudioPlayerPositionChangedEvent(newPosition));
+                      audioPlayers[message.message]?.seek(newPosition);
+                      context.read<MessageBloc>().add(AudioPlayerPositionChangedEvent(message.message!, newPosition));
                     },
                   ),
                   Padding(
@@ -79,12 +102,12 @@ Widget audioMessageWidget({
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextWidgetCommon(
-                          text: TimeProvider.formatDuration(state.audioPosition),
+                          text: TimeProvider.formatDuration(currentPosition),
                           textColor: kWhite,
                           fontSize: 8.sp,
                         ),
                         TextWidgetCommon(
-                          text: TimeProvider.formatDuration(state.audioDuration),
+                          text: TimeProvider.formatDuration(duration),
                           textColor: kWhite,
                           fontSize: 8.sp,
                         ),
@@ -100,3 +123,5 @@ Widget audioMessageWidget({
     ),
   );
 }
+
+

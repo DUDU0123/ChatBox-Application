@@ -1,16 +1,12 @@
 import 'dart:developer';
-
-import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
-import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
-import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
-import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
-import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
-import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/contact_single_widget.dart';
+import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/floating_done_navigation_button.dart';
+import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/select_contact_circle_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -114,7 +110,6 @@ class _SelectContactPageState extends State<SelectContactPage> {
                   itemCount: state.contactList!.length,
                   itemBuilder: (context, index) {
                     final contact = state.contactList![index];
-                    log("${state.selectedContactList?.length.toString()} SelectedList");
                     return ContactSingleWidget(
                       key: ValueKey(contact.userContactNumber),
                       isSelected: state.selectedContactList != null
@@ -135,203 +130,12 @@ class _SelectContactPageState extends State<SelectContactPage> {
       ),
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
-          return GestureDetector(
-            onTap: () {
-              state.selectedContactList != null
-                  ? context.read<MessageBloc>().add(
-                        ContactMessageSendEvent(
-                          contactListToSend: state.selectedContactList!,
-                          chatModel: widget.chatModel,
-                        ),
-                      )
-                  : null;
-              Navigator.pop(context);
-            },
-            child: Container(
-              height: 50.h,
-              width: 60.w,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  darkLinearGradientColorOne,
-                  darkLinearGradientColorTwo,
-                ]),
-                borderRadius: BorderRadius.circular(15.sp),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 30.sp,
-                  color: kWhite,
-                ),
-              ),
-            ),
+          return FloatingDoneNavigateButton(
+            chatModel: widget.chatModel,
+            selectedContactList: state.selectedContactList,
           );
         },
       ),
     );
   }
-}
-
-class ContactSingleWidget extends StatelessWidget {
-  const ContactSingleWidget({
-    super.key,
-    required this.contactNameorNumber,
-    required this.contactModel,
-    required this.isSelected,
-  });
-  final String contactNameorNumber;
-  final ContactModel contactModel;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      key: ValueKey(contactModel.userContactNumber),
-      onTap: () {
-        context.read<ContactBloc>().add(SelectUserEvent(contact: contactModel));
-      },
-      leading: Stack(
-        children: [
-          selectedUserDataWidget(
-            contactModel: contactModel,
-          ),
-          isSelected
-              ? Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          darkLinearGradientColorOne,
-                          darkLinearGradientColorTwo,
-                        ],
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.done,
-                      color: kWhite,
-                      size: 20.sp,
-                    ),
-                  ),
-                )
-              : zeroMeasureWidget
-        ],
-      ),
-      title: TextWidgetCommon(
-        text: contactNameorNumber,
-      ),
-    );
-  }
-}
-
-class SelectContactCircleWidget extends StatelessWidget {
-  const SelectContactCircleWidget({
-    super.key,
-    required this.contactModel,
-  });
-  final ContactModel contactModel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      key: ValueKey(contactModel.userContactNumber),
-      children: [
-        Stack(
-          children: [
-            selectedUserDataWidget(
-              contactModel: contactModel,
-            ),
-            Positioned(
-              bottom: 0.h,
-              right: 0.w,
-              child: Container(
-                height: 25.h,
-                width: 25.w,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        darkLinearGradientColorOne,
-                        darkLinearGradientColorTwo,
-                      ],
-                    )),
-                child: Center(
-                  child: IconButton(
-                    onPressed: () {
-                      context
-                          .read<ContactBloc>()
-                          .add(SelectUserEvent(contact: contactModel));
-                    },
-                    icon: Icon(
-                      Icons.close,
-                      color: kWhite,
-                      size: 12.sp,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          width: 50.w,
-          child: TextWidgetCommon(
-            text: contactModel.userContactName ??
-                contactModel.userContactNumber ??
-                '',
-            fontSize: 12.sp,
-            fontWeight: FontWeight.normal,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-        )
-      ],
-    );
-  }
-}
-
-BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
-    {required ContactModel contactModel}) {
-  return BlocBuilder<UserBloc, UserState>(
-    builder: (context, state) {
-      Stream<UserModel?> userModel = const Stream.empty();
-      if (contactModel.chatBoxUserId != null) {
-        userModel = UserData.getOneUserDataFromDataBaseAsStream(
-          userId: contactModel.chatBoxUserId!,
-        );
-      }
-      return StreamBuilder<UserModel?>(
-        stream: userModel,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data == null) {
-            commonProfileDefaultIconCircularCotainer(
-              context: context,
-            );
-          }
-          return snapshot.data?.userProfileImage != null
-              ? Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).popupMenuTheme.color,
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                            snapshot.data!.userProfileImage!,
-                          ))),
-                  width: 50.w,
-                  height: 50.h,
-                )
-              : commonProfileDefaultIconCircularCotainer(
-                  context: context,
-                );
-        },
-      );
-    },
-  );
 }

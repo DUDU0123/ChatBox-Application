@@ -31,19 +31,6 @@ class RootWidgetPage extends StatelessWidget {
             darkTheme: ThemeConstants.darkTheme,
             initialRoute: "/",
             routes: routes(context: context),
-            // {
-            //   "/": (context) => const MainPage(
-            //         // mobileScreenLayout: ChatboxWelcomePage(),
-            //         // webScreenLayout: ChatboxWebAuthenticationPage(),
-            //       ),
-            //   'welcome_page': (context) => const ChatboxWelcomePage(),
-            //   "create_account": (context) => CreateAccountPage(),
-            //   "verify_number": (context) => NumberVerifyPage(),
-            //   "bottomNav_Navigator": (context) => NavigatorBottomnavPage(),
-            //   //"/messaging_page":(context)=> MessagingPage(),
-            //   "/search_page":(context)=> SearchPage(),
-            //   "/settings_page": (context)=> const SettingsPage()
-            // },
           ),
         );
       }),
@@ -61,7 +48,7 @@ class RootWidgetPage extends StatelessWidget {
       'welcome_page': (context) => const ChatboxWelcomePage(),
       "create_account": (context) => CreateAccountPage(),
       "verify_number": (context) => NumberVerifyPage(),
-      "bottomNav_Navigator": (context) => NavigatorBottomnavPage(),
+      "bottomNav_Navigator": (context) => const NavigatorBottomnavPage(),
       // "/messaging_page":(context)=> MessagingPage(),
       "/search_page": (context) => SearchPage(),
       "/settings_page": (context) => const SettingsPage()

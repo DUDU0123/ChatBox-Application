@@ -18,6 +18,15 @@ import 'package:video_player/video_player.dart';
 Widget locationMessageWidget({required MessageModel message}) {
   return Column(
     children: [
+      SvgPicture.asset(
+        location,
+        width: 50.w,
+        height: 50.w,
+        colorFilter: ColorFilter.mode(
+          kBlack,
+          BlendMode.srcIn,
+        ),
+      ),
       TextButton(
         onPressed: () async {
           await canLaunchUrlString(message.message ?? '')

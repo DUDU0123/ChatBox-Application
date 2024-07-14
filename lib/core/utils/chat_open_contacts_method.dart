@@ -1,6 +1,5 @@
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

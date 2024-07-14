@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:chatbox/core/constants/app_constants.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
@@ -10,16 +7,11 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/location_pick/location_pick_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 
 class AttachmentListContainerVertical extends StatelessWidget {
   const AttachmentListContainerVertical({super.key, required this.chatModel});

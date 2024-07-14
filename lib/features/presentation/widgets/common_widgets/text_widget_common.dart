@@ -31,14 +31,12 @@ class TextWidgetCommon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
       softWrap: softWrap,
       text,
       style: TextStyle(
-        
         color: textColor,
         fontWeight: fontWeight,
         fontSize: fontSize,

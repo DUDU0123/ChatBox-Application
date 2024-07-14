@@ -34,10 +34,15 @@ class ChatboxWelcomePage extends StatelessWidget {
                   textColor: theme.textTheme.titleSmall?.color,
                   fontWeight: theme.textTheme.titleSmall?.fontWeight,
                 ),
-                Text(
-                  "Privacy Policy ",
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: darkSmallTextColor,
+                GestureDetector(
+                  onTap: () {
+                    
+                  },
+                  child: Text(
+                    "Privacy Policy ",
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: darkSmallTextColor,
+                    ),
                   ),
                 ),
                 TextWidgetCommon(

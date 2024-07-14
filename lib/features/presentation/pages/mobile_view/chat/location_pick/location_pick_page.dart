@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
@@ -10,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-
 class LocationPickPage extends StatelessWidget {
   const LocationPickPage({super.key, required this.chatModel});
   final ChatModel chatModel;
@@ -40,21 +37,21 @@ class LocationPickPage extends StatelessWidget {
                       location: locationUrl,
                     ),
                   );
-              // return SizedBox(
-              //   width: screenWidth(context: context),
-              //   height: screenHeight(context: context) / 2,
-              //   child: GoogleMap(
-              //     initialCameraPosition: const CameraPosition(
-              //       target: LatLng(9.506031, 76.6793504),
-              //       zoom: 20,
-              //     ),
-              //     myLocationEnabled: true,
-              //     myLocationButtonEnabled: true,
-              //     onMapCreated: (GoogleMapController controller) {
-              //       // Additional configuration if needed
-              //     },
-              //   ),
-              // );
+              return SizedBox(
+                width: screenWidth(context: context),
+                height: screenHeight(context: context) / 2,
+                // child: GoogleMap(
+                //   initialCameraPosition:  CameraPosition(
+                //     target:state.currentLocation,
+                //     zoom: 20,
+                //   ),
+                //   myLocationEnabled: true,
+                //   myLocationButtonEnabled: true,
+                //   onMapCreated: (GoogleMapController controller) {
+                //     // Additional configuration if needed
+                //   },
+                // ),
+              );
             }
             return zeroMeasureWidget;
           }),
@@ -68,7 +65,7 @@ class LocationPickPage extends StatelessWidget {
                 context.read<MessageBloc>().add(LocationPickEvent());
               },
               child: TextWidgetCommon(
-                text: "Select your current location",
+                text: "Send your current location",
                 fontSize: 18.sp,
                 textColor: kWhite,
                 fontWeight: FontWeight.w500,

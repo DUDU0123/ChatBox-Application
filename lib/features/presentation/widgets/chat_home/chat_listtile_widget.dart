@@ -7,7 +7,6 @@ import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_p
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -33,7 +33,7 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             AccountOwnerProfileTile(),
+            const AccountOwnerProfileTile(),
             kHeight10,
             const CommonDivider(),
             kHeight20,

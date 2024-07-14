@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
-import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
-import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

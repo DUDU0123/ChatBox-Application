@@ -13,7 +13,6 @@ import 'package:equatable/equatable.dart';
 
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -47,6 +46,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<AudioRecordToggleEvent>(audioRecordToggleEvent);
     on<AudioPlayerPositionChangedEvent>(onAudioPlayerPositionChanged);
     on<AudioPlayerDurationChangedEvent>(onAudioPlayerDurationChanged);
+    on<AudioPlayerPlayStateChangedEvent>(onAudioPlayerPlayStateChanged);
+    on<AudioPlayerCompletedEvent>(_onAudioPlayerCompleted);
     on<LocationPickEvent>(locationPickEvent);
     on<LocationMessageSendEvent>(locationMessageSendEvent);
     // // other events
@@ -167,7 +168,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         // emit(
         //     MessageSucessState(messages: messages, messageModel: photoMessage));
         emit(MessageState(
-            messages: state.messages ?? messages, messageModel: photoMessage));
+            messages: state.messages ?? messages, messagemodel: photoMessage));
       }
     } catch (e) {
       log("Send photo message error: ${e.toString()}");
@@ -213,7 +214,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         // emit(
         //     MessageSucessState(messages: messages, messageModel: videoMessage));
         emit(MessageState(
-            messages: state.messages ?? messages, messageModel: videoMessage));
+            messages: state.messages ?? messages, messagemodel: videoMessage));
       }
     } catch (e) {
       log("Send photo message error: ${e.toString()}");
@@ -234,7 +235,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         isVideoPlaying: true,
         messages: state.messages,
         isAttachmentListOpened: state.isAttachmentListOpened,
-        messageModel: state.messageModel,
+        messagemodel: state.messagemodel,
         isTyped: state.isTyped,
       ));
     } catch (e) {
@@ -261,7 +262,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         isVideoPlaying: false,
         messages: state.messages,
         isAttachmentListOpened: state.isAttachmentListOpened,
-        messageModel: state.messageModel,
+        messagemodel: state.messagemodel,
         isTyped: state.isTyped,
       ));
     } catch (e) {
@@ -300,7 +301,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         emit(MessageState(
           messages: state.messages ?? messages,
           isAttachmentListOpened: state.isAttachmentListOpened,
-          messageModel: message,
+          messagemodel: message,
           isTyped: state.isTyped,
         ));
       }
@@ -350,7 +351,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           emit(MessageState(
             messages: state.messages ?? messages,
             isAttachmentListOpened: state.isAttachmentListOpened,
-            messageModel: message,
+            messagemodel: message,
             isTyped: state.isTyped,
           ));
         }
@@ -429,7 +430,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       emit(MessageState(
         messages: state.messages ?? messages,
         isAttachmentListOpened: state.isAttachmentListOpened,
-        messageModel: message,
+        messagemodel: message,
         isTyped: state.isTyped,
         isRecording: false,
       ));
@@ -438,27 +439,37 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       emit(MessageErrorState(message: e.toString()));
     }
   }
-
   FutureOr<void> onAudioPlayerPositionChanged(
       AudioPlayerPositionChangedEvent event, Emitter<MessageState> emit) {
-    try {
-      emit(state.copyWith(audioPosition: event.position));
-    } catch (e) {
-      log("Audio player position change error");
-      emit(MessageErrorState(message: e.toString()));
-    }
+    final newAudioPositions = Map<String, Duration>.from(state.audioPositions);
+    newAudioPositions[event.messageKey] = event.position;
+    emit(state.copyWith(audioPositions: newAudioPositions));
   }
 
   FutureOr<void> onAudioPlayerDurationChanged(
       AudioPlayerDurationChangedEvent event, Emitter<MessageState> emit) {
-    try {
-      emit(state.copyWith(audioDuration: event.duration));
-    } catch (e) {
-      log("Audio player position change error");
-      emit(MessageErrorState(message: e.toString()));
-    }
+    final newAudioDurations = Map<String, Duration>.from(state.audioDurations);
+    newAudioDurations[event.messageKey] = event.duration;
+    emit(state.copyWith(audioDurations: newAudioDurations));
   }
 
+  FutureOr<void> onAudioPlayerPlayStateChanged(
+      AudioPlayerPlayStateChangedEvent event, Emitter<MessageState> emit) {
+    final newAudioPlayingStates = Map<String, bool>.from(state.audioPlayingStates);
+    newAudioPlayingStates[event.messageKey] = event.isPlaying;
+    emit(state.copyWith(audioPlayingStates: newAudioPlayingStates));
+  }
+  FutureOr<void> _onAudioPlayerCompleted(
+      AudioPlayerCompletedEvent event, Emitter<MessageState> emit) {
+    final newAudioPositions = Map<String, Duration>.from(state.audioPositions);
+    newAudioPositions[event.messageKey] = Duration.zero;
+    final newAudioPlayingStates = Map<String, bool>.from(state.audioPlayingStates);
+    newAudioPlayingStates[event.messageKey] = false;
+    emit(state.copyWith(
+      audioPositions: newAudioPositions,
+      audioPlayingStates: newAudioPlayingStates,
+    ));
+  }
   Future<FutureOr<void>> locationMessageSendEvent(
       LocationMessageSendEvent event, Emitter<MessageState> emit) async {
     try {
@@ -489,7 +500,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       emit(MessageState(
         messages: state.messages ?? messages,
         isAttachmentListOpened: state.isAttachmentListOpened,
-        messageModel: message,
+        messagemodel: message,
         isTyped: state.isTyped,
       ));
     } catch (e) {

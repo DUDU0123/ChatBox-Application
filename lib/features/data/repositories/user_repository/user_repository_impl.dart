@@ -7,7 +7,6 @@ import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/domain/repositories/user_repo/user_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepositoryImpl extends UserRepository {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;

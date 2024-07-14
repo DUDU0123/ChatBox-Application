@@ -94,7 +94,7 @@ class ManageStoragePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           width: 90.w,
           //color: buttonSmallTextColor,
           child: Stack(

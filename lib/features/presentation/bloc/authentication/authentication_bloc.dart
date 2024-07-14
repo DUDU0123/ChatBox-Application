@@ -53,7 +53,7 @@ class AuthenticationBloc
           Navigator.pushAndRemoveUntil(
             event.context,
             MaterialPageRoute(
-              builder: (context) => SplashScreen(),
+              builder: (context) => const SplashScreen(),
             ),
             (route) => false,
           );
@@ -96,9 +96,6 @@ class AuthenticationBloc
         log("Else COndition inside try");
         emit(AuthenticationErrorState(message: "Enter valid phone number"));
       }
-    } on FirebaseAuthException catch (e) {
-      log("Firebase exception");
-      emit(AuthenticationErrorState(message: e.message.toString()));
     } catch (e) {
       log("Catch error");
       emit(AuthenticationErrorState(message: e.toString()));
@@ -131,8 +128,6 @@ class AuthenticationBloc
         emit(AuthenticationErrorState(message: "Enter correct Otp"));
         log("working catsssc");
       }
-    } on FirebaseAuthException catch (e) {
-      emit(AuthenticationErrorState(message: e.message.toString()));
     } catch (e) {
       emit(AuthenticationErrorState(message: e.toString()));
     }
@@ -172,9 +167,6 @@ class AuthenticationBloc
         log("Else COndition inside try");
         emit(AuthenticationErrorState(message: "Enter valid phone number"));
       }
-    } on FirebaseAuthException catch (e) {
-      log("Firebase exception");
-      emit(AuthenticationErrorState(message: e.message.toString()));
     } catch (e) {
       log("Catch error");
       emit(AuthenticationErrorState(message: e.toString()));

@@ -2,6 +2,8 @@ import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 
 Color kWhite = Colors.white;
+Color kRed = Colors.red;
+Color kGreen = Colors.green;
 Color kBlack = Colors.black;
 Color kTransparent = Colors.transparent;
 Color iconGreyColor = const Color.fromARGB(255, 127, 126, 126);
