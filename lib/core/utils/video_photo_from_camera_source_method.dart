@@ -9,7 +9,8 @@ import 'package:image_picker/image_picker.dart';
 
 Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
   required BuildContext context,
-  required ChatModel chatModel,
+  required ChatModel? chatModel,
+  required String? receiverContactName,
 }) {
   return showDialog(
     context: context,
@@ -23,12 +24,14 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             subtitle: "Take video",
             icon: Icons.video_call,
             onTap: () {
-              context.read<MessageBloc>().add(
+             chatModel!=null? context.read<MessageBloc>().add(
                     VideoMessageSendEvent(
+                      receiverContactName: receiverContactName??"",
+                      receiverID: chatModel.receiverID??"",
                       imageSource: ImageSource.camera,
                       chatModel: chatModel,
                     ),
-                  );
+                  ):null;
               Navigator.pop(context);
               // Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
@@ -37,12 +40,14 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             subtitle: "Take photo",
             icon: Icons.camera,
             onTap: () {
-              context.read<MessageBloc>().add(
+            chatModel!=null?  context.read<MessageBloc>().add(
                     PhotoMessageSendEvent(
+                      receiverContactName: receiverContactName??'',
+                      receiverID: chatModel.receiverID??'',
                       imageSource: ImageSource.camera,
                       chatModel: chatModel,
                     ),
-                  );
+                  ):null;
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },

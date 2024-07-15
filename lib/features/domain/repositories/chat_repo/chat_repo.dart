@@ -4,10 +4,10 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 
 abstract class ChatRepo {
-  Future<void> createNewChat({
-    required String receiverId,
-    required String recieverContactName,
-  });
+  // Future<void> createNewChat({
+  //   required String receiverId,
+  //   required String recieverContactName,
+  // });
   Stream<List<ChatModel>> getAllChats();
   void deleteAChat({
     required ChatModel chatModel
@@ -20,8 +20,10 @@ abstract class ChatRepo {
     required String messageId,
   });
   Future<void> sendMessage({
-    required String chatId,
+    required String? chatId,
     required MessageModel message,
+    required String receiverId,
+  required String receiverContactName,
   });
   Future<String> sendAssetMessage({
     required String chatID,

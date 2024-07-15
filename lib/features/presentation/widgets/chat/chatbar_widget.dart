@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -23,12 +24,14 @@ class ChatBarWidget extends StatefulWidget {
     required this.chatModel,
     required this.scrollController,
     required this.recorder,
+    required this.receiverContactName,
   });
   final TextEditingController messageController;
-  final ChatModel chatModel;
   bool isImojiButtonClicked;
   final ScrollController scrollController;
   final FlutterSoundRecorder recorder;
+  final ChatModel? chatModel;
+  final String? receiverContactName;
 
   @override
   State<ChatBarWidget> createState() => _ChatBarWidgetState();
@@ -113,11 +116,12 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  widget.chatModel.chatID != null
+                                 
+                                 widget.chatModel!=null? widget.chatModel?.chatID != null
                                       ? context.read<MessageBloc>().add(
                                           AttachmentIconClickedEvent(
-                                              chatID: widget.chatModel.chatID!))
-                                      : null;
+                                              chatID: widget.chatModel!.chatID!))
+                                      : null:null;
                                 },
                                 icon: Icon(
                                   Icons.attach_file,
@@ -127,6 +131,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                               IconButton(
                                 onPressed: () async {
                                   videoOrPhotoTakeFromCameraSourceMethod(
+                                    receiverContactName: widget.receiverContactName,
                                     chatModel: widget.chatModel,
                                     context: context,
                                   );
@@ -159,7 +164,8 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                           onPressed: () async {
                             if (widget.messageController.text.isNotEmpty) {
                               sendMessage(
-                                chatModel: widget.chatModel,
+                                receiverContactName: widget.receiverContactName,
+                                chatModel: widget.chatModel!,
                                 context: context,
                                 messageController: widget.messageController,
                                 scrollController: widget.scrollController,
@@ -167,7 +173,9 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             } else {
                               context.read<MessageBloc>().add(
                                     AudioRecordToggleEvent(
-                                      chatModel: widget.chatModel,
+                                      receiverID: widget.chatModel?.receiverID??'',
+                              receiverContactName: widget.receiverContactName??'',
+                                      chatModel: widget.chatModel!,
                                       recorder: widget.recorder,
                                     ),
                                   );
@@ -206,14 +214,15 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
 
 void sendMessage({
   required BuildContext context,
-  required ChatModel chatModel,
+  required ChatModel? chatModel,
   required TextEditingController messageController,
   required ScrollController scrollController,
+  required String? receiverContactName,
 }) {
   MessageModel message = MessageModel(
     messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-    senderID: chatModel.senderID,
-    receiverID: chatModel.receiverID,
+    senderID: chatModel?.senderID,
+    receiverID: chatModel?.receiverID,
     messageTime: DateTime.now().toString(),
     isPinnedMessage: false,
     isStarredMessage: false,
@@ -223,7 +232,7 @@ void sendMessage({
     messageType: MessageType.text,
     messageStatus: MessageStatus.sent,
   );
-  if (chatModel.chatID != null) {
+  if (chatModel?.chatID != null) {
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
@@ -231,6 +240,9 @@ void sendMessage({
     );
     context.read<MessageBloc>().add(
           MessageSentEvent(
+            currentUserId: firebaseAuth.currentUser?.uid??'',
+            receiverContactName: receiverContactName??'',
+            receiverID: chatModel?.receiverID??'',
             chatModel: chatModel,
             message: message,
           ),

@@ -1,4 +1,5 @@
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/config/restart/restart_provider.dart';
 import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/features/presentation/pages/main_page/main_page.dart';
@@ -18,8 +19,15 @@ class RootWidgetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeManager()..init(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ThemeManager()..init(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RestartProvider(),
+        ),
+      ],
       child: ScreenUtilInit(builder: (context, child) {
         final themeManager = Provider.of<ThemeManager>(context);
         return MultiBlocProvider(
@@ -54,5 +62,4 @@ class RootWidgetPage extends StatelessWidget {
       "/settings_page": (context) => const SettingsPage()
     };
   } //routes provider method end
-
 }

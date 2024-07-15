@@ -188,47 +188,22 @@ class UserData {
   }
 
   // Method to delete user in DB
-  // Future<void> deleteUserInFireStoreDB({required String userId}) async {
-  //   try {
-  //     await firestore.collection(usersCollection).doc(userId).delete();
-  //     final userDoc = firestore.collection(usersCollection).doc(userId);
-  //     final userChats = userDoc.collection(chatsCollection);
-  //     final userChatDocs = await userChats.get();
-  //     for (final chatDocument in userChatDocs.docs) {
-  //       if (chatDocument.exists) {
-  //         await chatDocument.reference.delete();
-  //       }
-  //     }
-  //     await userDoc.delete();
-  //   } on FirebaseAuthException catch (e) {
-  //     log(
-  //       'Firebase Auth exception: $e',
-  //     );
-  //     throw Exception("Error while deleting user data: $e");
-  //   } catch (e, stackTrace) {
-  //     log('Error while deleting user data: $e', stackTrace: stackTrace);
-  //     throw Exception("Error while deleting user data: $e");
-  //   }
-  // }
-
-
   Future<void> deleteUserInFireStoreDB({required String userId}) async {
     try {
-      // Get the reference to the user's document
-      final userDocRef = firestore.collection(usersCollection).doc(userId);
-      // Get the reference to the user's chats collection
-      final userChatsCollectionRef = userDocRef.collection(chatsCollection);
-      // Get all the documents in the user's chats collection
-      final userChatsSnapshot = await userChatsCollectionRef.get();
-      // Delete each document in the user's chats collection
-      for (final chatDoc in userChatsSnapshot.docs) {
-        await chatDoc.reference.delete();
+      await firestore.collection(usersCollection).doc(userId).delete();
+      final userDoc = firestore.collection(usersCollection).doc(userId);
+      final userChats = userDoc.collection(chatsCollection);
+      final userChatDocs = await userChats.get();
+      for (final chatDocument in userChatDocs.docs) {
+        if (chatDocument.exists) {
+          await chatDocument.reference.delete();
+        }
       }
-
-      // Delete the user's document
-      await userDocRef.delete();
+      await userDoc.delete();
     } on FirebaseAuthException catch (e) {
-      log('Firebase Auth exception: $e');
+      log(
+        'Firebase Auth exception: $e',
+      );
       throw Exception("Error while deleting user data: $e");
     } catch (e, stackTrace) {
       log('Error while deleting user data: $e', stackTrace: stackTrace);
@@ -236,11 +211,13 @@ class UserData {
     }
   }
 
+
+
+
   Future<void> deleteUserFilesInDB({required String fullPathToFile}) async {
     log(name: "FilePath", fullPathToFile);
     try {
       Reference fileReference = firebaseStorage.ref(fullPathToFile);
-
       // Check if the file exists by attempting to get its metadata
       await fileReference.getMetadata();
 
@@ -336,6 +313,7 @@ class UserData {
             context: context,
             title: "Delete account confirmation",
             content: TextFieldCommon(
+              keyboardType: TextInputType.number,
               controller: smsController,
               textAlign: TextAlign.center,
             ),

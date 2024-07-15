@@ -11,10 +11,12 @@ class FloatingDoneNavigateButton extends StatelessWidget {
     super.key,
     required this.chatModel,
     required this.selectedContactList,
+    required this.receiverContactName,
   });
 
   final ChatModel chatModel;
   final List<ContactModel>? selectedContactList;
+  final String receiverContactName;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,8 @@ class FloatingDoneNavigateButton extends StatelessWidget {
         selectedContactList != null
             ? context.read<MessageBloc>().add(
                   ContactMessageSendEvent(
+                    receiverID: chatModel.receiverID!,
+                    receiverContactName: receiverContactName,
                     contactListToSend: selectedContactList!,
                     chatModel: chatModel,
                   ),

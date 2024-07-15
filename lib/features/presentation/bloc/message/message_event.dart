@@ -30,27 +30,40 @@ class AttachmentIconClickedEvent extends MessageEvent {
 }
 
 class MessageSentEvent extends MessageEvent {
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
+  final String receiverID;
+  final String currentUserId;
+  final String receiverContactName;
   final File? file;
   final MessageModel message;
   const MessageSentEvent({
     required this.chatModel,
     this.file,
     required this.message,
+    required this.receiverContactName,
+    required this.receiverID,
+    required this.currentUserId,
   });
   @override
   List<Object> get props => [
-        chatModel,
+        chatModel ?? const ChatModel(),
         message,
+        file ?? File(''),
+        currentUserId,
+        receiverContactName,
       ];
 }
 
 class PhotoMessageSendEvent extends MessageEvent {
   final ImageSource imageSource;
   final ChatModel chatModel;
+  final String receiverID;
+  final String receiverContactName;
   const PhotoMessageSendEvent({
     required this.imageSource,
     required this.chatModel,
+    required this.receiverContactName,
+    required this.receiverID,
   });
   @override
   List<Object> get props => [
@@ -62,9 +75,13 @@ class PhotoMessageSendEvent extends MessageEvent {
 class VideoMessageSendEvent extends MessageEvent {
   final ImageSource imageSource;
   final ChatModel chatModel;
+  final String receiverID;
+  final String receiverContactName;
   const VideoMessageSendEvent({
     required this.imageSource,
     required this.chatModel,
+    required this.receiverContactName,
+    required this.receiverID,
   });
   @override
   List<Object> get props => [
@@ -79,13 +96,17 @@ class GetOneMessageEvent extends MessageEvent {
 }
 
 class GetAllMessageEvent extends MessageEvent {
-  final String chatId;
+  final String? chatId;
+  final String currentUserId;
+  final String receiverId;
   const GetAllMessageEvent({
     required this.chatId,
+    required this.currentUserId,
+    required this.receiverId,
   });
   @override
   List<Object> get props => [
-        chatId,
+        chatId ?? currentUserId,
       ];
 }
 
@@ -122,9 +143,13 @@ class AssetMessageEvent extends MessageEvent {
 class ContactMessageSendEvent extends MessageEvent {
   final List<ContactModel> contactListToSend;
   final ChatModel chatModel;
+  final String receiverID;
+  final String receiverContactName;
   const ContactMessageSendEvent({
     required this.contactListToSend,
     required this.chatModel,
+    required this.receiverContactName,
+    required this.receiverID,
   });
   @override
   List<Object> get props => [
@@ -135,22 +160,31 @@ class ContactMessageSendEvent extends MessageEvent {
 class OpenDeviceFileAndSaveToDbEvent extends MessageEvent {
   final ChatModel chatModel;
   final MessageType messageType;
+  final String receiverID;
+  final String receiverContactName;
   const OpenDeviceFileAndSaveToDbEvent({
+    required this.receiverContactName,
+    required this.receiverID,
     required this.chatModel,
     required this.messageType,
   });
   @override
   List<Object> get props => [
-        chatModel,messageType,
+        chatModel,
+        messageType,
       ];
 }
 
 class AudioRecordToggleEvent extends MessageEvent {
   final ChatModel chatModel;
   final FlutterSoundRecorder recorder;
+  final String receiverID;
+  final String receiverContactName;
   const AudioRecordToggleEvent({
     required this.chatModel,
     required this.recorder,
+    required this.receiverContactName,
+    required this.receiverID,
   });
   @override
   List<Object> get props => [
@@ -162,8 +196,12 @@ class AudioRecordToggleEvent extends MessageEvent {
 class AudioMessageSendEvent extends MessageEvent {
   final ChatModel chatModel;
   final File audioFile;
+  final String receiverID;
+  final String receiverContactName;
   const AudioMessageSendEvent({
     required this.chatModel,
+    required this.receiverContactName,
+    required this.receiverID,
     required this.audioFile,
   });
   @override
@@ -171,17 +209,24 @@ class AudioMessageSendEvent extends MessageEvent {
         chatModel,
       ];
 }
-class LocationPickEvent extends MessageEvent{}
+
+class LocationPickEvent extends MessageEvent {}
+
 class LocationMessageSendEvent extends MessageEvent {
   final ChatModel chatModel;
   final String location;
+  final String receiverID;
+  final String receiverContactName;
   const LocationMessageSendEvent({
     required this.chatModel,
     required this.location,
+    required this.receiverContactName,
+    required this.receiverID,
   });
   @override
   List<Object> get props => [chatModel];
 }
+
 class ChatOpenedEvent extends MessageEvent {
   final ChatModel chatModel;
   const ChatOpenedEvent({
@@ -190,7 +235,8 @@ class ChatOpenedEvent extends MessageEvent {
   @override
   List<Object> get props => [chatModel];
 }
-class ChatClosedEvent extends MessageEvent{
+
+class ChatClosedEvent extends MessageEvent {
   final ChatModel chatModel;
   const ChatClosedEvent({
     required this.chatModel,
@@ -199,28 +245,13 @@ class ChatClosedEvent extends MessageEvent{
   List<Object> get props => [chatModel];
 }
 
-// class AudioPlayerPositionChangedEvent extends MessageEvent {
-//   final Duration position;
-//   const AudioPlayerPositionChangedEvent(this.position);
-
-//   @override
-//   List<Object> get props => [position];
-// }
-
-// class AudioPlayerDurationChangedEvent extends MessageEvent {
-//   final Duration duration;
-//   const AudioPlayerDurationChangedEvent(this.duration);
-
-  // @override
-  // List<Object> get props => [duration];
-// }
 class AudioPlayerPositionChangedEvent extends MessageEvent {
   final String messageKey;
   final Duration position;
 
   const AudioPlayerPositionChangedEvent(this.messageKey, this.position);
-    @override
-  List<Object> get props => [messageKey,position];
+  @override
+  List<Object> get props => [messageKey, position];
 }
 
 class AudioPlayerDurationChangedEvent extends MessageEvent {
@@ -228,7 +259,7 @@ class AudioPlayerDurationChangedEvent extends MessageEvent {
   final Duration duration;
 
   const AudioPlayerDurationChangedEvent(this.messageKey, this.duration);
-    @override
+  @override
   List<Object> get props => [duration, messageKey];
 }
 
@@ -237,13 +268,14 @@ class AudioPlayerPlayStateChangedEvent extends MessageEvent {
   final bool isPlaying;
 
   const AudioPlayerPlayStateChangedEvent(this.messageKey, this.isPlaying);
-   @override
+  @override
   List<Object> get props => [isPlaying, messageKey];
 }
+
 class AudioPlayerCompletedEvent extends MessageEvent {
   final String messageKey;
 
   const AudioPlayerCompletedEvent(this.messageKey);
-   @override
+  @override
   List<Object> get props => [messageKey];
 }

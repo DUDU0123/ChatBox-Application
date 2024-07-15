@@ -20,12 +20,13 @@ class MessageContainerWidget extends StatelessWidget {
     required this.message,
     required this.chatModel,
     required this.videoControllers,
-    required this.audioPlayers,
+    required this.audioPlayers, required this.receiverID,
   });
   final MessageModel message;
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final Map<String, VideoPlayerController> videoControllers;
   final Map<String, AudioPlayer> audioPlayers;
+  final String receiverID;
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +78,14 @@ class MessageContainerWidget extends StatelessWidget {
                       ? textMessageWidget(message: message)
                       : message.messageType == MessageType.photo
                           ? photoMessageShowWidget(
+                            receiverID: receiverID,
                               message: message,
                               chatModel: chatModel,
                               context: context,
                             )
                           : videoControllers[message.message!] != null
                               ? videoMessageShowWidget(
+                                receiverID: receiverID,
                                   chatModel: chatModel,
                                   videoControllers: videoControllers,
                                   context: context,

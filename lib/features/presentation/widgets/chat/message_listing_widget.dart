@@ -13,7 +13,8 @@ import 'package:video_player/video_player.dart';
 Widget messageListingWidget({
   required MessageState state,
   required ScrollController scrollController,
-  required ChatModel chatModel,
+  required ChatModel? chatModel,
+  required String receiverID,
   required Map<String, AudioPlayer> audioPlayers,
   required Map<String, VideoPlayerController> videoControllers,
 }) {
@@ -59,6 +60,7 @@ Widget messageListingWidget({
             });
           }
           return MessageContainerWidget(
+            receiverID:receiverID ,
             chatModel: chatModel,
             message: message,
             audioPlayers: audioPlayers,

@@ -12,26 +12,26 @@ class ChatRepoImpl extends ChatRepo {
     required this.chatData,
     required this.firebaseAuth,
   });
-  @override
-  Future<void> createNewChat({
-    required String receiverId,
-    required String recieverContactName,
-  }) async {
-    if (firebaseAuth.currentUser != null) {
-      final isChatExists = await chatData.checkIfChatExistAlready(
-        firebaseAuth.currentUser!.uid,
-        receiverId,
-      );
-      if (!isChatExists) {
-        await chatData.createANewChat(
-          receiverId: receiverId,
-          receiverContactName: recieverContactName,
-        );
-      } else {
-        return;
-      }
-    }
-  }
+  // @override
+  // Future<void> createNewChat({
+  //   required String receiverId,
+  //   required String recieverContactName,
+  // }) async {
+  //   if (firebaseAuth.currentUser != null) {
+  //     final isChatExists = await chatData.checkIfChatExistAlready(
+  //       firebaseAuth.currentUser!.uid,
+  //       receiverId,
+  //     );
+  //     if (!isChatExists) {
+  //       await chatData.createANewChat(
+  //         receiverId: receiverId,
+  //         receiverContactName: recieverContactName,
+  //       );
+  //     } else {
+  //       return;
+  //     }
+  //   }
+  // }
 
   @override
   Future<void> deleteMessage({
@@ -77,10 +77,17 @@ class ChatRepoImpl extends ChatRepo {
 
   @override
   Future<void> sendMessage({
-    required String chatId,
+    required String? chatId,
     required MessageModel message,
+    required String receiverId,
+    required String receiverContactName,
   }) async {
-    await chatData.sendMessageToAChat(chatId: chatId, message: message);
+    await chatData.sendMessageToAChat(
+      chatId: chatId,
+      message: message,
+      receiverContactName: receiverContactName,
+      receiverId: receiverId,
+    );
   }
 
   @override
@@ -91,8 +98,10 @@ class ChatRepoImpl extends ChatRepo {
       chatModel: chatModel,
     );
   }
+
   @override
-  Future<String> sendAssetMessage({required String chatID, required File file}) {
-   return chatData.sendAssetMessage(chatID: chatID, file: file);
+  Future<String> sendAssetMessage(
+      {required String chatID, required File file}) {
+    return chatData.sendAssetMessage(chatID: chatID, file: file);
   }
 }

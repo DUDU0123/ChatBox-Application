@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
@@ -15,16 +16,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
+
 class ChatRoomPage extends StatefulWidget {
   const ChatRoomPage({
     super.key,
     required this.userName,
     required this.isGroup,
-    required this.chatModel,
+    this.chatModel, this.receiverID,
   });
   final String userName;
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final bool isGroup;
+  final String? receiverID;
 
   @override
   State<ChatRoomPage> createState() => _ChatRoomPageState();
@@ -53,13 +56,16 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    context
-        .read<MessageBloc>()
-        .add(GetAllMessageEvent(chatId: widget.chatModel.chatID!));
+   widget.chatModel != null? context.read<MessageBloc>().add(GetAllMessageEvent(
+    currentUserId: firebaseAuth.currentUser?.uid??'',
+    receiverId: widget.receiverID??'',
+        chatId:widget.chatModel!.chatID!)):null;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: chatRoomAppBarWidget(
+          context: context,
+          receiverID: widget.receiverID??"",
           chatModel: widget.chatModel,
           isGroup: widget.isGroup,
           userName: widget.userName,
@@ -84,6 +90,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       return commonErrorWidget(message: state.message);
                     }
                     return messageListingWidget(
+                      receiverID: widget.receiverID??"",
                       chatModel: widget.chatModel,
                       audioPlayers: audioPlayers,
                       scrollController: scrollController,
@@ -94,6 +101,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 ),
               ),
               ChatBarWidget(
+                receiverContactName: widget.userName,
                 recorder: recorder,
                 scrollController: scrollController,
                 chatModel: widget.chatModel,
@@ -111,6 +119,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   visible: state.isAttachmentListOpened ?? false,
                   replacement: zeroMeasureWidget,
                   child: AttachmentListContainerVertical(
+                    receverContactName: widget.userName,
                     chatModel: widget.chatModel,
                   ),
                 );

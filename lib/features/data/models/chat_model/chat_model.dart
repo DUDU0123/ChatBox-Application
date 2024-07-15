@@ -20,11 +20,13 @@ class ChatModel extends ChatEntity {
     super.isMuted,
     super.isIncomingMessage,
     super.isChatOpen,
+    super.isGroup,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> map) {
     log("Map Data: $map");
     return ChatModel(
+      isGroup:map[isGroupChat]??false,
       attachmentsWithMessage: map['attachments'],
       chatID: map[chatId],
       receiverID: map[receiverId],
@@ -32,13 +34,13 @@ class ChatModel extends ChatEntity {
       receiverProfileImage: map[receiverProfilePhoto],
       lastMessageTime: map[chatLastMessageTime],
       lastMessage: map[chatLastMessage],
-      isMuted: map[chatMuted]??false,
+      isMuted: map[chatMuted] ?? false,
       notificationCount: map[chatMessageNotificationCount],
       lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
       lastMessageType: MessageType.values.byName(map[lastChatType]),
       receiverName: map[receiverNameInChatList],
       isIncomingMessage: map[isIncoming],
-      isChatOpen: map[isUserChatOpen]??false,
+      isChatOpen: map[isUserChatOpen] ?? false,
     );
   }
   Map<String, dynamic> toJson() {
@@ -46,6 +48,7 @@ class ChatModel extends ChatEntity {
       chatId: chatID,
       receiverId: receiverID,
       senderId: senderID,
+      isGroupChat: isGroup,
       receiverProfilePhoto: receiverProfileImage,
       chatLastMessageTime: lastMessageTime,
       chatLastMessage: lastMessage,
@@ -55,8 +58,8 @@ class ChatModel extends ChatEntity {
       lastChatStatus: lastMessageStatus?.name,
       receiverNameInChatList: receiverName,
       'attachments': attachmentsWithMessage,
-      isIncoming :isIncomingMessage,
-      isUserChatOpen :isChatOpen,
+      isIncoming: isIncomingMessage,
+      isUserChatOpen: isChatOpen,
     };
   }
 
@@ -68,6 +71,7 @@ class ChatModel extends ChatEntity {
     String? lastMessageTime,
     MessageStatus? lastMessageStatus,
     MessageType? lastMessageType,
+    bool? isGroup,
     int? notificationCount,
     String? receiverProfileImage,
     String? receiverName,
@@ -87,7 +91,9 @@ class ChatModel extends ChatEntity {
       receiverProfileImage: receiverProfileImage ?? this.receiverProfileImage,
       receiverName: receiverName ?? this.receiverName,
       isMuted: isMuted ?? this.isMuted,
-      isIncomingMessage: isIncomingMessage??this.isIncomingMessage,
-      isChatOpen: isChatOpen??this.isChatOpen,
-    );}
+      isIncomingMessage: isIncomingMessage ?? this.isIncomingMessage,
+      isChatOpen: isChatOpen ?? this.isChatOpen,
+      isGroup: isGroup??this.isGroup,
+    );
+  }
 }

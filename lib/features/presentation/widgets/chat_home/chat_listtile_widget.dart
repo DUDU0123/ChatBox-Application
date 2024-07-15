@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
@@ -33,6 +34,7 @@ class ChatListTileWidget extends StatelessWidget {
     required this.isGroup,
     required this.messageStatus,
     required this.chatModel,
+    this.receiverID,
   });
 
   final String userName;
@@ -55,6 +57,7 @@ class ChatListTileWidget extends StatelessWidget {
   final bool isGroup;
   final ChatModel chatModel;
   final MessageStatus messageStatus;
+  final String? receiverID;
 
   bool? getUserNetworkStatus({required String userID}) {
     bool? isOnline = false;
@@ -81,7 +84,7 @@ class ChatListTileWidget extends StatelessWidget {
       onTap: () {
                   context
               .read<MessageBloc>()
-              .add(GetAllMessageEvent(chatId: chatModel.chatID!));
+              .add(GetAllMessageEvent(chatId: chatModel.chatID!, currentUserId: firebaseAuth.currentUser?.uid??'', receiverId: receiverID??"",));
       },
       onLongPress: () {
         chatTileActionsOnLongPressMethod(

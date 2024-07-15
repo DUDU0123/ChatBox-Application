@@ -14,8 +14,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AttachmentListContainerVertical extends StatelessWidget {
-  const AttachmentListContainerVertical({super.key, required this.chatModel});
-  final ChatModel chatModel;
+  const AttachmentListContainerVertical({
+    super.key,
+    required this.chatModel,
+    this.receverContactName,
+  });
+  final ChatModel? chatModel;
+  final String? receverContactName;
 
   @override
   Widget build(BuildContext context) {
@@ -45,55 +50,82 @@ class AttachmentListContainerVertical extends StatelessWidget {
               ),
               child: IconButton(
                 onPressed: () async {
-                chatModel.chatID!=null?  context.read<MessageBloc>().add(AttachmentIconClickedEvent(chatID: chatModel.chatID!)):null;
+                  chatModel != null
+                      ? chatModel?.chatID != null
+                          ? context.read<MessageBloc>().add(
+                              AttachmentIconClickedEvent(
+                                  chatID: chatModel!.chatID!))
+                          : null
+                      : null;
                   switch (attachmentIcons[index].mediaType) {
                     case MediaType.camera:
                       await videoOrPhotoTakeFromCameraSourceMethod(
+                        receiverContactName: receverContactName,
                         context: context,
                         chatModel: chatModel,
                       );
                       break;
                     case MediaType.gallery:
-                      context.read<MessageBloc>().add(
-                            PhotoMessageSendEvent(
-                                chatModel: chatModel,
-                                imageSource: ImageSource.gallery),
-                          );
+                      chatModel != null
+                          ? context.read<MessageBloc>().add(
+                                PhotoMessageSendEvent(
+                                    receiverID: chatModel!.receiverID ?? '',
+                                    receiverContactName:
+                                        receverContactName ?? '',
+                                    chatModel: chatModel!,
+                                    imageSource: ImageSource.gallery),
+                              )
+                          : null;
                       break;
                     case MediaType.document:
-                      context.read<MessageBloc>().add(
-                            OpenDeviceFileAndSaveToDbEvent(
-                              messageType: MessageType.document,
-                              chatModel: chatModel,
-                            ),
-                          );
+                      chatModel != null
+                          ? context.read<MessageBloc>().add(
+                                OpenDeviceFileAndSaveToDbEvent(
+                                  receiverID: chatModel!.receiverID ?? '',
+                                  receiverContactName: receverContactName ?? '',
+                                  messageType: MessageType.document,
+                                  chatModel: chatModel!,
+                                ),
+                              )
+                          : null;
                       break;
                     case MediaType.contact:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return SelectContactPage(
-                            chatModel: chatModel,
-                          );
-                        }),
-                      );
+                      chatModel != null
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return SelectContactPage(
+                                  receiverContactName: receverContactName,
+                                  chatModel: chatModel!,
+                                );
+                              }),
+                            )
+                          : null;
                       break;
                     case MediaType.location:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LocationPickPage(chatModel: chatModel,),
-                        ),
-                      );
+                      chatModel != null
+                          ? Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LocationPickPage(
+                                  chatModel: chatModel!,
+                                ),
+                              ),
+                            )
+                          : null;
                       context.read<MessageBloc>().add(LocationPickEvent());
                       break;
                     case MediaType.audio:
-                      context.read<MessageBloc>().add(
-                            OpenDeviceFileAndSaveToDbEvent(
-                              messageType: MessageType.audio,
-                              chatModel: chatModel,
-                            ),
-                          );
+                      chatModel != null
+                          ? context.read<MessageBloc>().add(
+                                OpenDeviceFileAndSaveToDbEvent(
+                                  receiverID: chatModel?.receiverID ?? '',
+                                  receiverContactName: receverContactName ?? '',
+                                  messageType: MessageType.audio,
+                                  chatModel: chatModel!,
+                                ),
+                              )
+                          : null;
                       break;
                     default:
                   }
@@ -116,4 +148,3 @@ class AttachmentListContainerVertical extends StatelessWidget {
     );
   }
 }
-

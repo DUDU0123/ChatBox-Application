@@ -12,8 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SelectContactPage extends StatefulWidget {
-  const SelectContactPage({super.key, required this.chatModel});
+  const SelectContactPage({super.key, required this.chatModel, this.receiverContactName,});
   final ChatModel chatModel;
+  final String? receiverContactName;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
 }
@@ -131,6 +132,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
+            receiverContactName: widget.receiverContactName??'',
             chatModel: widget.chatModel,
             selectedContactList: state.selectedContactList,
           );

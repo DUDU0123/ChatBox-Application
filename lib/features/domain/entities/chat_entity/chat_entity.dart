@@ -17,6 +17,7 @@ class ChatEntity extends Equatable {
   final String? senderID;
   final bool? isIncomingMessage;
   final bool? isChatOpen;
+  final bool? isGroup;
   const ChatEntity({
     this.receiverName,
     this.attachmentsWithMessage,
@@ -31,6 +32,7 @@ class ChatEntity extends Equatable {
     this.lastMessageStatus,
     this.lastMessageType,
     this.isIncomingMessage,
+    this.isGroup,
     this.isChatOpen,
   });
 
@@ -51,6 +53,7 @@ class ChatEntity extends Equatable {
       attachmentsWithMessage,
       isIncomingMessage,
       isChatOpen,
+      isGroup,
     ];
   }
 }

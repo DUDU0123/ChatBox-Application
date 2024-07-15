@@ -87,8 +87,9 @@ Widget documentMessageWidget({
 
 Widget photoMessageShowWidget({
   required MessageModel message,
-  required ChatModel chatModel,
+  required ChatModel? chatModel,
   required BuildContext context,
+  required String receiverID,
 }) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(10.sp),
@@ -98,8 +99,9 @@ Widget photoMessageShowWidget({
           context,
           MaterialPageRoute(
             builder: (context) => AssetShowPage(
+              receiverID: receiverID,
               messageType: MessageType.photo,
-              chatID: chatModel.chatID ?? '',
+              chatID: chatModel?.chatID ?? '',
               message: message,
             ),
           ),
@@ -119,8 +121,9 @@ Widget photoMessageShowWidget({
 
 Widget videoMessageShowWidget({
   required MessageModel message,
-  required ChatModel chatModel,
+  required ChatModel? chatModel,
   required BuildContext context,
+  required String receiverID,
   required final Map<String, VideoPlayerController> videoControllers,
 }) {
   return GestureDetector(
@@ -132,8 +135,9 @@ Widget videoMessageShowWidget({
         context,
         MaterialPageRoute(
           builder: (context) => AssetShowPage(
+            receiverID: receiverID,
             messageType: MessageType.video,
-            chatID: chatModel.chatID ?? '',
+            chatID: chatModel?.chatID ?? '',
             controllers: videoControllers,
             message: message,
           ),

@@ -88,8 +88,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> getAllMessageEvent(
       GetAllMessageEvent event, Emitter<MessageState> emit) async {
     try {
+    final chatId =  ChatData.generateChatId(currentUserId: event.currentUserId, receiverId: event.receiverId);
       final messages = chatRepo.getAllMessages(
-        chatId: event.chatId,
+        chatId: event.chatId??chatId,
       );
       // emit(MessageSucessState(messages: messages));
       emit(MessageState(messages: messages));
@@ -107,21 +108,35 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> messageDeleteEvent(
       MessageDeleteEvent event, Emitter<MessageState> emit) {}
+  //  FutureOr<void> createANewChatEvent(
+  //     CreateANewChatEvent event, Emitter<ChatState> emit) async {
+  //   try {
+      // await chatRepo.createNewChat(
+      //   receiverId: event.receiverId,
+      //   recieverContactName: event.recieverContactName,
+      // );
+  //     add(GetAllChatsEvent());
+  //   } catch (e) {
+  //     log("Create chat: e ${e.toString()}");
+  //     emit(ChatErrorState(message: e.toString()));
+  //   }
+  // }
 
   Future<FutureOr<void>> messageSentEvent(
       MessageSentEvent event, Emitter<MessageState> emit) async {
     try {
-      if (event.chatModel.chatID == null) {
-        return null;
-      }
       await chatRepo.sendMessage(
-        chatId: event.chatModel.chatID.toString(),
+        chatId: event.chatModel?.chatID.toString(),
         message: event.message,
+        receiverContactName: event.receiverContactName,
+        receiverId: event.receiverContactName,
       );
       ChatData.updateChatMessageDataOfUser(
           chatModel: event.chatModel, message: event.message);
       add(GetAllMessageEvent(
-        chatId: event.chatModel.chatID.toString(),
+        currentUserId: event.currentUserId,
+        receiverId: event.receiverID,
+        chatId: event.chatModel?.chatID?.toString(),
       ));
     } catch (e) {
       log("Send message error: ${e.toString()}");
@@ -156,7 +171,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           receiverID: event.chatModel.receiverID,
           senderID: event.chatModel.senderID,
         );
-        await chatRepo.sendMessage(chatId: chatID, message: photoMessage);
+        await chatRepo.sendMessage(
+          chatId: chatID,
+          message: photoMessage,
+          receiverContactName: event.receiverContactName,
+          receiverId: event.receiverContactName,
+        );
         ChatData.updateChatMessageDataOfUser(
           chatModel: event.chatModel,
           message: photoMessage,
@@ -204,7 +224,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           receiverID: event.chatModel.receiverID,
           senderID: event.chatModel.senderID,
         );
-        await chatRepo.sendMessage(chatId: chatID, message: videoMessage);
+        await chatRepo.sendMessage(
+          chatId: chatID,
+          message: videoMessage,
+          receiverContactName: event.receiverContactName,
+          receiverId: event.receiverContactName,
+        );
         ChatData.updateChatMessageDataOfUser(
             chatModel: event.chatModel, message: videoMessage);
         // add(GetAllMessageEvent(chatId: chatID));
@@ -291,7 +316,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           receiverID: event.chatModel.receiverID,
           senderID: event.chatModel.senderID,
         );
-        await chatRepo.sendMessage(chatId: chatID, message: message);
+        await chatRepo.sendMessage(
+          chatId: chatID,
+          message: message,
+          receiverContactName: event.receiverContactName,
+          receiverId: event.receiverContactName,
+        );
         ChatData.updateChatMessageDataOfUser(
             chatModel: event.chatModel, message: message);
         final messages = chatRepo.getAllMessages(
@@ -341,7 +371,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             receiverID: event.chatModel.receiverID,
             senderID: event.chatModel.senderID,
           );
-          await chatRepo.sendMessage(chatId: chatID, message: message);
+          await chatRepo.sendMessage(
+            chatId: chatID,
+            message: message,
+            receiverContactName: event.receiverContactName,
+            receiverId: event.receiverContactName,
+          );
           ChatData.updateChatMessageDataOfUser(
               chatModel: event.chatModel, message: message);
           final messages = chatRepo.getAllMessages(
@@ -367,11 +402,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     try {
       if (event.recorder.isRecording) {
         String? path = await event.recorder.stopRecorder();
-        
+
         if (path != null) {
           File audioFile = File(path);
           add(
             AudioMessageSendEvent(
+              receiverContactName: event.receiverContactName,
+              receiverID: event.receiverID,
               chatModel: event.chatModel,
               audioFile: audioFile,
             ),
@@ -420,7 +457,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         receiverID: event.chatModel.receiverID,
         senderID: event.chatModel.senderID,
       );
-      await chatRepo.sendMessage(chatId: chatID, message: message);
+      await chatRepo.sendMessage(
+        chatId: chatID,
+        message: message,
+        receiverContactName: event.receiverContactName,
+        receiverId: event.receiverContactName,
+      );
       ChatData.updateChatMessageDataOfUser(
           chatModel: event.chatModel, message: message);
       final messages = chatRepo.getAllMessages(
@@ -439,6 +481,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       emit(MessageErrorState(message: e.toString()));
     }
   }
+
   FutureOr<void> onAudioPlayerPositionChanged(
       AudioPlayerPositionChangedEvent event, Emitter<MessageState> emit) {
     final newAudioPositions = Map<String, Duration>.from(state.audioPositions);
@@ -455,21 +498,25 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> onAudioPlayerPlayStateChanged(
       AudioPlayerPlayStateChangedEvent event, Emitter<MessageState> emit) {
-    final newAudioPlayingStates = Map<String, bool>.from(state.audioPlayingStates);
+    final newAudioPlayingStates =
+        Map<String, bool>.from(state.audioPlayingStates);
     newAudioPlayingStates[event.messageKey] = event.isPlaying;
     emit(state.copyWith(audioPlayingStates: newAudioPlayingStates));
   }
+
   FutureOr<void> _onAudioPlayerCompleted(
       AudioPlayerCompletedEvent event, Emitter<MessageState> emit) {
     final newAudioPositions = Map<String, Duration>.from(state.audioPositions);
     newAudioPositions[event.messageKey] = Duration.zero;
-    final newAudioPlayingStates = Map<String, bool>.from(state.audioPlayingStates);
+    final newAudioPlayingStates =
+        Map<String, bool>.from(state.audioPlayingStates);
     newAudioPlayingStates[event.messageKey] = false;
     emit(state.copyWith(
       audioPositions: newAudioPositions,
       audioPlayingStates: newAudioPlayingStates,
     ));
   }
+
   Future<FutureOr<void>> locationMessageSendEvent(
       LocationMessageSendEvent event, Emitter<MessageState> emit) async {
     try {
@@ -490,7 +537,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         receiverID: event.chatModel.receiverID,
         senderID: event.chatModel.senderID,
       );
-      await chatRepo.sendMessage(chatId: chatID, message: message);
+      await chatRepo.sendMessage(
+        chatId: chatID,
+        message: message,
+        receiverContactName: event.receiverContactName,
+        receiverId: event.receiverContactName,
+      );
       ChatData.updateChatMessageDataOfUser(
           chatModel: event.chatModel, message: message);
       final messages = chatRepo.getAllMessages(
@@ -512,7 +564,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> locationPickEvent(
       LocationPickEvent event, Emitter<MessageState> emit) async {
     try {
-      // await Geolocator.requestPermission();
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         await Geolocator.requestPermission();

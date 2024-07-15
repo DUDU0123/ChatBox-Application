@@ -1,3 +1,4 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -15,12 +16,13 @@ class AssetShowPage extends StatefulWidget {
     this.controllers = const {},
     required this.message,
     required this.chatID,
-    required this.messageType,
+    required this.messageType, required this.receiverID,
   });
   final Map<String, VideoPlayerController> controllers;
   final MessageModel message;
   final MessageType messageType;
   final String chatID;
+  final String receiverID;
 
   @override
   _AssetShowPageState createState() => _AssetShowPageState();
@@ -65,11 +67,13 @@ class _AssetShowPageState extends State<AssetShowPage> {
             onPressed: () {
               Navigator.pop(context);
 
-              context.read<MessageBloc>().add(
+           firebaseAuth.currentUser?.uid!=null?   context.read<MessageBloc>().add(
                     GetAllMessageEvent(
+                      receiverId: widget.receiverID,
+                      currentUserId: firebaseAuth.currentUser?.uid??'',
                       chatId: widget.chatID,
                     ),
-                  );
+                  ):null;
             },
             icon: Icon(
               Icons.arrow_back,

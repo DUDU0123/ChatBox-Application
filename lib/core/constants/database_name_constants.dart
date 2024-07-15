@@ -50,6 +50,7 @@ const lastChatType = 'last_message_type';
 const isIncoming = 'is_incoming';
 const receiverNameInChatList = 'receiver_name';
 const isUserChatOpen = 'isChatOpen';
+const isGroupChat = 'is_group';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

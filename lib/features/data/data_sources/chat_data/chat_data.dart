@@ -25,7 +25,7 @@ class ChatData {
   });
 
   // Method to generate a chat ID by combining the IDs of receiver and sender
-  String _generateChatId(
+  static String generateChatId(
       {required String currentUserId, required String receiverId}) {
     try {
       List<String> uids = [currentUserId, receiverId];
@@ -42,7 +42,7 @@ class ChatData {
       String currentUserId, String contactId) async {
     try {
       String chatId =
-          _generateChatId(currentUserId: currentUserId, receiverId: contactId);
+          generateChatId(currentUserId: currentUserId, receiverId: contactId);
       DocumentSnapshot chatSnapshot = await firestore
           .collection(usersCollection)
           .doc(currentUserId)
@@ -64,7 +64,7 @@ class ChatData {
     try {
       return firestore.collection(usersCollection).doc(userId).snapshots().map(
             (event) => UserModel.fromJson(
-              map: event.data()!,
+              map: event.data()??{},
             ),
           );
     } on FirebaseAuthException catch (e) {
@@ -84,7 +84,7 @@ class ChatData {
   }) async {
     try {
       String currentUserId = firebaseAuth.currentUser!.uid;
-      String chatId = _generateChatId(
+      String chatId = generateChatId(
         currentUserId: currentUserId,
         receiverId: receiverId,
       );
@@ -154,20 +154,100 @@ class ChatData {
       throw Exception("Error while creating chat: $e");
     }
   }
+
+
+  Future<void> sendMessageToAChat(
+      {required String? chatId, required MessageModel message,required String receiverId,
+  required String receiverContactName,}) async {
+    try {
+     final String?  currentUserId = firebaseAuth.currentUser?.uid;
+     if (currentUserId==null) {
+       return;
+     }
+     final isChatExists = await checkIfChatExistAlready(currentUserId, receiverId);
+     if (!isChatExists && chatId==null) {
+       await createANewChat(receiverId: receiverId, receiverContactName: receiverContactName);
+     }
+      if (message.senderID == message.receiverID) {
+        await firestore
+            .collection(usersCollection)
+            .doc(message.senderID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .set(message.toJson());
+      } else {
+        await firestore
+            .collection(usersCollection)
+            .doc(message.senderID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .set(message.toJson());
+        await firestore
+            .collection(usersCollection)
+            .doc(message.receiverID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .set(message.toJson());
+      }
+    } on FirebaseAuthException catch (e) {
+      log("From Chat Data: 241: ${e.message}");
+      throw Exception(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<String> sendAssetMessage({
+    required String chatID,
+    required File file,
+  }) async {
+    try {
+      final assetUrl = await saveUserFileToDataBaseStorage(
+          ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
+      return assetUrl;
+    } on FirebaseAuthException catch (e) {
+      log("Photo send error chat data: ${e.message}");
+      throw Exception(e.message);
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
+    }
+  }
+
+
+
+
+
+
+
+
   static void updateChatMessageDataOfUser(
-      {required ChatModel chatModel, required MessageModel message}) {
-    if (chatModel.senderID == null || chatModel.receiverID == null) {
+      {required ChatModel? chatModel, required MessageModel message}) {
+    if (chatModel?.senderID == null || chatModel?.receiverID == null) {
       return;
     }
     String messageType = '';
     String lastMessage = '';
     String messageStatus = '';
+    // final Stream<UserModel?> receiverDataStream =
+    //     UserData.getOneUserDataFromDataBaseAsStream(
+    //         userId: chatModel.receiverID!);
+    // final Stream<UserModel?> senderDataStream =
+    //     UserData.getOneUserDataFromDataBaseAsStream(
+    //         userId: chatModel.senderID!);
     final Stream<UserModel?> receiverDataStream =
         UserData.getOneUserDataFromDataBaseAsStream(
-            userId: chatModel.receiverID!);
+            userId: message.receiverID!);
     final Stream<UserModel?> senderDataStream =
         UserData.getOneUserDataFromDataBaseAsStream(
-            userId: chatModel.senderID!);
+            userId: message.senderID!);
     receiverDataStream.listen((UserModel? data) async {
       if (data != null) {
         switch (message.messageStatus) {
@@ -217,15 +297,15 @@ class ChatData {
         }
         await fireStore
             .collection(usersCollection)
-            .doc(chatModel.senderID)
+            .doc(chatModel?.senderID)
             .collection(chatsCollection)
-            .doc(chatModel.chatID)
+            .doc(chatModel?.chatID)
             .update({
           chatLastMessageTime: message.messageTime,
           lastChatType: messageType,
           chatLastMessage: lastMessage,
           lastChatStatus: messageStatus,
-          isIncoming: message.senderID == chatModel.receiverID,
+          isIncoming: message.senderID == chatModel?.receiverID,
         });
       } else {
         throw Exception("User data is null");
@@ -236,15 +316,15 @@ class ChatData {
       if (data != null) {
         await fireStore
             .collection(usersCollection)
-            .doc(chatModel.receiverID)
+            .doc(chatModel?.receiverID)
             .collection(chatsCollection)
-            .doc(chatModel.chatID)
+            .doc(chatModel?.chatID)
             .update({
           chatLastMessageTime: message.messageTime,
           lastChatType: messageType,
           chatLastMessage: lastMessage,
           lastChatStatus: messageStatus,
-          isIncoming: message.senderID != chatModel.receiverID,
+          isIncoming: message.senderID != chatModel?.receiverID,
         });
       } else {
         throw Exception("User data is null");
@@ -327,62 +407,6 @@ class ChatData {
           .delete();
     } on FirebaseAuthException catch (e) {
       log("From Chat Data: 220: ${e.message}");
-      throw Exception(e.message);
-    } catch (e) {
-      log(e.toString());
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> sendMessageToAChat(
-      {required String chatId, required MessageModel message}) async {
-    try {
-      if (message.senderID == message.receiverID) {
-        await firestore
-            .collection(usersCollection)
-            .doc(message.senderID)
-            .collection(chatsCollection)
-            .doc(chatId)
-            .collection(messagesCollection)
-            .doc(message.messageId)
-            .set(message.toJson());
-      } else {
-        await firestore
-            .collection(usersCollection)
-            .doc(message.senderID)
-            .collection(chatsCollection)
-            .doc(chatId)
-            .collection(messagesCollection)
-            .doc(message.messageId)
-            .set(message.toJson());
-        await firestore
-            .collection(usersCollection)
-            .doc(message.receiverID)
-            .collection(chatsCollection)
-            .doc(chatId)
-            .collection(messagesCollection)
-            .doc(message.messageId)
-            .set(message.toJson());
-      }
-    } on FirebaseAuthException catch (e) {
-      log("From Chat Data: 241: ${e.message}");
-      throw Exception(e.message);
-    } catch (e) {
-      log(e.toString());
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<String> sendAssetMessage({
-    required String chatID,
-    required File file,
-  }) async {
-    try {
-      final assetUrl = await saveUserFileToDataBaseStorage(
-          ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
-      return assetUrl;
-    } on FirebaseAuthException catch (e) {
-      log("Photo send error chat data: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());

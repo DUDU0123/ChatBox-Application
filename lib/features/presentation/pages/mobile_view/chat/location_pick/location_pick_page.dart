@@ -7,8 +7,11 @@ import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 class LocationPickPage extends StatelessWidget {
   const LocationPickPage({super.key, required this.chatModel});
   final ChatModel chatModel;
@@ -22,6 +25,32 @@ class LocationPickPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(
+                width: screenWidth(context: context),
+                height: screenHeight(context: context) / 2,
+                child: FlutterMap(
+                  options: const MapOptions(
+                    //initialCenter: state.currentLocation,
+                    initialZoom: 9.2,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    RichAttributionWidget(
+                      attributions: [
+                        TextSourceAttribution(
+                          'OpenStreetMap contributors',
+                          onTap: () => launchUrl(
+                              Uri.parse('https://openstreetmap.org/copyright')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
           BlocBuilder<MessageBloc, MessageState>(builder: (contex, state) {
             if (state is MessageErrorState) {
               return commonErrorWidget(message: state.message);
@@ -31,26 +60,37 @@ class LocationPickPage extends StatelessWidget {
               log("Current Location: ${state.latitude}, ${state.longitude}");
               String locationUrl =
                   'https://www.google.com/maps/search/?api=1&query=${state.latitude},${state.longitude}';
-              context.read<MessageBloc>().add(
-                    LocationMessageSendEvent(
-                      chatModel: chatModel,
-                      location: locationUrl,
-                    ),
-                  );
+              // context.read<MessageBloc>().add(
+              //       LocationMessageSendEvent(
+              //         chatModel: chatModel,
+              //         location: locationUrl,
+              //       ),
+              //     );
               return SizedBox(
                 width: screenWidth(context: context),
                 height: screenHeight(context: context) / 2,
-                // child: GoogleMap(
-                //   initialCameraPosition:  CameraPosition(
-                //     target:state.currentLocation,
-                //     zoom: 20,
-                //   ),
-                //   myLocationEnabled: true,
-                //   myLocationButtonEnabled: true,
-                //   onMapCreated: (GoogleMapController controller) {
-                //     // Additional configuration if needed
-                //   },
-                // ),
+                child: FlutterMap(
+                  options: const MapOptions(
+                    //initialCenter: state.currentLocation,
+                    initialZoom: 9.2,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    RichAttributionWidget(
+                      attributions: [
+                        TextSourceAttribution(
+                          'OpenStreetMap contributors',
+                          onTap: () => launchUrl(
+                              Uri.parse('https://openstreetmap.org/copyright')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               );
             }
             return zeroMeasureWidget;
