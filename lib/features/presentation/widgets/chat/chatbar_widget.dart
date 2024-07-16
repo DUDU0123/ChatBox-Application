@@ -165,7 +165,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             if (widget.messageController.text.isNotEmpty) {
                               sendMessage(
                                 receiverContactName: widget.receiverContactName,
-                                chatModel: widget.chatModel!,
+                                chatModel: widget.chatModel,
                                 context: context,
                                 messageController: widget.messageController,
                                 scrollController: widget.scrollController,

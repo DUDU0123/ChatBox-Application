@@ -14,6 +14,7 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 
 class ChatData {
   final FirebaseFirestore firestore;
@@ -36,6 +37,21 @@ class ChatData {
       log(name: "Chat Id generate error: ", e.toString());
       throw Exception(e.toString());
     }
+  }
+
+  static Stream<MessageModel> getMessageStream(
+      String chatID, String messageID) {
+    return fireStore
+        .collection(chatsCollection)
+        .doc(chatID)
+        .collection(messagesCollection)
+        .doc(messageID)
+        .snapshots()
+        .map(
+          (event) => MessageModel.fromJson(
+            map: event.data() ?? {},
+          ),
+        );
   }
 
   Future<bool> checkIfChatExistAlready(
@@ -64,7 +80,7 @@ class ChatData {
     try {
       return firestore.collection(usersCollection).doc(userId).snapshots().map(
             (event) => UserModel.fromJson(
-              map: event.data()??{},
+              map: event.data() ?? {},
             ),
           );
     } on FirebaseAuthException catch (e) {
@@ -155,19 +171,17 @@ class ChatData {
     }
   }
 
-
-  Future<void> sendMessageToAChat(
-      {required String? chatId, required MessageModel message,required String receiverId,
-  required String receiverContactName,}) async {
+  Future<void> sendMessageToAChat({
+    required String? chatId,
+    required MessageModel message,
+    required String receiverId,
+    required String receiverContactName,
+  }) async {
     try {
-     final String?  currentUserId = firebaseAuth.currentUser?.uid;
-     if (currentUserId==null) {
-       return;
-     }
-     final isChatExists = await checkIfChatExistAlready(currentUserId, receiverId);
-     if (!isChatExists && chatId==null) {
-       await createANewChat(receiverId: receiverId, receiverContactName: receiverContactName);
-     }
+      final String? currentUserId = firebaseAuth.currentUser?.uid;
+      if (currentUserId == null) {
+        return;
+      }
       if (message.senderID == message.receiverID) {
         await firestore
             .collection(usersCollection)
@@ -221,116 +235,272 @@ class ChatData {
     }
   }
 
-
-
-
-
-
-
-
-  static void updateChatMessageDataOfUser(
-      {required ChatModel? chatModel, required MessageModel message}) {
-    if (chatModel?.senderID == null || chatModel?.receiverID == null) {
-      return;
-    }
-    String messageType = '';
-    String lastMessage = '';
-    String messageStatus = '';
-    // final Stream<UserModel?> receiverDataStream =
-    //     UserData.getOneUserDataFromDataBaseAsStream(
-    //         userId: chatModel.receiverID!);
-    // final Stream<UserModel?> senderDataStream =
-    //     UserData.getOneUserDataFromDataBaseAsStream(
-    //         userId: chatModel.senderID!);
-    final Stream<UserModel?> receiverDataStream =
-        UserData.getOneUserDataFromDataBaseAsStream(
-            userId: message.receiverID!);
-    final Stream<UserModel?> senderDataStream =
-        UserData.getOneUserDataFromDataBaseAsStream(
-            userId: message.senderID!);
-    receiverDataStream.listen((UserModel? data) async {
-      if (data != null) {
-        switch (message.messageStatus) {
-          case MessageStatus.delivered:
-            messageStatus = 'delivered';
-            break;
-          case MessageStatus.read:
-            messageStatus = 'read';
-            break;
-          case MessageStatus.sent:
-            messageStatus = 'sent';
-            break;
-          case MessageStatus.none:
-            messageStatus = 'none';
-            break;
-          default:
+  static void listenToChatDocument(String userId, String chatId) {
+    FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(userId)
+        .collection(chatsCollection)
+        .doc(chatId)
+        .snapshots()
+        .listen((DocumentSnapshot docSnapshot) {
+      if (docSnapshot.exists) {
+        // Check if the chat is opened
+        ChatModel chat =
+            ChatModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
+        if (chat.isChatOpen ?? false) {
+          // Handle the case when the chat is opened
+          log(
+              name: "Checking chat open or not",
+              'Chat is opened by the receiver ${chat.isChatOpen}');
         }
-        switch (message.messageType) {
-          case MessageType.audio:
-            messageType = 'audio';
-            lastMessage = '🎧Audio';
-            break;
-          case MessageType.contact:
-            messageType = 'contact';
-            lastMessage = '📞Contact';
-            break;
-          case MessageType.document:
-            messageType = 'document';
-            lastMessage = '📄Doc';
-            break;
-          case MessageType.photo:
-            messageType = 'photo';
-            lastMessage = '📷Photo';
-            break;
-
-          case MessageType.video:
-            messageType = 'video';
-            lastMessage = '🎥Video';
-            break;
-          case MessageType.location:
-            messageType = 'location';
-            lastMessage = '📌Location';
-            break;
-          default:
-            lastMessage = message.message??'';
-            messageType = 'text';
-        }
-        await fireStore
-            .collection(usersCollection)
-            .doc(chatModel?.senderID)
-            .collection(chatsCollection)
-            .doc(chatModel?.chatID)
-            .update({
-          chatLastMessageTime: message.messageTime,
-          lastChatType: messageType,
-          chatLastMessage: lastMessage,
-          lastChatStatus: messageStatus,
-          isIncoming: message.senderID == chatModel?.receiverID,
-        });
-      } else {
-        throw Exception("User data is null");
-      }
-    });
-
-    senderDataStream.listen((UserModel? data) async {
-      if (data != null) {
-        await fireStore
-            .collection(usersCollection)
-            .doc(chatModel?.receiverID)
-            .collection(chatsCollection)
-            .doc(chatModel?.chatID)
-            .update({
-          chatLastMessageTime: message.messageTime,
-          lastChatType: messageType,
-          chatLastMessage: lastMessage,
-          lastChatStatus: messageStatus,
-          isIncoming: message.senderID != chatModel?.receiverID,
-        });
-      } else {
-        throw Exception("User data is null");
       }
     });
   }
+
+  // this method will update isChatOpen parameter when user open one chat and close it
+  static void updateChatOpenStatus(String userId, String chatId, bool isOpen) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('chats')
+        .doc(chatId)
+        .update({'isChatOpen': isOpen});
+  }
+
+static void updateChatMessageDataOfUser({
+  required ChatModel? chatModel,
+  required MessageModel message,
+}) async {
+  if (chatModel?.senderID == null || chatModel?.receiverID == null) {
+    return;
+  }
+  if (chatModel == null) {
+    return;
+  }
+  
+  String messageType = '';
+  String lastMessage = '';
+  String messageStatus = MessageStatus.none.name;
+
+  // Determine the message type and last message string
+  switch (message.messageType) {
+    case MessageType.audio:
+      messageType = 'audio';
+      lastMessage = '🎧Audio';
+      break;
+    case MessageType.contact:
+      messageType = 'contact';
+      lastMessage = '📞Contact';
+      break;
+    case MessageType.document:
+      messageType = 'document';
+      lastMessage = '📄Doc';
+      break;
+    case MessageType.photo:
+      messageType = 'photo';
+      lastMessage = '📷Photo';
+      break;
+    case MessageType.video:
+      messageType = 'video';
+      lastMessage = '🎥Video';
+      break;
+    case MessageType.location:
+      messageType = 'location';
+      lastMessage = '📌Location';
+      break;
+    default:
+      lastMessage = message.message ?? '';
+      messageType = 'text';
+  }
+
+  // Fetch receiver data
+  final receiverSnapshot = await FirebaseFirestore.instance
+      .collection(usersCollection)
+      .doc(chatModel.receiverID)
+      .get();
+  
+  if (receiverSnapshot.exists) {
+    final receiverData = UserModel.fromJson(map: receiverSnapshot.data()!);
+
+    bool isChatOpen = await FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(chatModel.receiverID)
+        .collection(chatsCollection)
+        .doc(chatModel.chatID)
+        .get()
+        .then((doc) => doc['isChatOpen'] ?? false);
+
+    if (receiverData.userNetworkStatus! && isChatOpen) {
+      messageStatus = MessageStatus.read.name;
+    } else if (receiverData.userNetworkStatus! && !isChatOpen) {
+      messageStatus = MessageStatus.delivered.name;
+    } else if (!receiverData.userNetworkStatus!) {
+      messageStatus = MessageStatus.sent.name;
+    }
+
+    // Update sender's chat document
+    await FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(chatModel.senderID)
+        .collection(chatsCollection)
+        .doc(chatModel.chatID)
+        .update({
+      chatLastMessageTime: message.messageTime,
+      lastChatType: messageType,
+      chatLastMessage: lastMessage,
+      lastChatStatus: messageStatus,
+      isIncoming: message.senderID == chatModel.receiverID,
+    });
+
+    // Update receiver's chat document
+    await FirebaseFirestore.instance
+        .collection(usersCollection)
+        .doc(chatModel.receiverID)
+        .collection(chatsCollection)
+        .doc(chatModel.chatID)
+        .update({
+      chatLastMessageTime: message.messageTime,
+      lastChatType: messageType,
+      chatLastMessage: lastMessage,
+      lastChatStatus: messageStatus,
+      isIncoming: message.senderID != chatModel.receiverID,
+    });
+
+    await FirebaseFirestore.instance.collection(usersCollection)
+        .doc(chatModel.receiverID)
+        .collection(chatsCollection)
+        .doc(chatModel.chatID).collection(messagesCollection).doc(message.messageId).update({
+          dbMessageStatus: messageStatus,
+        });
+  } else {
+    throw Exception("Receiver user data not found");
+  }
+}
+
+// static void updateChatMessageDataOfUser({
+//   required ChatModel? chatModel,
+//   required MessageModel message,
+// }) async {
+//   if (chatModel?.senderID == null || chatModel?.receiverID == null) {
+//     return;
+//   }
+//   if (chatModel == null) {
+//     return;
+//   }
+  
+//   String messageType = '';
+//   String lastMessage = '';
+//   String messageStatus = MessageStatus.none.name;
+
+//   // Determine the message type and last message string
+//   switch (message.messageType) {
+//     case MessageType.audio:
+//       messageType = 'audio';
+//       lastMessage = '🎧Audio';
+//       break;
+//     case MessageType.contact:
+//       messageType = 'contact';
+//       lastMessage = '📞Contact';
+//       break;
+//     case MessageType.document:
+//       messageType = 'document';
+//       lastMessage = '📄Doc';
+//       break;
+//     case MessageType.photo:
+//       messageType = 'photo';
+//       lastMessage = '📷Photo';
+//       break;
+//     case MessageType.video:
+//       messageType = 'video';
+//       lastMessage = '🎥Video';
+//       break;
+//     case MessageType.location:
+//       messageType = 'location';
+//       lastMessage = '📌Location';
+//       break;
+//     default:
+//       lastMessage = message.message ?? '';
+//       messageType = 'text';
+//   }
+
+//   // Fetch receiver data
+//   final receiverSnapshot = await FirebaseFirestore.instance
+//       .collection(usersCollection)
+//       .doc(chatModel.receiverID)
+//       .get();
+  
+//   if (receiverSnapshot.exists) {
+//     final receiverData = UserModel.fromJson(map: receiverSnapshot.data()!);
+
+//     bool isChatOpen = await FirebaseFirestore.instance
+//         .collection(usersCollection)
+//         .doc(chatModel.receiverID)
+//         .collection(chatsCollection)
+//         .doc(chatModel.chatID)
+//         .get()
+//         .then((doc) => doc['isChatOpen'] ?? false);
+
+//     if (receiverData.userNetworkStatus! && isChatOpen) {
+//       messageStatus = MessageStatus.read.name;
+//     } else if (receiverData.userNetworkStatus! && !isChatOpen) {
+//       messageStatus = MessageStatus.delivered.name;
+//     } else if (!receiverData.userNetworkStatus!) {
+//       messageStatus = MessageStatus.sent.name;
+//     }
+
+//     // Update all messages in the chat
+//     final messagesSnapshot = await FirebaseFirestore.instance
+//         .collection(usersCollection)
+//         .doc(chatModel.receiverID)
+//         .collection(chatsCollection)
+//         .doc(chatModel.chatID)
+//         .collection(messagesCollection)
+//         .get();
+
+//     if (messagesSnapshot.docs.isNotEmpty) {
+//       final batch = FirebaseFirestore.instance.batch();
+
+//       for (final doc in messagesSnapshot.docs) {
+//         batch.update(doc.reference, {
+//           dbMessageStatus: messageStatus,
+//         });
+//       }
+
+//       await batch.commit();
+//     }
+
+//     // Update sender's chat document
+//     await FirebaseFirestore.instance
+//         .collection(usersCollection)
+//         .doc(chatModel.senderID)
+//         .collection(chatsCollection)
+//         .doc(chatModel.chatID)
+//         .update({
+//       chatLastMessageTime: message.messageTime,
+//       lastChatType: messageType,
+//       chatLastMessage: lastMessage,
+//       lastChatStatus: messageStatus,
+//       isIncoming: message.senderID == chatModel.receiverID,
+//     });
+
+//     // Update receiver's chat document
+//     await FirebaseFirestore.instance
+//         .collection(usersCollection)
+//         .doc(chatModel.receiverID)
+//         .collection(chatsCollection)
+//         .doc(chatModel.chatID)
+//         .update({
+//       chatLastMessageTime: message.messageTime,
+//       lastChatType: messageType,
+//       chatLastMessage: lastMessage,
+//       lastChatStatus: messageStatus,
+//       isIncoming: message.senderID != chatModel.receiverID,
+//     });
+//   } else {
+//     throw Exception("Receiver user data not found");
+//   }
+// }
+
 
   Stream<List<ChatModel>> getAllChatsFromDB() {
     try {

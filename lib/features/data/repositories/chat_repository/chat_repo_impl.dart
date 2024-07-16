@@ -12,26 +12,26 @@ class ChatRepoImpl extends ChatRepo {
     required this.chatData,
     required this.firebaseAuth,
   });
-  // @override
-  // Future<void> createNewChat({
-  //   required String receiverId,
-  //   required String recieverContactName,
-  // }) async {
-  //   if (firebaseAuth.currentUser != null) {
-  //     final isChatExists = await chatData.checkIfChatExistAlready(
-  //       firebaseAuth.currentUser!.uid,
-  //       receiverId,
-  //     );
-  //     if (!isChatExists) {
-  //       await chatData.createANewChat(
-  //         receiverId: receiverId,
-  //         receiverContactName: recieverContactName,
-  //       );
-  //     } else {
-  //       return;
-  //     }
-  //   }
-  // }
+  @override
+  Future<void> createNewChat({
+    required String receiverId,
+    required String recieverContactName,
+  }) async {
+    if (firebaseAuth.currentUser != null) {
+      final isChatExists = await chatData.checkIfChatExistAlready(
+        firebaseAuth.currentUser!.uid,
+        receiverId,
+      );
+      if (!isChatExists) {
+        await chatData.createANewChat(
+          receiverId: receiverId,
+          receiverContactName: recieverContactName,
+        );
+      } else {
+        return;
+      }
+    }
+  }
 
   @override
   Future<void> deleteMessage({

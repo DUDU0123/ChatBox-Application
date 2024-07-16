@@ -5,34 +5,66 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 
-messageStatusWidget({
+// messageStatusWidget({
+//   required MessageStatus messageStatus,
+//   // required bool isReceiverOnline,
+//   // required bool isSenderOnline,
+// }) {
+//   return Padding(
+//     padding: EdgeInsets.only(
+//         bottom: messageStatus == MessageStatus.sent ? 0 : 2.h,
+//         top: messageStatus == MessageStatus.sent ? 3.h : 0),
+//     child: Icon(
+//       messageStatus == MessageStatus.sent
+//           ? Icons.done
+//           : messageStatus == MessageStatus.delivered
+//               ? Icons.done_all
+//               : messageStatus == MessageStatus.read
+//                   ? Icons.done_all
+//                   : Icons.update,
+//       color: messageStatus == MessageStatus.sent
+//           ? iconGreyColor
+//           : messageStatus == MessageStatus.delivered
+//               ? iconGreyColor
+//               : messageStatus == MessageStatus.read
+//                   ? buttonSmallTextColor
+//                   : iconGreyColor,
+//       size: 18.sp,
+//     ),
+//   );
+// }
+Widget messageStatusWidget({
   required MessageStatus messageStatus,
-  required bool isReceiverOnline,
-  required bool isSenderOnline,
 }) {
-  return Padding(
-    padding: EdgeInsets.only(
-        bottom: messageStatus == MessageStatus.sent ? 0 : 2.h,
-        top: messageStatus == MessageStatus.sent ? 3.h : 0),
-    child: Icon(
-      messageStatus == MessageStatus.sent
-          ? messageStatus == MessageStatus.delivered
-              ? messageStatus == MessageStatus.read
-                  ? Icons.done_all
-                  : Icons.done_all
-              : Icons.done
-          : Icons.update,
-      color:  messageStatus == MessageStatus.sent
-          ? messageStatus == MessageStatus.delivered
-              ? messageStatus == MessageStatus.read
-                  ? buttonSmallTextColor
-                  : iconGreyColor
-              : iconGreyColor
-          : iconGreyColor,
-      size: 18.sp,
-    ),
+  IconData icon;
+  Color iconColor;
+
+  switch (messageStatus) {
+    case MessageStatus.sent:
+      icon = Icons.done;
+      iconColor = iconGreyColor;
+      break;
+    case MessageStatus.delivered:
+      icon = Icons.done_all;
+      iconColor = iconGreyColor;
+      break;
+    case MessageStatus.read:
+      icon = Icons.done_all;
+      iconColor = buttonSmallTextColor;
+      break;
+    default:
+      icon = Icons.update;
+      iconColor = iconGreyColor;
+      break;
+  }
+
+  return Icon(
+    icon,
+    color: iconColor,
+    size: 18.sp,
   );
 }
+
 
 Widget greyIconWidget({required iconName}) {
   return Icon(

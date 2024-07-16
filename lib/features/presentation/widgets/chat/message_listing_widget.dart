@@ -17,6 +17,7 @@ Widget messageListingWidget({
   required String receiverID,
   required Map<String, AudioPlayer> audioPlayers,
   required Map<String, VideoPlayerController> videoControllers,
+  required BuildContext rootContext,
 }) {
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
@@ -60,6 +61,7 @@ Widget messageListingWidget({
             });
           }
           return MessageContainerWidget(
+            rootContext: rootContext,
             receiverID:receiverID ,
             chatModel: chatModel,
             message: message,

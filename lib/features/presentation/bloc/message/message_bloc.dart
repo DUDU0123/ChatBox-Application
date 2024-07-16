@@ -88,9 +88,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> getAllMessageEvent(
       GetAllMessageEvent event, Emitter<MessageState> emit) async {
     try {
-    final chatId =  ChatData.generateChatId(currentUserId: event.currentUserId, receiverId: event.receiverId);
+      final chatId = ChatData.generateChatId(
+          currentUserId: event.currentUserId, receiverId: event.receiverId);
       final messages = chatRepo.getAllMessages(
-        chatId: event.chatId??chatId,
+        chatId: event.chatId ?? chatId,
       );
       // emit(MessageSucessState(messages: messages));
       emit(MessageState(messages: messages));
@@ -108,35 +109,28 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> messageDeleteEvent(
       MessageDeleteEvent event, Emitter<MessageState> emit) {}
-  //  FutureOr<void> createANewChatEvent(
-  //     CreateANewChatEvent event, Emitter<ChatState> emit) async {
-  //   try {
-      // await chatRepo.createNewChat(
-      //   receiverId: event.receiverId,
-      //   recieverContactName: event.recieverContactName,
-      // );
-  //     add(GetAllChatsEvent());
-  //   } catch (e) {
-  //     log("Create chat: e ${e.toString()}");
-  //     emit(ChatErrorState(message: e.toString()));
-  //   }
-  // }
 
   Future<FutureOr<void>> messageSentEvent(
       MessageSentEvent event, Emitter<MessageState> emit) async {
     try {
+      log('Sending nessage');
+      final chatId = ChatData.generateChatId(
+        currentUserId: event.currentUserId,
+        receiverId: event.receiverID,
+      );
       await chatRepo.sendMessage(
-        chatId: event.chatModel?.chatID.toString(),
+        chatId:event.chatModel!=null? event.chatModel!.chatID:chatId,
         message: event.message,
         receiverContactName: event.receiverContactName,
         receiverId: event.receiverContactName,
       );
+       log('Sended message');
       ChatData.updateChatMessageDataOfUser(
           chatModel: event.chatModel, message: event.message);
       add(GetAllMessageEvent(
         currentUserId: event.currentUserId,
         receiverId: event.receiverID,
-        chatId: event.chatModel?.chatID?.toString(),
+        chatId: event.chatModel!=null? event.chatModel!.chatID:chatId,
       ));
     } catch (e) {
       log("Send message error: ${e.toString()}");

@@ -5,7 +5,6 @@ import 'package:chatbox/core/utils/chat_open_contacts_method.dart';
 import 'package:chatbox/core/utils/invite_app_function.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/user_tile_name_about_profile_image.dart';
 import 'package:flutter/material.dart';
@@ -71,18 +70,15 @@ class ContactListPage extends StatelessWidget {
                               if (state.contactList![index].isChatBoxUser !=
                                   null) {
                                 state.contactList![index].isChatBoxUser!
-                                    ? Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ChatRoomPage(
-                                            isGroup: false,
-                                            userName: state.contactList![index]
-                                                    .userContactName ??
-                                                '',
-                                                receiverID: state.contactList![index].chatBoxUserId,
-                                          ),
-                                        ),
-                                      )
+                                    ?
+                                    chatOpen(
+                                        receiverId: state
+                                            .contactList![index].chatBoxUserId!,
+                                        recieverContactName: state
+                                                .contactList![index]
+                                                .userContactName ??
+                                            '',
+                                        context: context)
                                     : null;
                               }
                             },

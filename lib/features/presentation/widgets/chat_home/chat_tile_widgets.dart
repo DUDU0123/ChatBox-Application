@@ -94,8 +94,8 @@ Widget buildOutgoingStatus(
     required MessageStatus messageStatus}) {
   if (!(isTyping ?? false) && !(isVoiceRecoding ?? false)) {
     return messageStatusWidget(
-      isReceiverOnline: isReceiverOnline,
-      isSenderOnline: isSenderOnline,
+      // isReceiverOnline: isReceiverOnline,
+      // isSenderOnline: isSenderOnline,
       messageStatus: messageStatus,
     );
   }

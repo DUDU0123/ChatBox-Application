@@ -13,25 +13,24 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ChatBloc({
     required this.chatRepo,
   }) : super(ChatInitial()) {
-   // on<CreateANewChatEvent>(createANewChatEvent);
+    on<CreateANewChatEvent>(createANewChatEvent);
     on<GetAllChatsEvent>(getAllChatsEvent);
     on<DeletAChatEvent>(deleteAChatEvent);
-    
   }
 
-  // FutureOr<void> createANewChatEvent(
-  //     CreateANewChatEvent event, Emitter<ChatState> emit) async {
-  //   try {
-  //     await chatRepo.createNewChat(
-  //       receiverId: event.receiverId,
-  //       recieverContactName: event.recieverContactName,
-  //     );
-  //     add(GetAllChatsEvent());
-  //   } catch (e) {
-  //     log("Create chat: e ${e.toString()}");
-  //     emit(ChatErrorState(message: e.toString()));
-  //   }
-  // }
+  FutureOr<void> createANewChatEvent(
+      CreateANewChatEvent event, Emitter<ChatState> emit) async {
+    try {
+      await chatRepo.createNewChat(
+        receiverId: event.receiverId,
+        recieverContactName: event.recieverContactName,
+      );
+      add(GetAllChatsEvent());
+    } catch (e) {
+      log("Create chat: e ${e.toString()}");
+      emit(ChatErrorState(message: e.toString()));
+    }
+  }
 
   FutureOr<void> getAllChatsEvent(
       GetAllChatsEvent event, Emitter<ChatState> emit) {

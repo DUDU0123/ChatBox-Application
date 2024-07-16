@@ -3,6 +3,7 @@ import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chat_room_appbar_widget.dart';
@@ -22,7 +23,8 @@ class ChatRoomPage extends StatefulWidget {
     super.key,
     required this.userName,
     required this.isGroup,
-    this.chatModel, this.receiverID,
+    this.chatModel,
+    this.receiverID,
   });
   final String userName;
   final ChatModel? chatModel;
@@ -43,6 +45,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   StreamSubscription<Duration?>? _positionSubscription;
 
   @override
+  void initState() {
+    super.initState();
+    ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
+        widget.chatModel?.chatID ?? '', true);
+  }
+
+  @override
   void dispose() {
     videoControllers.forEach((key, controller) => controller.dispose());
     audioPlayers.forEach((key, controller) => controller.dispose());
@@ -51,21 +60,26 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     recorder.closeRecorder();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
+    ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
+        widget.chatModel?.chatID ?? '', false);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-   widget.chatModel != null? context.read<MessageBloc>().add(GetAllMessageEvent(
-    currentUserId: firebaseAuth.currentUser?.uid??'',
-    receiverId: widget.receiverID??'',
-        chatId:widget.chatModel!.chatID!)):null;
+    //ChatData.listenToChatDocument(widget.chatModel?.senderID??'', widget.chatModel?.chatID??'');
+    widget.chatModel != null
+        ? context.read<MessageBloc>().add(GetAllMessageEvent(
+            currentUserId: firebaseAuth.currentUser?.uid ?? '',
+            receiverId: widget.receiverID ?? '',
+            chatId: widget.chatModel!.chatID!))
+        : null;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: chatRoomAppBarWidget(
           context: context,
-          receiverID: widget.receiverID??"",
+          receiverID: widget.receiverID ?? "",
           chatModel: widget.chatModel,
           isGroup: widget.isGroup,
           userName: widget.userName,
@@ -90,7 +104,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       return commonErrorWidget(message: state.message);
                     }
                     return messageListingWidget(
-                      receiverID: widget.receiverID??"",
+                      rootContext: context,
+                      receiverID: widget.receiverID ?? "",
                       chatModel: widget.chatModel,
                       audioPlayers: audioPlayers,
                       scrollController: scrollController,

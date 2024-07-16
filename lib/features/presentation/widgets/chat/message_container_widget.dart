@@ -20,13 +20,14 @@ class MessageContainerWidget extends StatelessWidget {
     required this.message,
     required this.chatModel,
     required this.videoControllers,
-    required this.audioPlayers, required this.receiverID,
+    required this.audioPlayers, required this.receiverID, required this.rootContext,
   });
   final MessageModel message;
   final ChatModel? chatModel;
   final Map<String, VideoPlayerController> videoControllers;
   final Map<String, AudioPlayer> audioPlayers;
   final String receiverID;
+  final BuildContext rootContext;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class MessageContainerWidget extends StatelessWidget {
         children: [
           message.messageType == MessageType.audio
               ? audioMessageWidget(
-                  context: context,
+                  context: rootContext,
                   audioPlayers: audioPlayers,
                   message: message,
                 )

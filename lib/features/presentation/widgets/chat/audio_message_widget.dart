@@ -124,4 +124,100 @@ Widget audioMessageWidget({
   );
 }
 
+// Widget audioMessageWidget({
+//   required MessageModel message,
+//   required Map<String, AudioPlayer> audioPlayers,
+// }) {
+//   return BlocBuilder<MessageBloc, MessageState>(
+//     builder: (context, state) {
+//       return Container(
+//         height: 75.h,
+//         width: screenWidth(context: context) / 1.26,
+//         padding: EdgeInsets.all(6.w),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(10.sp),
+//           gradient: LinearGradient(
+//             colors: [
+//               lightLinearGradientColorOne,
+//               lightLinearGradientColorTwo,
+//             ],
+//           ),
+//         ),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.start,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: 40.w,
+//               height: 40.h,
+//               decoration: BoxDecoration(
+//                 color: kBlack,
+//                 shape: BoxShape.circle,
+//               ),
+//             ),
+//             SizedBox(width: 10.w),
+//             GestureDetector(
+//               onTap: () async {
+//                 await audioPlayers[message.message]?.setUrl(message.message ?? '');
+
+//                 final isPlaying = audioPlayers[message.message]?.playing ?? false;
+//                 if (isPlaying) {
+//                   await audioPlayers[message.message]?.pause();
+//                   context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(message.message!, false));
+//                 } else {
+//                   await audioPlayers[message.message]?.play();
+//                   context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(message.message!, true));
+//                 }
+//               },
+//               child: Icon(
+//                 state.audioPlayingStates[message.message] ?? false
+//                     ? Icons.pause
+//                     : Icons.play_arrow,
+//                 size: 40.sp,
+//                 color: kWhite,
+//               ),
+//             ),
+//             Expanded(
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Slider(
+//                     value: state.audioPositions[message.message]?.inSeconds.toDouble() ?? 0.0,
+//                     max: state.audioDurations[message.message]?.inSeconds.toDouble() ?? 0.0,
+//                     onChanged: (value) {
+//                       final newPosition = Duration(seconds: value.toInt());
+//                       audioPlayers[message.message]?.seek(newPosition);
+//                       context.read<MessageBloc>().add(AudioPlayerPositionChangedEvent(message.message!, newPosition));
+//                     },
+//                   ),
+//                   Padding(
+//                     padding: EdgeInsets.symmetric(horizontal: 10.w),
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         TextWidgetCommon(
+//                           text: TimeProvider.formatDuration(state.audioPositions[message.message] ?? Duration.zero),
+//                           textColor: kWhite,
+//                           fontSize: 8.sp,
+//                         ),
+//                         TextWidgetCommon(
+//                           text: TimeProvider.formatDuration(state.audioDurations[message.message] ?? Duration.zero),
+//                           textColor: kWhite,
+//                           fontSize: 8.sp,
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       );
+//     },
+//   );
+// }
+
+
 
