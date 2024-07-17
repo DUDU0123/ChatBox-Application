@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
@@ -12,9 +14,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SelectContactPage extends StatefulWidget {
-  const SelectContactPage({super.key, required this.chatModel, this.receiverContactName,});
+  const SelectContactPage({
+    super.key,
+    required this.chatModel,
+    this.receiverContactName,
+    required this.pageType,
+  });
   final ChatModel chatModel;
   final String? receiverContactName;
+  final PageTypeEnum pageType;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
 }
@@ -50,7 +58,12 @@ class _SelectContactPageState extends State<SelectContactPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const TextWidgetCommon(text: "Selected Contacts"),
+            TextWidgetCommon(
+                text: widget.pageType == PageTypeEnum.sendContactSelectPage
+                    ? "Selected Contacts"
+                    : widget.pageType == PageTypeEnum.groupMemberSelectPage
+                        ? "New Group"
+                        : "New Broadcast"),
             BlocBuilder<ContactBloc, ContactState>(
               builder: (context, state) {
                 return TextWidgetCommon(
@@ -63,7 +76,14 @@ class _SelectContactPageState extends State<SelectContactPage> {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          context.watch<ContactBloc>().state.selectedContactList!.isNotEmpty
+              ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: smallGreyMediumBoldTextWidget(text: widget.pageType!=PageTypeEnum.sendContactSelectPage ?"Added members":"Selected contacts"),
+                )
+              : zeroMeasureWidget,
           SizedBox(
             height: context
                     .watch<ContactBloc>()
@@ -92,6 +112,10 @@ class _SelectContactPageState extends State<SelectContactPage> {
                 );
               },
             ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            child: smallGreyMediumBoldTextWidget(text: widget.pageType!=PageTypeEnum.sendContactSelectPage ? "Add members":"Select contacts"),
           ),
           Expanded(
             child: BlocBuilder<ContactBloc, ContactState>(
@@ -132,7 +156,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
-            receiverContactName: widget.receiverContactName??'',
+            receiverContactName: widget.receiverContactName ?? '',
             chatModel: widget.chatModel,
             selectedContactList: state.selectedContactList,
           );

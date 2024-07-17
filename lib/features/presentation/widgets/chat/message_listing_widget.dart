@@ -22,6 +22,7 @@ Widget messageListingWidget({
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
     builder: (context, snapshot) {
+      
       log("Inside stream builder");
       if (snapshot.data == null) {
         log("Snapshot message list data null");
@@ -36,6 +37,7 @@ Widget messageListingWidget({
           log("Inside listview builder");
           log(snapshot.data!.length.toString());
           final message = snapshot.data![index];
+          log("Messagroom : status of message: ${message.messageStatus}");
           if (message.messageType == MessageType.video &&
               !videoControllers.containsKey(message.message)) {
             videoControllers[message.message!] =

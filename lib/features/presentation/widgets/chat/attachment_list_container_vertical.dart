@@ -95,6 +95,7 @@ class AttachmentListContainerVertical extends StatelessWidget {
                               context,
                               MaterialPageRoute(builder: (context) {
                                 return SelectContactPage(
+                                  pageType: PageTypeEnum.sendContactSelectPage,
                                   receiverContactName: receverContactName,
                                   chatModel: chatModel!,
                                 );

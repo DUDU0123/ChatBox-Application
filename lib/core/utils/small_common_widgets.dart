@@ -161,3 +161,13 @@ Widget commonProfileDefaultIconCircularCotainer(
     ),
   );
 }
+ Widget smallGreyMediumBoldTextWidget({
+    required String text,
+  }) {
+    return TextWidgetCommon(
+      text: text,
+      fontSize: 12.sp,
+      textColor: iconGreyColor,
+      fontWeight: FontWeight.w500,
+    );
+  }

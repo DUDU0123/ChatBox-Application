@@ -267,240 +267,192 @@ class ChatData {
         .update({'isChatOpen': isOpen});
   }
 
-static void updateChatMessageDataOfUser({
-  required ChatModel? chatModel,
-  required MessageModel message,
-}) async {
-  if (chatModel?.senderID == null || chatModel?.receiverID == null) {
-    return;
-  }
-  if (chatModel == null) {
-    return;
-  }
-  
-  String messageType = '';
-  String lastMessage = '';
-  String messageStatus = MessageStatus.none.name;
-
-  // Determine the message type and last message string
-  switch (message.messageType) {
-    case MessageType.audio:
-      messageType = 'audio';
-      lastMessage = '🎧Audio';
-      break;
-    case MessageType.contact:
-      messageType = 'contact';
-      lastMessage = '📞Contact';
-      break;
-    case MessageType.document:
-      messageType = 'document';
-      lastMessage = '📄Doc';
-      break;
-    case MessageType.photo:
-      messageType = 'photo';
-      lastMessage = '📷Photo';
-      break;
-    case MessageType.video:
-      messageType = 'video';
-      lastMessage = '🎥Video';
-      break;
-    case MessageType.location:
-      messageType = 'location';
-      lastMessage = '📌Location';
-      break;
-    default:
-      lastMessage = message.message ?? '';
-      messageType = 'text';
-  }
-
-  // Fetch receiver data
-  final receiverSnapshot = await FirebaseFirestore.instance
-      .collection(usersCollection)
-      .doc(chatModel.receiverID)
-      .get();
-  
-  if (receiverSnapshot.exists) {
-    final receiverData = UserModel.fromJson(map: receiverSnapshot.data()!);
-
-    bool isChatOpen = await FirebaseFirestore.instance
-        .collection(usersCollection)
-        .doc(chatModel.receiverID)
-        .collection(chatsCollection)
-        .doc(chatModel.chatID)
-        .get()
-        .then((doc) => doc['isChatOpen'] ?? false);
-
-    if (receiverData.userNetworkStatus! && isChatOpen) {
-      messageStatus = MessageStatus.read.name;
-    } else if (receiverData.userNetworkStatus! && !isChatOpen) {
-      messageStatus = MessageStatus.delivered.name;
-    } else if (!receiverData.userNetworkStatus!) {
-      messageStatus = MessageStatus.sent.name;
+  static void updateChatMessageDataOfUser({
+    required ChatModel? chatModel,
+    required MessageModel message,
+  }) async {
+    if (chatModel?.senderID == null || chatModel?.receiverID == null) {
+      return;
+    }
+    if (chatModel == null) {
+      return;
     }
 
-    // Update sender's chat document
-    await FirebaseFirestore.instance
-        .collection(usersCollection)
-        .doc(chatModel.senderID)
-        .collection(chatsCollection)
-        .doc(chatModel.chatID)
-        .update({
-      chatLastMessageTime: message.messageTime,
-      lastChatType: messageType,
-      chatLastMessage: lastMessage,
-      lastChatStatus: messageStatus,
-      isIncoming: message.senderID == chatModel.receiverID,
-    });
+    String messageType = '';
+    String lastMessage = '';
+    String messageStatus = MessageStatus.none.name;
 
-    // Update receiver's chat document
-    await FirebaseFirestore.instance
+    // Determine the message type and last message string
+    switch (message.messageType) {
+      case MessageType.audio:
+        messageType = 'audio';
+        lastMessage = '🎧Audio';
+        break;
+      case MessageType.contact:
+        messageType = 'contact';
+        lastMessage = '📞Contact';
+        break;
+      case MessageType.document:
+        messageType = 'document';
+        lastMessage = '📄Doc';
+        break;
+      case MessageType.photo:
+        messageType = 'photo';
+        lastMessage = '📷Photo';
+        break;
+      case MessageType.video:
+        messageType = 'video';
+        lastMessage = '🎥Video';
+        break;
+      case MessageType.location:
+        messageType = 'location';
+        lastMessage = '📌Location';
+        break;
+      default:
+        lastMessage = message.message ?? '';
+        messageType = 'text';
+    }
+
+    // Listen to receiver's network status and chat state
+    FirebaseFirestore.instance
         .collection(usersCollection)
         .doc(chatModel.receiverID)
-        .collection(chatsCollection)
-        .doc(chatModel.chatID)
-        .update({
-      chatLastMessageTime: message.messageTime,
-      lastChatType: messageType,
-      chatLastMessage: lastMessage,
-      lastChatStatus: messageStatus,
-      isIncoming: message.senderID != chatModel.receiverID,
-    });
+        .snapshots()
+        .listen((receiverSnapshot) async {
+      if (receiverSnapshot.exists) {
+        final receiverData = receiverSnapshot.data();
+        bool userNetworkStatus = receiverData![userDbNetworkStatus] ?? false;
 
-    await FirebaseFirestore.instance.collection(usersCollection)
-        .doc(chatModel.receiverID)
-        .collection(chatsCollection)
-        .doc(chatModel.chatID).collection(messagesCollection).doc(message.messageId).update({
+        bool isChatOpen = await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.receiverID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .get()
+            .then((doc) => doc[isUserChatOpen] ?? false);
+        log("Is chat open: $isChatOpen");
+
+        // Get the current message status
+        String currentMessageStatus = await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .get()
+            .then((doc) => doc[dbMessageStatus] ?? MessageStatus.none.name);
+
+        // Only update the status if it's not already 'read'
+        if (currentMessageStatus != MessageStatus.read.name) {
+          if (userNetworkStatus && isChatOpen) {
+            messageStatus = MessageStatus.read.name;
+          } else if (userNetworkStatus && !isChatOpen) {
+            messageStatus = MessageStatus.delivered.name;
+          } else if (!userNetworkStatus) {
+            messageStatus = MessageStatus.sent.name;
+          }
+        } else {
+          messageStatus = MessageStatus.read.name;
+        }
+
+        // getting the messages collection of sender chat
+        final senderMessagesSnapshot = await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .collection(messagesCollection)
+            .get();
+        // getting the messages collection of receiver chat
+        final receiverMessagesSnapshot = await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.receiverID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .collection(messagesCollection)
+            .get();
+
+        // sender message snapshot editing message status
+        if (senderMessagesSnapshot.docs.isNotEmpty) {
+          final batch = FirebaseFirestore.instance.batch();
+
+          for (final doc in senderMessagesSnapshot.docs) {
+            String currentStatus =
+                doc.data()[dbMessageStatus] ?? MessageStatus.none.name;
+            if (currentStatus != MessageStatus.read.name) {
+              batch.update(doc.reference, {
+                dbMessageStatus: messageStatus,
+              });
+            }
+          }
+
+          await batch.commit();
+        } else {
+          log("No messages to update for sender");
+        }
+        // receiver message snapshot editing message status
+        if (receiverMessagesSnapshot.docs.isNotEmpty) {
+          final batch = FirebaseFirestore.instance.batch();
+
+          for (final doc in receiverMessagesSnapshot.docs) {
+            String currentStatus =
+                doc.data()[dbMessageStatus] ?? MessageStatus.none.name;
+            if (currentStatus != MessageStatus.read.name) {
+              batch.update(doc.reference, {
+                dbMessageStatus: messageStatus,
+              });
+            }
+          }
+
+          await batch.commit();
+        } else {
+          log("No messages to update for receiver");
+        }
+
+        // Update sender's chat document
+        await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .update({
+          chatLastMessageTime: message.messageTime,
+          lastChatType: messageType,
+          chatLastMessage: lastMessage,
+          lastChatStatus: messageStatus,
+          isIncoming: message.senderID == chatModel.receiverID,
+        });
+
+        // Update receiver's chat document
+        await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.receiverID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .update({
+          chatLastMessageTime: message.messageTime,
+          lastChatType: messageType,
+          chatLastMessage: lastMessage,
+          lastChatStatus: messageStatus,
+          isIncoming: message.senderID != chatModel.receiverID,
+        });
+
+        await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel.receiverID)
+            .collection(chatsCollection)
+            .doc(chatModel.chatID)
+            .collection(messagesCollection)
+            .doc(message.messageId)
+            .update({
           dbMessageStatus: messageStatus,
         });
-  } else {
-    throw Exception("Receiver user data not found");
+      } else {
+        log("Receiver snapshot does not exist");
+      }
+    });
   }
-}
-
-// static void updateChatMessageDataOfUser({
-//   required ChatModel? chatModel,
-//   required MessageModel message,
-// }) async {
-//   if (chatModel?.senderID == null || chatModel?.receiverID == null) {
-//     return;
-//   }
-//   if (chatModel == null) {
-//     return;
-//   }
-  
-//   String messageType = '';
-//   String lastMessage = '';
-//   String messageStatus = MessageStatus.none.name;
-
-//   // Determine the message type and last message string
-//   switch (message.messageType) {
-//     case MessageType.audio:
-//       messageType = 'audio';
-//       lastMessage = '🎧Audio';
-//       break;
-//     case MessageType.contact:
-//       messageType = 'contact';
-//       lastMessage = '📞Contact';
-//       break;
-//     case MessageType.document:
-//       messageType = 'document';
-//       lastMessage = '📄Doc';
-//       break;
-//     case MessageType.photo:
-//       messageType = 'photo';
-//       lastMessage = '📷Photo';
-//       break;
-//     case MessageType.video:
-//       messageType = 'video';
-//       lastMessage = '🎥Video';
-//       break;
-//     case MessageType.location:
-//       messageType = 'location';
-//       lastMessage = '📌Location';
-//       break;
-//     default:
-//       lastMessage = message.message ?? '';
-//       messageType = 'text';
-//   }
-
-//   // Fetch receiver data
-//   final receiverSnapshot = await FirebaseFirestore.instance
-//       .collection(usersCollection)
-//       .doc(chatModel.receiverID)
-//       .get();
-  
-//   if (receiverSnapshot.exists) {
-//     final receiverData = UserModel.fromJson(map: receiverSnapshot.data()!);
-
-//     bool isChatOpen = await FirebaseFirestore.instance
-//         .collection(usersCollection)
-//         .doc(chatModel.receiverID)
-//         .collection(chatsCollection)
-//         .doc(chatModel.chatID)
-//         .get()
-//         .then((doc) => doc['isChatOpen'] ?? false);
-
-//     if (receiverData.userNetworkStatus! && isChatOpen) {
-//       messageStatus = MessageStatus.read.name;
-//     } else if (receiverData.userNetworkStatus! && !isChatOpen) {
-//       messageStatus = MessageStatus.delivered.name;
-//     } else if (!receiverData.userNetworkStatus!) {
-//       messageStatus = MessageStatus.sent.name;
-//     }
-
-//     // Update all messages in the chat
-//     final messagesSnapshot = await FirebaseFirestore.instance
-//         .collection(usersCollection)
-//         .doc(chatModel.receiverID)
-//         .collection(chatsCollection)
-//         .doc(chatModel.chatID)
-//         .collection(messagesCollection)
-//         .get();
-
-//     if (messagesSnapshot.docs.isNotEmpty) {
-//       final batch = FirebaseFirestore.instance.batch();
-
-//       for (final doc in messagesSnapshot.docs) {
-//         batch.update(doc.reference, {
-//           dbMessageStatus: messageStatus,
-//         });
-//       }
-
-//       await batch.commit();
-//     }
-
-//     // Update sender's chat document
-//     await FirebaseFirestore.instance
-//         .collection(usersCollection)
-//         .doc(chatModel.senderID)
-//         .collection(chatsCollection)
-//         .doc(chatModel.chatID)
-//         .update({
-//       chatLastMessageTime: message.messageTime,
-//       lastChatType: messageType,
-//       chatLastMessage: lastMessage,
-//       lastChatStatus: messageStatus,
-//       isIncoming: message.senderID == chatModel.receiverID,
-//     });
-
-//     // Update receiver's chat document
-//     await FirebaseFirestore.instance
-//         .collection(usersCollection)
-//         .doc(chatModel.receiverID)
-//         .collection(chatsCollection)
-//         .doc(chatModel.chatID)
-//         .update({
-//       chatLastMessageTime: message.messageTime,
-//       lastChatType: messageType,
-//       chatLastMessage: lastMessage,
-//       lastChatStatus: messageStatus,
-//       isIncoming: message.senderID != chatModel.receiverID,
-//     });
-//   } else {
-//     throw Exception("Receiver user data not found");
-//   }
-// }
-
 
   Stream<List<ChatModel>> getAllChatsFromDB() {
     try {

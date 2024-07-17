@@ -20,7 +20,9 @@ class MessageContainerWidget extends StatelessWidget {
     required this.message,
     required this.chatModel,
     required this.videoControllers,
-    required this.audioPlayers, required this.receiverID, required this.rootContext,
+    required this.audioPlayers,
+    required this.receiverID,
+    required this.rootContext,
   });
   final MessageModel message;
   final ChatModel? chatModel;
@@ -31,6 +33,9 @@ class MessageContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (message.message == null) {
+      return zeroMeasureWidget;
+    }
     return Align(
       alignment: firebaseAuth.currentUser?.uid == message.receiverID
           ? Alignment.centerLeft
@@ -48,7 +53,10 @@ class MessageContainerWidget extends StatelessWidget {
                           message.messageType == MessageType.video
                       ? 250.h
                       : null,
-                  width:message.message!.length>20 || message.messageType==MessageType.contact? screenWidth(context: context) / 1.6: null,
+                  width: message.message!.length > 20 ||
+                          message.messageType == MessageType.contact
+                      ? screenWidth(context: context) / 1.6
+                      : screenWidth(context: context) / 2.6,
                   margin: EdgeInsets.symmetric(vertical: 4.h),
                   padding: message.messageType == MessageType.photo ||
                           message.messageType == MessageType.video
@@ -79,14 +87,14 @@ class MessageContainerWidget extends StatelessWidget {
                       ? textMessageWidget(message: message)
                       : message.messageType == MessageType.photo
                           ? photoMessageShowWidget(
-                            receiverID: receiverID,
+                              receiverID: receiverID,
                               message: message,
                               chatModel: chatModel,
                               context: context,
                             )
                           : videoControllers[message.message!] != null
                               ? videoMessageShowWidget(
-                                receiverID: receiverID,
+                                  receiverID: receiverID,
                                   chatModel: chatModel,
                                   videoControllers: videoControllers,
                                   context: context,
