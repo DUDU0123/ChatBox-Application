@@ -6,6 +6,7 @@ class MessageState extends Equatable{
   final Stream<List<MessageModel>>? messages;
   final MessageModel? messagemodel;
   final bool? isRecording;
+  final Set<String>? selectedMessageIds;
   final Map<String, Duration> audioPositions;
   final Map<String, Duration> audioDurations;
   final Map<String, bool> audioPlayingStates;
@@ -20,6 +21,7 @@ class MessageState extends Equatable{
     this.isAttachmentListOpened = false,
     this.isVideoPlaying = false,
     this.messagemodel,
+    this.selectedMessageIds = const {},
   });
 
   MessageState copyWith({
@@ -32,6 +34,7 @@ class MessageState extends Equatable{
     Map<String, bool>? audioPlayingStates,
     Stream<List<MessageModel>>? messages,
     MessageModel? messagemodel,
+    Set<String>? selectedMessageIds,
   }) {
     return MessageState(
       isTyped: isTyped ?? this.isTyped,
@@ -44,6 +47,7 @@ class MessageState extends Equatable{
       messages: messages ?? this.messages,
       messagemodel: messagemodel ?? this.messagemodel,
       isRecording: isRecording ?? this.isRecording,
+      selectedMessageIds: selectedMessageIds??this.selectedMessageIds,
     );
   }
   @override
@@ -57,6 +61,7 @@ class MessageState extends Equatable{
         messagemodel ?? const MessageModel(),
         messages ?? [],
         isRecording??false,
+        selectedMessageIds??{},
       ];
 }
 

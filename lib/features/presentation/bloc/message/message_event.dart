@@ -19,13 +19,9 @@ class MessageTypedEvent extends MessageEvent {
 }
 
 class AttachmentIconClickedEvent extends MessageEvent {
-  final String chatID;
-  const AttachmentIconClickedEvent({
-    required this.chatID,
-  });
   @override
   List<Object> get props => [
-        chatID,
+        
       ];
 }
 
@@ -278,4 +274,13 @@ class AudioPlayerCompletedEvent extends MessageEvent {
   const AudioPlayerCompletedEvent(this.messageKey);
   @override
   List<Object> get props => [messageKey];
+}
+
+class MessageSelectedEvent extends MessageEvent {
+  final MessageModel messageModel;
+  const MessageSelectedEvent({
+    required this.messageModel,
+  });
+  @override
+  List<Object> get props => [messageModel,];
 }

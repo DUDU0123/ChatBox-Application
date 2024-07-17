@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
+
 Widget messageListingWidget({
   required MessageState state,
   required ScrollController scrollController,
@@ -22,7 +24,6 @@ Widget messageListingWidget({
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
     builder: (context, snapshot) {
-      
       log("Inside stream builder");
       if (snapshot.data == null) {
         log("Snapshot message list data null");
@@ -52,23 +53,52 @@ Widget messageListingWidget({
 
             player.durationStream.listen((duration) {
               if (duration != null) {
-                context.read<MessageBloc>().add(AudioPlayerDurationChangedEvent(message.message!, duration));
+                context.read<MessageBloc>().add(AudioPlayerDurationChangedEvent(
+                    message.message!, duration));
               }
             });
             player.positionStream.listen((position) {
-              context.read<MessageBloc>().add(AudioPlayerPositionChangedEvent(message.message!, position));
+              context.read<MessageBloc>().add(
+                  AudioPlayerPositionChangedEvent(message.message!, position));
             });
             player.playingStream.listen((isPlaying) {
-              context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(message.message!, isPlaying));
+              context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(
+                  message.message!, isPlaying));
             });
           }
-          return MessageContainerWidget(
-            rootContext: rootContext,
-            receiverID:receiverID ,
-            chatModel: chatModel,
-            message: message,
-            audioPlayers: audioPlayers,
-            videoControllers: videoControllers,
+          bool isSelected =
+              state.selectedMessageIds?.contains(message.messageId)??false;
+          return GestureDetector(
+            onLongPress: () {
+              context.read<MessageBloc>().add(
+                    MessageSelectedEvent(
+                      messageModel: message,
+                    ),
+                  );
+            },
+            onTap: () {
+             isSelected? context.read<MessageBloc>().add(
+                    MessageSelectedEvent(
+                      messageModel: message,
+                    ),
+                  ):null;
+            },
+            child: Container(
+              width: screenWidth(context: context),
+              color: isSelected != null
+                  ? isSelected
+                      ? buttonSmallTextColor.withOpacity(0.3)
+                      : kTransparent
+                  : kTransparent,
+              child: MessageContainerWidget(
+                rootContext: rootContext,
+                receiverID: receiverID,
+                chatModel: chatModel,
+                message: message,
+                audioPlayers: audioPlayers,
+                videoControllers: videoControllers,
+              ),
+            ),
           );
         },
       );

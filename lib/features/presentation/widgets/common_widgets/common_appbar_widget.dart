@@ -56,11 +56,11 @@ class CommonAppBar extends StatelessWidget {
                         text: appBarTitle,
                         fontSize: 18.sp,
                       ),
-                      TextWidgetCommon(
+                    pageType!=PageTypeEnum.groupMessageInsidePage?  TextWidgetCommon(
                         overflow: TextOverflow.ellipsis,
                         text: userStatus ?? 'Last seen 10:00am',
                         fontSize: 10.sp,
-                      ),
+                      ):zeroMeasureWidget,
                     ],
                   ),
                 ),

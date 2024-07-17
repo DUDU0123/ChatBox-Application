@@ -1,7 +1,10 @@
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_details_add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,30 +12,69 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class FloatingDoneNavigateButton extends StatelessWidget {
   const FloatingDoneNavigateButton({
     super.key,
-    required this.chatModel,
-    required this.selectedContactList,
-    required this.receiverContactName,
+    this.chatModel,
+    this.selectedContactList,
+    this.receiverContactName,
+    required this.pageType,
+    this.icon,
+    this.groupName,
   });
 
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final List<ContactModel>? selectedContactList;
-  final String receiverContactName;
+  final String? receiverContactName;
+  final PageTypeEnum pageType;
+  final IconData? icon;
+  final String? groupName;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        selectedContactList != null
-            ? context.read<MessageBloc>().add(
-                  ContactMessageSendEvent(
-                    receiverID: chatModel.receiverID!,
-                    receiverContactName: receiverContactName,
-                    contactListToSend: selectedContactList!,
-                    chatModel: chatModel,
+        switch (pageType) {
+          case PageTypeEnum.sendContactSelectPage:
+            selectedContactList != null
+                ? chatModel != null
+                    ? receiverContactName != null
+                        ? context.read<MessageBloc>().add(
+                              ContactMessageSendEvent(
+                                receiverID: chatModel!.receiverID!,
+                                receiverContactName: receiverContactName!,
+                                contactListToSend: selectedContactList!,
+                                chatModel: chatModel!,
+                              ),
+                            )
+                        : null
+                    : null
+                : null;
+            Navigator.pop(context);
+            break;
+          case PageTypeEnum.groupMemberSelectPage:
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupDetailsAddPage(
+                    selectedGroupMembers: selectedContactList ?? [],
                   ),
-                )
-            : null;
-        Navigator.pop(context);
+                ));
+            break;
+          case PageTypeEnum.broadcastMembersSelectPage:
+            break;
+          case PageTypeEnum.groupDetailsAddPage:
+            groupName != null
+                ? Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatRoomPage(
+                        userName: groupName!,
+                        isGroup: true,
+                      ),
+                    ),
+                  )
+                : null;
+            break;
+          default:
+        }
       },
       child: Container(
         height: 50.h,
@@ -46,7 +88,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
         ),
         child: Center(
           child: Icon(
-            Icons.arrow_forward_rounded,
+            icon ?? Icons.arrow_forward_rounded,
             size: 30.sp,
             color: kWhite,
           ),

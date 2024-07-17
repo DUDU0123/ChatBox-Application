@@ -21,6 +21,7 @@ enum PageTypeEnum {
   broadcastMembersSelectPage,
   broadCastSettingsPage,
   broadCastMessageInsidePage,
+  groupDetailsAddPage,
   none,
 }
 
@@ -60,4 +61,17 @@ enum MediaType {
 enum AssetSelected {
   video,
   photo,
+}
+enum MembersGroupPermission {
+  editGroupSettings,
+  sendMessages,
+  addMembers,
+}
+
+enum AdminsGroupPermission {
+  viewMembers,
+  approveMembers,
+  editGroupSettings,
+  sendMessages,
+  addMembers,
 }

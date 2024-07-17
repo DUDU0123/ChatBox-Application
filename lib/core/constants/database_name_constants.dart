@@ -52,6 +52,17 @@ const receiverNameInChatList = 'receiver_name';
 const isUserChatOpen = 'isChatOpen';
 const isGroupChat = 'is_group';
 
+
+// group db fields name
+const dbGroupId = 'group_id';
+const dbGroupName = 'group_name';
+const dbGroupDescription = 'group_description';
+const dbGroupProfileImage = 'group_profile_image';
+const dbGroupAdminsList = 'group_admins';
+const dbGroupMembersList = 'group_members';
+const dbGroupAdminsPermissionList = 'group_admins_permissions';
+const dbGroupMembersPermissionList = 'group_members_permissions';
+
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
 const chatAssetFolder = "chatsAsset/";

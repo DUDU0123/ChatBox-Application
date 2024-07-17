@@ -116,12 +116,9 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                 
-                                 widget.chatModel!=null? widget.chatModel?.chatID != null
-                                      ? context.read<MessageBloc>().add(
-                                          AttachmentIconClickedEvent(
-                                              chatID: widget.chatModel!.chatID!))
-                                      : null:null;
+                                  context
+                                      .read<MessageBloc>()
+                                      .add(AttachmentIconClickedEvent());
                                 },
                                 icon: Icon(
                                   Icons.attach_file,
@@ -131,7 +128,8 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                               IconButton(
                                 onPressed: () async {
                                   videoOrPhotoTakeFromCameraSourceMethod(
-                                    receiverContactName: widget.receiverContactName,
+                                    receiverContactName:
+                                        widget.receiverContactName,
                                     chatModel: widget.chatModel,
                                     context: context,
                                   );
@@ -173,8 +171,10 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             } else {
                               context.read<MessageBloc>().add(
                                     AudioRecordToggleEvent(
-                                      receiverID: widget.chatModel?.receiverID??'',
-                              receiverContactName: widget.receiverContactName??'',
+                                      receiverID:
+                                          widget.chatModel?.receiverID ?? '',
+                                      receiverContactName:
+                                          widget.receiverContactName ?? '',
                                       chatModel: widget.chatModel!,
                                       recorder: widget.recorder,
                                     ),
@@ -183,16 +183,23 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                           },
                           icon: BlocBuilder<MessageBloc, MessageState>(
                             builder: (context, state) {
-
-                              return !state.isRecording!? SvgPicture.asset(
-                                width: 24.w,
-                                height: 24.h,
-                                colorFilter:
-                                    ColorFilter.mode(kBlack, BlendMode.srcIn),
-                                state.isTyped ?? false||widget.messageController.text.isNotEmpty
-                                    ? sendIcon
-                                    : microphoneFilled,
-                              ): Icon(Icons.stop, color: kBlack,);
+                              return !state.isRecording!
+                                  ? SvgPicture.asset(
+                                      width: 24.w,
+                                      height: 24.h,
+                                      colorFilter: ColorFilter.mode(
+                                          kBlack, BlendMode.srcIn),
+                                      state.isTyped ??
+                                              false ||
+                                                  widget.messageController.text
+                                                      .isNotEmpty
+                                          ? sendIcon
+                                          : microphoneFilled,
+                                    )
+                                  : Icon(
+                                      Icons.stop,
+                                      color: kBlack,
+                                    );
                             },
                           ),
                         )),
@@ -240,9 +247,9 @@ void sendMessage({
     );
     context.read<MessageBloc>().add(
           MessageSentEvent(
-            currentUserId: firebaseAuth.currentUser?.uid??'',
-            receiverContactName: receiverContactName??'',
-            receiverID: chatModel?.receiverID??'',
+            currentUserId: firebaseAuth.currentUser?.uid ?? '',
+            receiverContactName: receiverContactName ?? '',
+            receiverID: chatModel?.receiverID ?? '',
             chatModel: chatModel,
             message: message,
           ),

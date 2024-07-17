@@ -50,10 +50,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<AudioPlayerCompletedEvent>(_onAudioPlayerCompleted);
     on<LocationPickEvent>(locationPickEvent);
     on<LocationMessageSendEvent>(locationMessageSendEvent);
-    // // other events
-    // on<UserStatusChangedEvent>(userStatusChangedEvent);
-    on<ChatOpenedEvent>(chatOpenedEvent);
-    on<ChatClosedEvent>(chatClosedEvent);
+    on<MessageSelectedEvent>(messageSelectedEvent);
   }
 
   FutureOr<void> messageTypedEvent(
@@ -586,9 +583,18 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
-  FutureOr<void> chatOpenedEvent(
-      ChatOpenedEvent event, Emitter<MessageState> emit) {}
+  FutureOr<void> messageSelectedEvent(MessageSelectedEvent event, Emitter<MessageState> emit) {
+  try {
+    final updatedSelectedIds = Set<String>.from(state.selectedMessageIds as Iterable);
+    if (updatedSelectedIds.contains(event.messageModel.messageId)) {
+      updatedSelectedIds.remove(event.messageModel.messageId);
+    } else {
+      updatedSelectedIds.add(event.messageModel.messageId??'');
+    }
+    emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
+  } catch (e) {
+    emit(MessageErrorState(message: e.toString()));
+  }
+}
 
-  FutureOr<void> chatClosedEvent(
-      ChatClosedEvent event, Emitter<MessageState> emit) {}
 }

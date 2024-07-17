@@ -1,8 +1,10 @@
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/contact_list_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -59,7 +61,15 @@ List<Widget> appBarIconsHome(
           return [
             PopupMenuItem(
               child: const Text("New group"),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SelectContactPage(
+                        pageType: PageTypeEnum.groupMemberSelectPage,
+                      ),
+                    ));
+              },
             ),
             PopupMenuItem(
               child: const Text("New broadcast"),

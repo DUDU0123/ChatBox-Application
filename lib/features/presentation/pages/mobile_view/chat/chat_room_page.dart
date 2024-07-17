@@ -5,6 +5,7 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chat_room_appbar_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_listing_widget.dart';
@@ -47,8 +48,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   @override
   void initState() {
     super.initState();
-    ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
-        widget.chatModel?.chatID ?? '', true);
+    !widget.isGroup
+        ? ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
+            widget.chatModel?.chatID ?? '', true)
+        : null;
   }
 
   @override
@@ -60,8 +63,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     recorder.closeRecorder();
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
-    ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
-        widget.chatModel?.chatID ?? '', false);
+    !widget.isGroup
+        ? ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
+            widget.chatModel?.chatID ?? '', false)
+        : null;
     super.dispose();
   }
 
@@ -77,13 +82,19 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
-        child: chatRoomAppBarWidget(
-          context: context,
-          receiverID: widget.receiverID ?? "",
-          chatModel: widget.chatModel,
-          isGroup: widget.isGroup,
-          userName: widget.userName,
-        ),
+        child: !widget.isGroup
+            ? oneToOneChatAppBarWidget(
+                context: context,
+                receiverID: widget.receiverID ?? "",
+                chatModel: widget.chatModel,
+                isGroup: widget.isGroup,
+                userName: widget.userName,
+              )
+            : groupChatAppBarWidget(
+                groupModel:const GroupModel(),
+                isGroup: true,
+                context: context,
+              ),
       ),
       body: Stack(
         children: [

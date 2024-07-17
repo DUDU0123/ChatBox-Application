@@ -50,13 +50,8 @@ class AttachmentListContainerVertical extends StatelessWidget {
               ),
               child: IconButton(
                 onPressed: () async {
-                  chatModel != null
-                      ? chatModel?.chatID != null
-                          ? context.read<MessageBloc>().add(
-                              AttachmentIconClickedEvent(
-                                  chatID: chatModel!.chatID!))
-                          : null
-                      : null;
+                  context.read<MessageBloc>().add(AttachmentIconClickedEvent());
+
                   switch (attachmentIcons[index].mediaType) {
                     case MediaType.camera:
                       await videoOrPhotoTakeFromCameraSourceMethod(

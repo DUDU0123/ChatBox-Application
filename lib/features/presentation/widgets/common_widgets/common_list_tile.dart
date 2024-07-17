@@ -13,6 +13,7 @@ Widget commonListTile({
   required bool isSmallTitle,
   required BuildContext context,
   bool? isSwitchTile,
+  Color? color,
 }) {
   return GestureDetector(
     onTap: onTap,
@@ -35,26 +36,36 @@ Widget commonListTile({
                   TextWidgetCommon(
                     text: title,
                     fontSize: isSmallTitle ? 16.sp : 18.sp,
-                    textColor: isSmallTitle
-                        ? iconGreyColor
-                        : Theme.of(context).colorScheme.onPrimary,
+                    textColor: color != null
+                        ? color
+                        : isSmallTitle
+                            ? iconGreyColor
+                            : Theme.of(context).colorScheme.onPrimary,
                   ),
-                 subtitle!=null? SizedBox(
-                  width: 200.w,
-                   child: TextWidgetCommon(
-                    overflow: TextOverflow.ellipsis,
-                      text: subtitle,
-                      fontSize: isSmallTitle ? 18.sp : isSwitchTile!=null? !isSwitchTile? 16.sp:10.sp:16.sp,
-                      textColor: isSmallTitle
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : iconGreyColor,
-                    ),
-                 ):zeroMeasureWidget,
+                  subtitle != null
+                      ? SizedBox(
+                          width: 200.w,
+                          child: TextWidgetCommon(
+                            overflow: TextOverflow.ellipsis,
+                            text: subtitle,
+                            fontSize: isSmallTitle
+                                ? 18.sp
+                                : isSwitchTile != null
+                                    ? !isSwitchTile
+                                        ? 16.sp
+                                        : 10.sp
+                                    : 16.sp,
+                            textColor: isSmallTitle
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : iconGreyColor,
+                          ),
+                        )
+                      : zeroMeasureWidget,
                 ],
               ),
             ],
           ),
-          trailing??zeroMeasureWidget,
+          trailing ?? zeroMeasureWidget,
         ],
       ),
     ),

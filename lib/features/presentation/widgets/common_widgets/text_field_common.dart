@@ -17,12 +17,13 @@ class TextFieldCommon extends StatelessWidget {
     this.prefix,
     this.fillColor,
     this.focusNode,
-    this.maxLines, this.cursorColor, this.minLines, this.onChanged,
+    this.maxLines, this.cursorColor, this.minLines, this.onChanged, this.labelText,
   });
   final InputBorder? border;
   final TextStyle? style;
   final Widget? suffixIcon;
   final String? hintText;
+  final String? labelText;
   final TextEditingController controller;
   final TextAlign textAlign;
   final bool? enabled;
@@ -55,7 +56,7 @@ class TextFieldCommon extends StatelessWidget {
       textAlign: textAlign,
       decoration: InputDecoration(
         prefix: prefix,
-        // filled: true,
+        labelText: labelText,
         fillColor: fillColor ?? kTransparent,
         border: border,
         disabledBorder: border,
@@ -63,6 +64,9 @@ class TextFieldCommon extends StatelessWidget {
         focusedBorder: border,
         suffixIcon: suffixIcon,
         hintText: hintText,
+        labelStyle: TextStyle(
+          color: buttonSmallTextColor,
+        ),
         hintStyle: theme.textTheme.labelSmall?.copyWith(
           color: iconGreyColor,
           fontSize: 16.sp,
