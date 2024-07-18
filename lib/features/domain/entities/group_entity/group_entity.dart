@@ -7,8 +7,8 @@ class GroupEntity extends Equatable {
   final String? groupCreatedAt;
   final String? groupProfileImage;
   final String? groupName;
-  final List<UserModel>? groupMembers;
-  final List<UserModel>? groupAdmins;
+  final List<String>? groupMembers;
+  final List<String>? groupAdmins;
   final String? groupDescription;
   final List<MembersGroupPermission>? membersPermissions;
   final List<AdminsGroupPermission>? adminsPermissions;

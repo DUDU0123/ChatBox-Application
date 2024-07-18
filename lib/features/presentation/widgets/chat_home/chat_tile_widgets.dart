@@ -54,7 +54,6 @@ Widget buildSubtitle(
     {required bool? isIncomingMessage,
     required bool isGroup,
     required bool? isTyping,
-    required bool isReceiverOnline, required bool isSenderOnline,
     required bool? isVoiceRecoding,
     required String? lastMessage,
     required MessageStatus messageStatus}) {
@@ -66,8 +65,6 @@ Widget buildSubtitle(
       if (isIncomingMessage == null) zeroMeasureWidget,
       if (isIncomingMessage == false)
         buildOutgoingStatus(
-          isReceiverOnline: isReceiverOnline,
-          isSenderOnline: isSenderOnline,
           messageStatus: messageStatus,
           isTyping: isTyping,
           isVoiceRecoding: isVoiceRecoding,
@@ -89,13 +86,9 @@ Widget buildSubtitle(
 Widget buildOutgoingStatus(
     {required bool? isTyping,
     required bool? isVoiceRecoding,
-    required bool isReceiverOnline,
-    required bool isSenderOnline,
     required MessageStatus messageStatus}) {
   if (!(isTyping ?? false) && !(isVoiceRecoding ?? false)) {
     return messageStatusWidget(
-      // isReceiverOnline: isReceiverOnline,
-      // isSenderOnline: isSenderOnline,
       messageStatus: messageStatus,
     );
   }

@@ -1,10 +1,15 @@
+import 'dart:io';
+
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_details_add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +24,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
     required this.pageType,
     this.icon,
     this.groupName,
+    this.pickedGroupImageFile,
   });
 
   final ChatModel? chatModel;
@@ -27,11 +33,12 @@ class FloatingDoneNavigateButton extends StatelessWidget {
   final PageTypeEnum pageType;
   final IconData? icon;
   final String? groupName;
+  final File? pickedGroupImageFile;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         switch (pageType) {
           case PageTypeEnum.sendContactSelectPage:
             selectedContactList != null
@@ -73,17 +80,46 @@ class FloatingDoneNavigateButton extends StatelessWidget {
           case PageTypeEnum.broadcastMembersSelectPage:
             break;
           case PageTypeEnum.groupDetailsAddPage:
+            final String? currentUser = firebaseAuth.currentUser?.uid;
+            if (currentUser == null) {
+              return;
+            }
+            List<String> selectUsersID = [];
+            for (var user in selectedContactList!) {
+              if (user.chatBoxUserId != null) {
+                selectUsersID.add(user.chatBoxUserId!);
+              }
+            }
+            List<MembersGroupPermission> memberPermissions = filterPermissions(
+              context.read<GroupBloc>().state.memberPermissions,
+            );
+            List<AdminsGroupPermission> adminPermissions = filterPermissions(
+              context.read<GroupBloc>().state.adminPermissions,
+            );
+            GroupModel newGroupData = GroupModel(
+              groupCreatedAt: DateTime.now().toString(),
+              groupName: groupName,
+              groupAdmins: [currentUser],
+              groupMembers: selectUsersID,
+              adminsPermissions: adminPermissions,
+              membersPermissions: memberPermissions,
+            );
             groupName != null
-                ? Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatRoomPage(
-                        userName: groupName ?? '',
-                        isGroup: true,
-                      ),
-                    ),
-                  )
-                : null;
+                ? groupName!.isNotEmpty
+                    ? context.read<GroupBloc>().add(
+                          CreateGroupEvent(
+                            newGroupData: newGroupData,
+                            groupProfileImage: pickedGroupImageFile,
+                          ),
+                        )
+                    : commonSnackBarWidget(
+                        contentText: "Enter group name",
+                        context: context,
+                      )
+                : commonSnackBarWidget(
+                    contentText: "Enter group name",
+                    context: context,
+                  );
             break;
           default:
         }

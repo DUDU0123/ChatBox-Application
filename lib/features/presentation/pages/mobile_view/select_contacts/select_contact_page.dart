@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
@@ -9,7 +10,6 @@ import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/contact_single_widget.dart';
 import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/floating_done_navigation_button.dart';
-import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/select_contact_circle_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -115,31 +115,34 @@ class _SelectContactPageState extends State<SelectContactPage> {
                 if (state.contactList == null) {
                   return zeroMeasureWidget;
                 }
-               List<ContactModel> chatBoxUsersList = [];
+                List<ContactModel> chatBoxUsersList = [];
                 for (var contact in state.contactList!) {
-                  if (contact.isChatBoxUser??false) {
+                  if (contact.isChatBoxUser ?? false) {
                     chatBoxUsersList.add(contact);
                   }
                 }
-                if (widget.pageType!=PageTypeEnum.sendContactSelectPage) {
+                chatBoxUsersList.removeWhere((chatBoxUser) =>
+                    chatBoxUser.chatBoxUserId == firebaseAuth.currentUser?.uid);
+                if (widget.pageType != PageTypeEnum.sendContactSelectPage) {
                   return ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  itemCount: chatBoxUsersList.length,
-                  itemBuilder: (context, index) {
-                    final contact = chatBoxUsersList[index];
-                    return ContactSingleWidget(
-                      key: ValueKey(contact.userContactNumber),
-                      isSelected: state.selectedContactList != null
-                          ? state.selectedContactList!.contains(contact)
-                          : false,
-                      contactModel: contact,
-                      contactNameorNumber: contact.userContactName ??
-                          contact.userContactNumber ??
-                          '',
-                    );
-                  },
-                  separatorBuilder: (context, index) => kHeight2,
-                );
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    itemCount: chatBoxUsersList.length,
+                    itemBuilder: (context, index) {
+                      final contact = chatBoxUsersList[index];
+
+                      return ContactSingleWidget(
+                        key: ValueKey(contact.userContactNumber),
+                        isSelected: state.selectedContactList != null
+                            ? state.selectedContactList!.contains(contact)
+                            : false,
+                        contactModel: contact,
+                        contactNameorNumber: contact.userContactName ??
+                            contact.userContactNumber ??
+                            '',
+                      );
+                    },
+                    separatorBuilder: (context, index) => kHeight2,
+                  );
                 }
                 return ListView.separated(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -177,4 +180,3 @@ class _SelectContactPageState extends State<SelectContactPage> {
     );
   }
 }
-

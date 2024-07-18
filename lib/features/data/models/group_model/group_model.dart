@@ -1,6 +1,6 @@
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
-import 'package:chatbox/features/data/models/user_model/user_model.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/domain/entities/group_entity/group_entity.dart';
 
 class GroupModel extends GroupEntity {
@@ -15,16 +15,23 @@ class GroupModel extends GroupEntity {
     super.adminsPermissions,
     super.groupCreatedAt,
   });
+
   factory GroupModel.fromJson(Map<String, dynamic> map) {
     return GroupModel(
       groupID: map[dbGroupId],
-      groupName: map[dbGroupName],
+      groupName: map[dbGroupName] ?? "ChatBoxGroup",
       groupDescription: map[dbGroupDescription],
       groupProfileImage: map[dbGroupProfileImage],
-      groupAdmins: map[dbGroupAdminsList],
-      groupMembers: map[dbGroupMembersList],
-      adminsPermissions: map[dbGroupAdminsPermissionList],
-      membersPermissions: map[dbGroupMembersPermissionList],
+      groupAdmins: List<String>.from(map[dbGroupAdminsList] ?? []),
+      groupMembers: List<String>.from(map[dbGroupMembersList] ?? []),
+      adminsPermissions: stringListToEnumList(
+        List<String>.from(map[dbGroupAdminsPermissionList] ?? []),
+        AdminsGroupPermission.values,
+      ),
+      membersPermissions: stringListToEnumList(
+        List<String>.from(map[dbGroupMembersPermissionList] ?? []),
+        MembersGroupPermission.values,
+      ),
       groupCreatedAt: map[dbGroupCreatedAt],
     );
   }
@@ -37,8 +44,8 @@ class GroupModel extends GroupEntity {
       dbGroupProfileImage: groupProfileImage,
       dbGroupAdminsList: groupAdmins,
       dbGroupMembersList: groupMembers,
-      dbGroupAdminsPermissionList: adminsPermissions,
-      dbGroupMembersPermissionList: membersPermissions,
+      dbGroupAdminsPermissionList: enumListToStringList(adminsPermissions!),
+      dbGroupMembersPermissionList: enumListToStringList(membersPermissions!),
       dbGroupCreatedAt: groupCreatedAt,
     };
   }
@@ -47,8 +54,8 @@ class GroupModel extends GroupEntity {
     String? groupID,
     String? groupName,
     String? groupProfileImage,
-    List<UserModel>? groupMembers,
-    List<UserModel>? groupAdmins,
+    List<String>? groupMembers,
+    List<String>? groupAdmins,
     String? groupDescription,
     List<MembersGroupPermission>? membersPermissions,
     List<AdminsGroupPermission>? adminsPermissions,

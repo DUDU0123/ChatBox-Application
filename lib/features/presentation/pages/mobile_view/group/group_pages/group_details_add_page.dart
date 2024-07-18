@@ -1,19 +1,21 @@
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_permissions_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/selected_contacts_show_widget.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_gradient_tile_widget.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/floating_done_navigation_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupDetailsAddPage extends StatefulWidget {
   const GroupDetailsAddPage({
@@ -28,13 +30,11 @@ class GroupDetailsAddPage extends StatefulWidget {
 
 class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
   TextEditingController groupNameController = TextEditingController();
-
   @override
   void dispose() {
     groupNameController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,15 +51,38 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
               // color: Colors.amberAccent,
               child: Row(
                 children: [
-                  Container(
-                    height: 85.h,width: 85.w,
-                    decoration: BoxDecoration(
-                      color: kRed,
-                     shape: BoxShape.circle,
-                     image: DecorationImage(image: AssetImage(appLogo), fit: BoxFit.cover,)
+                  GestureDetector(
+                    onTap: () async {
+                     File? pickedImageFile =
+                          await pickImage(imageSource: ImageSource.gallery);
+                      context.read<GroupBloc>().add(
+                          GroupImagePickEvent(pickedFile: pickedImageFile));
+                    },
+                    child: BlocBuilder<GroupBloc, GroupState>(
+                      builder: (context, state) {
+                        return Container(
+                          alignment: Alignment.center,
+                          height: 85.h,
+                          width: 85.w,
+                          decoration: BoxDecoration(
+                            color: kRed,
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: state.groupPickedImageFile != null?state.groupPickedImageFile!.path.isNotEmpty
+                                  ? FileImage(state.groupPickedImageFile!)
+                                  : const AssetImage(appLogo):const AssetImage(appLogo),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt_outlined,
+                            color: kBlack,
+                            size: 30.sp,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  nullImageReplaceWidget(containerRadius: 50, context: context),
                   kWidth15,
                   Expanded(
                     child: TextFieldCommon(
@@ -101,9 +124,12 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
         ),
       ),
       floatingActionButton: FloatingDoneNavigateButton(
+        
+        selectedContactList: widget.selectedGroupMembers,
         pageType: PageTypeEnum.groupDetailsAddPage,
         icon: Icons.done,
         groupName: groupNameController.text,
+        pickedGroupImageFile: context.watch<GroupBloc>().state.groupPickedImageFile,
       ),
     );
   }

@@ -1,14 +1,17 @@
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/data_sources/contact_data/contact_data.dart';
+import 'package:chatbox/features/data/data_sources/group_data/group_data.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
 import 'package:chatbox/features/data/repositories/chat_repository_impl/chat_repo_impl.dart';
 import 'package:chatbox/features/data/repositories/contact_repository_impl/contact_repo_impl.dart';
+import 'package:chatbox/features/data/repositories/group_repo_impl/group_repo_impl.dart';
 import 'package:chatbox/features/data/repositories/user_repository_impl/user_repository_impl.dart';
 import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -148,6 +151,16 @@ class AppBlocProvider {
           firebaseAuth: firebaseAuth,
         ),
       )..add(GetAllChatsEvent()),
+    ),
+    BlocProvider(
+      create: (context) => GroupBloc(
+        groupRepository: GroupRepoImpl(
+          groupData: GroupData(
+            firebaseAuth: firebaseAuth,
+            firebaseFirestore: fireStore,
+          ),
+        ),
+      )..add(GetAllGroupsEvent()),
     ),
   ];
 }

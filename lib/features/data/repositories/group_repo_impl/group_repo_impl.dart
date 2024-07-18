@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatbox/features/data/data_sources/group_data/group_data.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/domain/repositories/group_repo/group_repository.dart';
@@ -7,22 +9,29 @@ class GroupRepoImpl extends GroupRepository {
   GroupRepoImpl({
     required this.groupData,
   });
-  
+
   @override
-  Future<String?> createGroup({required GroupModel newGroupData}) async {
-   return await groupData.createNewGroup(newGroupData: newGroupData);
+  Future<String?> createGroup(
+      {required GroupModel newGroupData, required File? groupImageFile}) async {
+    return await groupData.createNewGroup(
+      newGroupData: newGroupData,
+      groupImageFile: groupImageFile,
+    );
   }
 
   @override
-  List<GroupModel> getAllGroups() {
-    return [];
+  Stream<List<GroupModel>>? getAllGroups() {
+    return groupData.getAllGroups();
   }
 
   @override
-  deleteGroup({required String groupID}) {}
-
-  
+  Future<bool> updateGroupData({required GroupModel updatedGroupData}) async {
+    return await groupData.updateGroupData(updatedGroupModel: updatedGroupData);
+  }
 
   @override
-  updateGroupData({required GroupModel updatedGroupData}) {}
+  Future<String> deleteAGroupOnlyForCurrentUser(
+      {required String groupID}) async {
+    return await groupData.deleteAgroupFromGroupsCurrentUser(groupID: groupID);
+  }
 }

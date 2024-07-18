@@ -26,10 +26,12 @@ class ChatRoomPage extends StatefulWidget {
     required this.userName,
     required this.isGroup,
     this.chatModel,
+    this.groupModel,
     this.receiverID,
   });
   final String userName;
   final ChatModel? chatModel;
+  final GroupModel? groupModel;
   final bool isGroup;
   final String? receiverID;
 
@@ -78,7 +80,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         ? context.read<MessageBloc>().add(GetAllMessageEvent(
             currentUserId: firebaseAuth.currentUser?.uid ?? '',
             receiverId: widget.receiverID ?? '',
-            chatId: widget.chatModel!.chatID!))
+            chatId: widget.chatModel!.chatID??""))
         : null;
     return Scaffold(
       appBar: PreferredSize(

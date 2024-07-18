@@ -17,6 +17,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
+
+class NetworkStatusService {
+  final _connectivity = Connectivity();
+  final _controller = StreamController<ConnectivityResult>.broadcast();
+
+  StreamSubscription? _subscription;
+
+  NetworkStatusService() {
+    _subscription = _connectivity.onConnectivityChanged.listen(_controller.add);
+  }
+
+  Stream<ConnectivityResult> get status => _controller.stream;
+
+  Future<ConnectivityResult> checkConnectivity() {
+    return _connectivity.checkConnectivity();
+  }
+
+  void dispose() {
+    _subscription?.cancel();
+    _controller.close();
+  }
+}
+
 class NavigatorBottomnavPage extends StatefulWidget {
   const NavigatorBottomnavPage({super.key});
 
@@ -25,6 +50,8 @@ class NavigatorBottomnavPage extends StatefulWidget {
 }
 
 class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
+  // final NetworkStatusService _networkStatusService = NetworkStatusService();
+  // ConnectivityResult _connectivityResult = ConnectivityResult.none;
   final pages = [
     const ChatHomePage(),
     const GroupHomePage(),
@@ -33,12 +60,27 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
   ];
 
   PageController pageController = PageController(initialPage: 0);
-  
+  // Future<void> _initConnectivity() async {
+  //   ConnectivityResult result = await _networkStatusService.checkConnectivity();
+  //   setState(() {
+  //     _connectivityResult = result;
+  //   });
+  // }
 
   @override
   void initState() {
     super.initState();
-    UserData.updateUserNetworkStatusInApp(isOnline: true);
+
+    // _initConnectivity();
+    // _networkStatusService.status.listen((result) {
+    //   setState(() {
+    //     _connectivityResult = result;
+    //   });
+    //   log("Connect: $result");
+    //   UserData.updateUserNetworkStatusInApp(isOnline: true);
+    // });
+
+    
     SystemChannels.lifecycle.setMessageHandler(
       (message) async {
         log(message.toString());

@@ -64,6 +64,7 @@ const dbGroupMembersList = 'group_members';
 const dbGroupAdminsPermissionList = 'group_admins_permissions';
 const dbGroupMembersPermissionList = 'group_members_permissions';
 const dbGroupCreatedAt = 'group_created_at';
+const dbGroupLastUpdatedDate = 'group_last_updated_date';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
