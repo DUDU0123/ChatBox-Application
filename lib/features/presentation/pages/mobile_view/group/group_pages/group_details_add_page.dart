@@ -6,6 +6,7 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_permissions_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/selected_contacts_show_widget.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_gradient_tile_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
@@ -50,9 +51,15 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
               // color: Colors.amberAccent,
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 35.sp,
+                  Container(
+                    height: 85.h,width: 85.w,
+                    decoration: BoxDecoration(
+                      color: kRed,
+                     shape: BoxShape.circle,
+                     image: DecorationImage(image: AssetImage(appLogo), fit: BoxFit.cover,)
+                    ),
                   ),
+                  nullImageReplaceWidget(containerRadius: 50, context: context),
                   kWidth15,
                   Expanded(
                     child: TextFieldCommon(

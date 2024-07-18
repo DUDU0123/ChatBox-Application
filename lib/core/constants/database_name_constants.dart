@@ -15,6 +15,7 @@ const userDbLastActiveTime = 'user_last_active_time';
 // collections names
 const usersCollection = 'users';
 const chatsCollection = 'chats';
+const groupsCollection = 'groups';
 const messagesCollection = 'messages';
 const attachmentsCollection = 'attachments';
 const starredMessagesCollection = 'starred_collection';
@@ -62,6 +63,7 @@ const dbGroupAdminsList = 'group_admins';
 const dbGroupMembersList = 'group_members';
 const dbGroupAdminsPermissionList = 'group_admins_permissions';
 const dbGroupMembersPermissionList = 'group_members_permissions';
+const dbGroupCreatedAt = 'group_created_at';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

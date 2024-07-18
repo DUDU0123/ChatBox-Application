@@ -12,6 +12,7 @@ import 'package:chatbox/features/presentation/widgets/chat/message_listing_widge
 import 'package:chatbox/features/presentation/widgets/chat/attachment_list_container_vertical.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chat_room_bg_image_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chatbar_widget.dart';
+import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -91,7 +92,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 userName: widget.userName,
               )
             : groupChatAppBarWidget(
-                groupModel:const GroupModel(),
+                groupModel: const GroupModel(),
                 isGroup: true,
                 context: context,
               ),
@@ -152,6 +153,21 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               },
             ),
           ),
+          Align(
+              alignment: Alignment.topCenter,
+              child: BlocBuilder<MessageBloc, MessageState>(
+                builder: (context, state) {
+                  if (state.messageDate == null) {
+                    return zeroMeasureWidget;
+                  }
+                  if (state.messageDate!.isEmpty) {
+                    return zeroMeasureWidget;
+                  }
+                  return MessagePageDateShowWidget(
+                    date: state.messageDate!,
+                  );
+                },
+              ))
         ],
       ),
     );

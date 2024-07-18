@@ -172,7 +172,7 @@ class OpenDeviceFileAndSaveToDbEvent extends MessageEvent {
 }
 
 class AudioRecordToggleEvent extends MessageEvent {
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final FlutterSoundRecorder recorder;
   final String receiverID;
   final String receiverContactName;
@@ -184,13 +184,13 @@ class AudioRecordToggleEvent extends MessageEvent {
   });
   @override
   List<Object> get props => [
-        chatModel,
+        chatModel??const ChatModel(),
         recorder,
       ];
 }
 
 class AudioMessageSendEvent extends MessageEvent {
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final File audioFile;
   final String receiverID;
   final String receiverContactName;
@@ -202,7 +202,7 @@ class AudioMessageSendEvent extends MessageEvent {
   });
   @override
   List<Object> get props => [
-        chatModel,
+        chatModel??const ChatModel(),
       ];
 }
 
@@ -283,4 +283,13 @@ class MessageSelectedEvent extends MessageEvent {
   });
   @override
   List<Object> get props => [messageModel,];
+}
+
+class GetMessageDateEvent extends MessageEvent {
+  final String currentMessageDate;
+  const GetMessageDateEvent({
+    required this.currentMessageDate,
+  });
+  @override
+  List<Object> get props => [currentMessageDate,];
 }

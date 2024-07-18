@@ -51,6 +51,18 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<LocationPickEvent>(locationPickEvent);
     on<LocationMessageSendEvent>(locationMessageSendEvent);
     on<MessageSelectedEvent>(messageSelectedEvent);
+    on<GetMessageDateEvent>(getMessageDateEvent);
+  }
+
+  FutureOr<void> getMessageDateEvent(
+      GetMessageDateEvent event, Emitter<MessageState> emit) {
+    try {
+      emit(state.copyWith(
+        messageDate: event.currentMessageDate,
+      ));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
   }
 
   FutureOr<void> messageTypedEvent(
@@ -116,18 +128,18 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         receiverId: event.receiverID,
       );
       await chatRepo.sendMessage(
-        chatId:event.chatModel!=null? event.chatModel!.chatID:chatId,
+        chatId: event.chatModel != null ? event.chatModel!.chatID : chatId,
         message: event.message,
         receiverContactName: event.receiverContactName,
         receiverId: event.receiverContactName,
       );
-       log('Sended message');
+      log('Sended message');
       ChatData.updateChatMessageDataOfUser(
           chatModel: event.chatModel, message: event.message);
       add(GetAllMessageEvent(
         currentUserId: event.currentUserId,
         receiverId: event.receiverID,
-        chatId: event.chatModel!=null? event.chatModel!.chatID:chatId,
+        chatId: event.chatModel != null ? event.chatModel!.chatID : chatId,
       ));
     } catch (e) {
       log("Send message error: ${e.toString()}");
@@ -426,7 +438,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> audioMessageSendEvent(
       AudioMessageSendEvent event, Emitter<MessageState> emit) async {
     try {
-      final String? chatID = event.chatModel.chatID;
+      final String? chatID = event.chatModel?.chatID;
       if (chatID == null) {
         return null;
       }
@@ -445,8 +457,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         isEditedMessage: false,
         isPinnedMessage: false,
         isStarredMessage: false,
-        receiverID: event.chatModel.receiverID,
-        senderID: event.chatModel.senderID,
+        receiverID: event.chatModel?.receiverID,
+        senderID: event.chatModel?.senderID,
       );
       await chatRepo.sendMessage(
         chatId: chatID,
@@ -583,18 +595,19 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
-  FutureOr<void> messageSelectedEvent(MessageSelectedEvent event, Emitter<MessageState> emit) {
-  try {
-    final updatedSelectedIds = Set<String>.from(state.selectedMessageIds as Iterable);
-    if (updatedSelectedIds.contains(event.messageModel.messageId)) {
-      updatedSelectedIds.remove(event.messageModel.messageId);
-    } else {
-      updatedSelectedIds.add(event.messageModel.messageId??'');
+  FutureOr<void> messageSelectedEvent(
+      MessageSelectedEvent event, Emitter<MessageState> emit) {
+    try {
+      final updatedSelectedIds =
+          Set<String>.from(state.selectedMessageIds as Iterable);
+      if (updatedSelectedIds.contains(event.messageModel.messageId)) {
+        updatedSelectedIds.remove(event.messageModel.messageId);
+      } else {
+        updatedSelectedIds.add(event.messageModel.messageId ?? '');
+      }
+      emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
     }
-    emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
-  } catch (e) {
-    emit(MessageErrorState(message: e.toString()));
   }
-}
-
 }

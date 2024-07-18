@@ -66,7 +66,7 @@ class ChatData {
           .doc(chatId)
           .get();
       return chatSnapshot.exists;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 47: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -83,7 +83,7 @@ class ChatData {
               map: event.data() ?? {},
             ),
           );
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log(
         'Firebase Auth exception: $e',
       );
@@ -162,7 +162,7 @@ class ChatData {
           throw Exception("User data is null");
         }
       });
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("Firebase Auth exception: ${e.message}");
       throw Exception("Error while creating chat: ${e.message}");
     } catch (e, stackTrace) {
@@ -209,7 +209,7 @@ class ChatData {
             .doc(message.messageId)
             .set(message.toJson());
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 241: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -226,7 +226,7 @@ class ChatData {
       final assetUrl = await saveUserFileToDataBaseStorage(
           ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
       return assetUrl;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("Photo send error chat data: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -465,7 +465,7 @@ class ChatData {
           .map((snapshot) => snapshot.docs
               .map((doc) => ChatModel.fromJson(doc.data()))
               .toList());
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 107: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -488,7 +488,7 @@ class ChatData {
           .map((snapshot) => snapshot.docs
               .map((doc) => MessageModel.fromJson(map: doc.data()))
               .toList());
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 186: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -510,7 +510,7 @@ class ChatData {
           .doc(messageId)
           .get();
       return MessageModel.fromJson(map: doc.data() as Map<String, dynamic>);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 208: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -527,7 +527,7 @@ class ChatData {
           .collection(chatsCollection)
           .doc(chatModel.chatID)
           .delete();
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 220: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -544,7 +544,7 @@ class ChatData {
       UploadTask uploadTask = firebaseStorage.ref().child(ref).putFile(file);
       TaskSnapshot taskSnapshot = await uploadTask;
       return await taskSnapshot.ref.getDownloadURL();
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log(
         'Firebase Auth exception: $e',
       );
@@ -567,7 +567,7 @@ class ChatData {
           .collection(messagesCollection)
           .doc(messageId)
           .delete();
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 262: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
@@ -591,7 +591,7 @@ class ChatData {
           .collection(messagesCollection)
           .doc(messageId)
           .update(updatedData.toJson());
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseException catch (e) {
       log("From Chat Data: 286: ${e.message}");
       throw Exception(e.message);
     } catch (e) {

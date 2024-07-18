@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DateProvider {
-  static String covertDateToFormatted({required String date}) {
-    int timeStamp = int.parse(date);
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timeStamp);
+  static String convertDateToFormatted({required String date}) {
+    DateTime dateTime = DateTime.parse(date);
     String formattedDate = DateFormat('MMMM d, yyyy').format(dateTime);
     return formattedDate;
   }

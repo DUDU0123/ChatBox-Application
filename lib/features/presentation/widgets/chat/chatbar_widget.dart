@@ -175,7 +175,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                           widget.chatModel?.receiverID ?? '',
                                       receiverContactName:
                                           widget.receiverContactName ?? '',
-                                      chatModel: widget.chatModel!,
+                                      chatModel: widget.chatModel,
                                       recorder: widget.recorder,
                                     ),
                                   );

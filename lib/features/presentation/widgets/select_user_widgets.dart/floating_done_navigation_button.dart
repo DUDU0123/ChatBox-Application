@@ -1,5 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
@@ -50,23 +51,34 @@ class FloatingDoneNavigateButton extends StatelessWidget {
             Navigator.pop(context);
             break;
           case PageTypeEnum.groupMemberSelectPage:
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => GroupDetailsAddPage(
-                    selectedGroupMembers: selectedContactList ?? [],
-                  ),
-                ));
+            selectedContactList != null
+                ? selectedContactList!.length >= 2
+                    ? Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GroupDetailsAddPage(
+                            selectedGroupMembers: selectedContactList!,
+                          ),
+                        ),
+                      )
+                    : commonSnackBarWidget(
+                        contentText: "Select atleast 2 members",
+                        context: context,
+                      )
+                : commonSnackBarWidget(
+                    contentText: "Select atleast 2 members",
+                    context: context,
+                  );
             break;
           case PageTypeEnum.broadcastMembersSelectPage:
             break;
           case PageTypeEnum.groupDetailsAddPage:
             groupName != null
-                ? Navigator.push(
+                ? Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatRoomPage(
-                        userName: groupName!,
+                        userName: groupName ?? '',
                         isGroup: true,
                       ),
                     ),

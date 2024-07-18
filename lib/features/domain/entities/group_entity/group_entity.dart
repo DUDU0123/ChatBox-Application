@@ -4,6 +4,7 @@ import 'package:chatbox/features/data/models/user_model/user_model.dart';
 
 class GroupEntity extends Equatable {
   final String? groupID;
+  final String? groupCreatedAt;
   final String? groupProfileImage;
   final String? groupName;
   final List<UserModel>? groupMembers;
@@ -20,6 +21,7 @@ class GroupEntity extends Equatable {
     this.groupDescription,
     this.membersPermissions,
     this.adminsPermissions,
+    this.groupCreatedAt,
   });
 
   @override
@@ -33,6 +35,7 @@ class GroupEntity extends Equatable {
       groupDescription,
       membersPermissions,
       adminsPermissions,
+      groupCreatedAt,
     ];
   }
 }

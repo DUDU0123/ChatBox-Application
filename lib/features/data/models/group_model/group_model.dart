@@ -13,6 +13,7 @@ class GroupModel extends GroupEntity {
     super.groupDescription,
     super.membersPermissions,
     super.adminsPermissions,
+    super.groupCreatedAt,
   });
   factory GroupModel.fromJson(Map<String, dynamic> map) {
     return GroupModel(
@@ -24,6 +25,7 @@ class GroupModel extends GroupEntity {
       groupMembers: map[dbGroupMembersList],
       adminsPermissions: map[dbGroupAdminsPermissionList],
       membersPermissions: map[dbGroupMembersPermissionList],
+      groupCreatedAt: map[dbGroupCreatedAt],
     );
   }
 
@@ -37,6 +39,7 @@ class GroupModel extends GroupEntity {
       dbGroupMembersList: groupMembers,
       dbGroupAdminsPermissionList: adminsPermissions,
       dbGroupMembersPermissionList: membersPermissions,
+      dbGroupCreatedAt: groupCreatedAt,
     };
   }
 
@@ -49,6 +52,7 @@ class GroupModel extends GroupEntity {
     String? groupDescription,
     List<MembersGroupPermission>? membersPermissions,
     List<AdminsGroupPermission>? adminsPermissions,
+    String? groupCreatedAt,
   }) {
     return GroupModel(
       groupID: groupID ?? this.groupID,
@@ -59,6 +63,7 @@ class GroupModel extends GroupEntity {
       groupDescription: groupDescription ?? this.groupDescription,
       membersPermissions: membersPermissions ?? this.membersPermissions,
       adminsPermissions: adminsPermissions ?? this.adminsPermissions,
+      groupCreatedAt: groupCreatedAt ?? this.groupCreatedAt,
     );
   }
 }
