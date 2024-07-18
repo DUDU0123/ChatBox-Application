@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:chatbox/core/constants/database_name_constants.dart';
-import 'package:chatbox/core/utils/common_DB_functions.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
