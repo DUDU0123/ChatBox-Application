@@ -124,7 +124,7 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
         ),
       ),
       floatingActionButton: FloatingDoneNavigateButton(
-        
+        isGroup: true,
         selectedContactList: widget.selectedGroupMembers,
         pageType: PageTypeEnum.groupDetailsAddPage,
         icon: Icons.done,

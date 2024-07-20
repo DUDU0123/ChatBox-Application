@@ -4,6 +4,7 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/widgets/chat/contact_message_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/audio_message_widget.dart';
@@ -18,28 +19,48 @@ class MessageContainerWidget extends StatelessWidget {
   const MessageContainerWidget({
     super.key,
     required this.message,
-    required this.chatModel,
+    this.chatModel,
+    this.groupModel,
     required this.videoControllers,
     required this.audioPlayers,
     required this.receiverID,
-    required this.rootContext,
+    required this.rootContext,required this.isGroup, required this.isIncomingMessage,
   });
   final MessageModel message;
   final ChatModel? chatModel;
+  final GroupModel? groupModel;
   final Map<String, VideoPlayerController> videoControllers;
   final Map<String, AudioPlayer> audioPlayers;
   final String receiverID;
   final BuildContext rootContext;
+  final bool isGroup;
+  final bool isIncomingMessage;
+
+  
 
   @override
   Widget build(BuildContext context) {
     if (message.message == null) {
       return zeroMeasureWidget;
     }
+
+    bool isCurrentUserMessage;
+    if (isGroup && groupModel != null) {
+      isCurrentUserMessage = groupModel!.groupMembers!.contains(firebaseAuth.currentUser?.uid) &&
+                             message.senderID == firebaseAuth.currentUser?.uid;
+    } else {
+      isCurrentUserMessage = firebaseAuth.currentUser?.uid == message.senderID;
+    }
+
+    groupModel?.groupMembers?.where((memberID)=> memberID!=firebaseAuth.currentUser?.uid);
     return Align(
-      alignment: firebaseAuth.currentUser?.uid == message.receiverID
-          ? Alignment.centerLeft
-          : Alignment.centerRight,
+      alignment: 
+      // firebaseAuth.currentUser?.uid == message.receiverID
+      //     ? Alignment.centerLeft
+      //     : Alignment.centerRight,
+      isCurrentUserMessage
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: Stack(
         children: [
           message.messageType == MessageType.audio
@@ -87,6 +108,7 @@ class MessageContainerWidget extends StatelessWidget {
                       ? textMessageWidget(message: message)
                       : message.messageType == MessageType.photo
                           ? photoMessageShowWidget(
+                            isGroup: isGroup,groupModel: groupModel,
                               receiverID: receiverID,
                               message: message,
                               chatModel: chatModel,
@@ -94,6 +116,7 @@ class MessageContainerWidget extends StatelessWidget {
                             )
                           : videoControllers[message.message!] != null
                               ? videoMessageShowWidget(
+                                isGroup: isGroup,groupModel: groupModel,
                                   receiverID: receiverID,
                                   chatModel: chatModel,
                                   videoControllers: videoControllers,
@@ -120,6 +143,7 @@ class MessageContainerWidget extends StatelessWidget {
                                             ),
                 ),
           messageStatusShowWidget(
+            isCurrentUserMessage: isCurrentUserMessage,
             message: message,
           ),
         ],

@@ -5,6 +5,7 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/selected_contacts_show_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -19,11 +20,13 @@ class SelectContactPage extends StatefulWidget {
     super.key,
     this.chatModel,
     this.receiverContactName,
-    required this.pageType,
+    required this.pageType, this.groupModel, required this.isGroup,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
   final PageTypeEnum pageType;
+  final GroupModel? groupModel;
+  final bool isGroup;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
 }
@@ -170,6 +173,8 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
+            groupModel: widget.groupModel,
+            isGroup: widget.isGroup,
             pageType: widget.pageType,
             receiverContactName: widget.receiverContactName ?? '',
             chatModel: widget.chatModel,

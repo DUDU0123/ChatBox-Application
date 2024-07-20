@@ -20,9 +20,7 @@ class MessageTypedEvent extends MessageEvent {
 
 class AttachmentIconClickedEvent extends MessageEvent {
   @override
-  List<Object> get props => [
-        
-      ];
+  List<Object> get props => [];
 }
 
 class MessageSentEvent extends MessageEvent {
@@ -32,13 +30,17 @@ class MessageSentEvent extends MessageEvent {
   final String receiverContactName;
   final File? file;
   final MessageModel message;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const MessageSentEvent({
     required this.chatModel,
-    this.file,
-    required this.message,
-    required this.receiverContactName,
     required this.receiverID,
     required this.currentUserId,
+    required this.receiverContactName,
+    this.file,
+    required this.message,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
@@ -47,24 +49,32 @@ class MessageSentEvent extends MessageEvent {
         file ?? File(''),
         currentUserId,
         receiverContactName,
+        groupModel ?? const GroupModel(),
+        isGroup,
       ];
 }
 
 class PhotoMessageSendEvent extends MessageEvent {
   final ImageSource imageSource;
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final String receiverID;
   final String receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const PhotoMessageSendEvent({
     required this.imageSource,
-    required this.chatModel,
-    required this.receiverContactName,
+     this.chatModel,
     required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
         imageSource,
-        chatModel,
+        chatModel??const ChatModel(),
+        isGroup,
+        groupModel ?? const GroupModel(),
       ];
 }
 
@@ -73,16 +83,22 @@ class VideoMessageSendEvent extends MessageEvent {
   final ChatModel chatModel;
   final String receiverID;
   final String receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const VideoMessageSendEvent({
     required this.imageSource,
     required this.chatModel,
-    required this.receiverContactName,
     required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
         imageSource,
         chatModel,
+        isGroup,
+        groupModel ?? const GroupModel(),
       ];
 }
 
@@ -95,14 +111,21 @@ class GetAllMessageEvent extends MessageEvent {
   final String? chatId;
   final String currentUserId;
   final String receiverId;
+  final bool? isGroup;
+  final GroupModel? groupModel;
   const GetAllMessageEvent({
     required this.chatId,
     required this.currentUserId,
     required this.receiverId,
+    this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
         chatId ?? currentUserId,
+        receiverId,
+        isGroup??false,
+        groupModel ?? const GroupModel(),
       ];
 }
 
@@ -141,33 +164,50 @@ class ContactMessageSendEvent extends MessageEvent {
   final ChatModel chatModel;
   final String receiverID;
   final String receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const ContactMessageSendEvent({
     required this.contactListToSend,
     required this.chatModel,
-    required this.receiverContactName,
     required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
         contactListToSend,
+        chatModel,
+        groupModel ?? const GroupModel(),
+        receiverContactName,
+        isGroup,
+        receiverID,
       ];
 }
 
 class OpenDeviceFileAndSaveToDbEvent extends MessageEvent {
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final MessageType messageType;
   final String receiverID;
+  final bool isGroup;
+  final GroupModel? groupModel;
   final String receiverContactName;
   const OpenDeviceFileAndSaveToDbEvent({
-    required this.receiverContactName,
-    required this.receiverID,
-    required this.chatModel,
+    this.chatModel,
     required this.messageType,
+    required this.receiverID,
+    required this.isGroup,
+    this.groupModel,
+    required this.receiverContactName,
   });
   @override
   List<Object> get props => [
-        chatModel,
+        chatModel??const ChatModel(),
         messageType,
+        receiverID,
+        receiverContactName,
+        groupModel ?? const GroupModel(),
+        isGroup,
       ];
 }
 
@@ -176,16 +216,24 @@ class AudioRecordToggleEvent extends MessageEvent {
   final FlutterSoundRecorder recorder;
   final String receiverID;
   final String receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const AudioRecordToggleEvent({
-    required this.chatModel,
+    this.chatModel,
     required this.recorder,
-    required this.receiverContactName,
     required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
-        chatModel??const ChatModel(),
+        chatModel ?? const ChatModel(),
         recorder,
+        receiverContactName,
+        receiverID,
+        isGroup,
+        groupModel ?? const GroupModel(),
       ];
 }
 
@@ -194,15 +242,24 @@ class AudioMessageSendEvent extends MessageEvent {
   final File audioFile;
   final String receiverID;
   final String receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const AudioMessageSendEvent({
-    required this.chatModel,
-    required this.receiverContactName,
-    required this.receiverID,
+    this.chatModel,
     required this.audioFile,
+    required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
   List<Object> get props => [
-        chatModel??const ChatModel(),
+        chatModel ?? const ChatModel(),
+        audioFile,
+        receiverContactName,
+        receiverID,
+        isGroup,
+        groupModel ?? const GroupModel(),
       ];
 }
 
@@ -213,14 +270,25 @@ class LocationMessageSendEvent extends MessageEvent {
   final String location;
   final String receiverID;
   final String receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
   const LocationMessageSendEvent({
     required this.chatModel,
     required this.location,
-    required this.receiverContactName,
     required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
   });
   @override
-  List<Object> get props => [chatModel];
+  List<Object> get props => [
+        chatModel,
+        location,
+        receiverContactName,
+        receiverID,
+        isGroup,
+        groupModel ?? const GroupModel(),
+      ];
 }
 
 class ChatOpenedEvent extends MessageEvent {
@@ -282,7 +350,9 @@ class MessageSelectedEvent extends MessageEvent {
     required this.messageModel,
   });
   @override
-  List<Object> get props => [messageModel,];
+  List<Object> get props => [
+        messageModel,
+      ];
 }
 
 class GetMessageDateEvent extends MessageEvent {
@@ -291,5 +361,7 @@ class GetMessageDateEvent extends MessageEvent {
     required this.currentMessageDate,
   });
   @override
-  List<Object> get props => [currentMessageDate,];
+  List<Object> get props => [
+        currentMessageDate,
+      ];
 }

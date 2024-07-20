@@ -6,6 +6,7 @@ import 'package:chatbox/core/utils/chat_asset_send_methods.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_show_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -90,6 +91,8 @@ Widget photoMessageShowWidget({
   required ChatModel? chatModel,
   required BuildContext context,
   required String receiverID,
+  required bool isGroup,
+  GroupModel? groupModel,
 }) {
   return ClipRRect(
     borderRadius: BorderRadius.circular(10.sp),
@@ -99,6 +102,7 @@ Widget photoMessageShowWidget({
           context,
           MaterialPageRoute(
             builder: (context) => AssetShowPage(
+              isGroup: isGroup,groupModel: groupModel,
               receiverID: receiverID,
               messageType: MessageType.photo,
               chatID: chatModel?.chatID ?? '',
@@ -125,6 +129,8 @@ Widget videoMessageShowWidget({
   required BuildContext context,
   required String receiverID,
   required final Map<String, VideoPlayerController> videoControllers,
+  required bool isGroup,
+  GroupModel? groupModel,
 }) {
   return GestureDetector(
     onTap: () {
@@ -135,6 +141,8 @@ Widget videoMessageShowWidget({
         context,
         MaterialPageRoute(
           builder: (context) => AssetShowPage(
+            isGroup: isGroup,
+            groupModel: groupModel,
             receiverID: receiverID,
             messageType: MessageType.video,
             chatID: chatModel?.chatID ?? '',

@@ -66,6 +66,7 @@ List<Widget> appBarIconsHome(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const SelectContactPage(
+                        isGroup: false,
                         pageType: PageTypeEnum.groupMemberSelectPage,
                       ),
                     ));

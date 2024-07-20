@@ -3,6 +3,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,15 @@ class AssetShowPage extends StatefulWidget {
     this.controllers = const {},
     required this.message,
     required this.chatID,
-    required this.messageType, required this.receiverID,
+    required this.messageType, required this.receiverID, required this.isGroup, this.groupModel,
   });
   final Map<String, VideoPlayerController> controllers;
   final MessageModel message;
   final MessageType messageType;
   final String chatID;
   final String receiverID;
+  final bool isGroup;
+  final GroupModel? groupModel;
 
   @override
   _AssetShowPageState createState() => _AssetShowPageState();
@@ -69,6 +72,8 @@ class _AssetShowPageState extends State<AssetShowPage> {
 
            firebaseAuth.currentUser?.uid!=null?   context.read<MessageBloc>().add(
                     GetAllMessageEvent(
+                      isGroup: widget.isGroup,
+                      groupModel: widget.groupModel,
                       receiverId: widget.receiverID,
                       currentUserId: firebaseAuth.currentUser?.uid??'',
                       chatId: widget.chatID,

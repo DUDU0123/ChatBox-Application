@@ -24,7 +24,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
     required this.pageType,
     this.icon,
     this.groupName,
-    this.pickedGroupImageFile,
+    this.pickedGroupImageFile, this.groupModel, required this.isGroup,
   });
 
   final ChatModel? chatModel;
@@ -34,6 +34,8 @@ class FloatingDoneNavigateButton extends StatelessWidget {
   final IconData? icon;
   final String? groupName;
   final File? pickedGroupImageFile;
+  final GroupModel? groupModel;
+  final bool isGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,8 @@ class FloatingDoneNavigateButton extends StatelessWidget {
                     ? receiverContactName != null
                         ? context.read<MessageBloc>().add(
                               ContactMessageSendEvent(
+                                isGroup: isGroup,
+                                groupModel: groupModel,
                                 receiverID: chatModel!.receiverID!,
                                 receiverContactName: receiverContactName!,
                                 contactListToSend: selectedContactList!,
@@ -100,7 +104,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
               groupCreatedAt: DateTime.now().toString(),
               groupName: groupName,
               groupAdmins: [currentUser],
-              groupMembers: selectUsersID,
+              groupMembers: [currentUser,...selectUsersID],
               adminsPermissions: adminPermissions,
               membersPermissions: memberPermissions,
             );

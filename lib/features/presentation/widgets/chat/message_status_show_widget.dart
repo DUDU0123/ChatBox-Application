@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Widget messageStatusShowWidget({
   required MessageModel message,
+  required bool isCurrentUserMessage,
 }) {
   return Positioned(
     bottom: 6.h,
@@ -24,7 +25,7 @@ Widget messageStatusShowWidget({
           textColor: iconGreyColor,
         ),
         kWidth2,
-     message.messageStatus==MessageStatus.sent?   Icon(
+    isCurrentUserMessage?  message.messageStatus==MessageStatus.sent?   Icon(
           Icons.done,
           color: iconGreyColor,
           size: 12.sp,
@@ -40,7 +41,7 @@ Widget messageStatusShowWidget({
           Icons.update,
           color: iconGreyColor,
           size: 12.sp,
-        ),
+        ):zeroMeasureWidget,
         kWidth2,
         // Icon(
         //   Icons.push_pin_rounded,

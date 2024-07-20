@@ -65,37 +65,6 @@ class UserData {
       throw Exception("Error while fetching user data: $e");
     }
   }
-  static Future<UserModel?> getOneUserDataFromDBFuture(
-      {required String userId}) async {
-    try {
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await fireStore.collection(usersCollection).doc(userId).get();
-      if (documentSnapshot.exists) {
-        return UserModel.fromJson(map: documentSnapshot.data()!);
-      } else {
-        log('User not found with ID: $userId');
-        return null;
-      }
-    } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
-      throw Exception("Error while fetching user data: $e");
-    } catch (e, stackTrace) {
-      log('Error while fetching user data: $e', stackTrace: stackTrace);
-      throw Exception("Error while fetching user data: $e");
-    }
-  }
-  static updateUserNetworkStatusInApp({required bool isOnline}) async {
-    await fireStore
-        .collection(usersCollection)
-        .doc(firebaseAuth.currentUser?.uid)
-        .update({
-      userDbLastActiveTime: DateTime.now().millisecondsSinceEpoch.toString(),
-      userDbNetworkStatus: isOnline,
-    });
-  }
-
   // Method to get one user by ID
   Future<UserModel?> getOneUserDataFromDataBase(
       {required String userId}) async {

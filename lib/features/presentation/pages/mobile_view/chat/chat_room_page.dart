@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
@@ -27,13 +28,14 @@ class ChatRoomPage extends StatefulWidget {
     required this.isGroup,
     this.chatModel,
     this.groupModel,
-    this.receiverID,
+    this.receiverID, required this.isIncomingMessage,
   });
   final String userName;
   final ChatModel? chatModel;
   final GroupModel? groupModel;
   final bool isGroup;
   final String? receiverID;
+  final bool isIncomingMessage;
 
   @override
   State<ChatRoomPage> createState() => _ChatRoomPageState();
@@ -52,8 +54,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   void initState() {
     super.initState();
     !widget.isGroup
-        ? ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
-            widget.chatModel?.chatID ?? '', true)
+        ? CommonDBFunctions.updateChatOpenStatus(
+            widget.chatModel?.receiverID ?? '',
+            widget.chatModel?.chatID ?? '',
+            true)
         : null;
   }
 
@@ -67,8 +71,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     _durationSubscription?.cancel();
     _positionSubscription?.cancel();
     !widget.isGroup
-        ? ChatData.updateChatOpenStatus(widget.chatModel?.receiverID ?? '',
-            widget.chatModel?.chatID ?? '', false)
+        ? CommonDBFunctions.updateChatOpenStatus(
+            widget.chatModel?.receiverID ?? '',
+            widget.chatModel?.chatID ?? '',
+            false)
         : null;
     super.dispose();
   }
@@ -76,12 +82,15 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   @override
   Widget build(BuildContext context) {
     //ChatData.listenToChatDocument(widget.chatModel?.senderID??'', widget.chatModel?.chatID??'');
-    widget.chatModel != null
-        ? context.read<MessageBloc>().add(GetAllMessageEvent(
-            currentUserId: firebaseAuth.currentUser?.uid ?? '',
-            receiverId: widget.receiverID ?? '',
-            chatId: widget.chatModel!.chatID??""))
-        : null;
+
+    context.read<MessageBloc>().add(GetAllMessageEvent(
+          isGroup: widget.isGroup,
+          groupModel: widget.groupModel,
+          currentUserId: firebaseAuth.currentUser?.uid ?? '',
+          receiverId: widget.receiverID ?? '',
+          chatId: widget.chatModel?.chatID ?? "",
+        ));
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -90,11 +99,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 context: context,
                 receiverID: widget.receiverID ?? "",
                 chatModel: widget.chatModel,
-                isGroup: widget.isGroup,
+                isGroup: false,
                 userName: widget.userName,
               )
             : groupChatAppBarWidget(
-                groupModel: const GroupModel(),
+                groupModel: widget.groupModel,
                 isGroup: true,
                 context: context,
               ),
@@ -118,8 +127,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       return commonErrorWidget(message: state.message);
                     }
                     return messageListingWidget(
+                      isIncomingMessage: widget.isIncomingMessage,
                       rootContext: context,
-                      receiverID: widget.receiverID ?? "",
+                      isGroup: widget.isGroup,
+                      receiverID: widget.receiverID,
                       chatModel: widget.chatModel,
                       audioPlayers: audioPlayers,
                       scrollController: scrollController,
@@ -130,6 +141,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 ),
               ),
               ChatBarWidget(
+                isGroup: widget.isGroup,
+                groupModel: widget.groupModel,
                 receiverContactName: widget.userName,
                 recorder: recorder,
                 scrollController: scrollController,
@@ -148,6 +161,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   visible: state.isAttachmentListOpened ?? false,
                   replacement: zeroMeasureWidget,
                   child: AttachmentListContainerVertical(
+                    isGroup: widget.isGroup,
+                    groupModel: widget.groupModel,
                     receverContactName: widget.userName,
                     chatModel: widget.chatModel,
                   ),

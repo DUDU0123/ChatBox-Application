@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -35,7 +36,7 @@ class GroupHomePage extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasError || snapshot.data == null) {
                   log(snapshot.error.toString());
-                  
+
                   return commonErrorWidget(
                     message: "Something went wrong",
                   );
@@ -50,12 +51,28 @@ class GroupHomePage extends StatelessWidget {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final GroupModel group = snapshot.data![index];
+                    log("Last : ${group.lastMessage}");
                     return ChatListTileWidget(
+                      isMutedChat: group.isMuted,
+                      lastMessage: group.lastMessage,
+                      lastMessageTime: group.lastMessage == null ||
+                              group.lastMessage!.isEmpty
+                          ? ''
+                          : DateProvider.formatMessageDateTime(
+                              messageDateTimeString:
+                                  group.lastMessageTime.toString()),
+                      notificationCount: group.notificationCount,
+                      isIncomingMessage: group.isIncomingMessage,
                       userProfileImage: group.groupProfileImage,
-                      userName: group.groupName!=null? group.groupName!.isNotEmpty?group.groupName!:'ChatBox Group':'ChatBox Group',
+                      userName: group.groupName != null
+                          ? group.groupName!.isNotEmpty
+                              ? group.groupName!
+                              : 'ChatBox Group'
+                          : 'ChatBox Group',
                       isGroup: true,
-                      messageStatus: MessageStatus.read,
-                      chatModel: const ChatModel(),
+                      messageStatus:
+                          group.lastMessageStatus ?? MessageStatus.none,
+                      groupModel: group,
                     );
                   },
                   separatorBuilder: (context, index) => kHeight5,

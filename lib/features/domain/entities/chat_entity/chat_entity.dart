@@ -5,18 +5,20 @@ import 'package:equatable/equatable.dart';
 class ChatEntity extends Equatable {
   final String? chatID;
   final String? receiverID;
-  final String? lastMessage;
-  final String? lastMessageTime;
+  
   final String? receiverName;
   final String? receiverProfileImage;
+  
+  final List<MessageAttachmentModel>? attachmentsWithMessage;
   final bool? isMuted;
   final MessageStatus? lastMessageStatus;
-  final List<MessageAttachmentModel>? attachmentsWithMessage;
+  final String? lastMessage;
+  final String? lastMessageTime;
   final MessageType? lastMessageType;
   final int? notificationCount;
-  final String? senderID;
   final bool? isIncomingMessage;
   final bool? isChatOpen;
+  final String? senderID;
   final bool? isGroup;
   const ChatEntity({
     this.receiverName,

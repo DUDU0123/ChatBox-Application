@@ -14,6 +14,14 @@ class GroupModel extends GroupEntity {
     super.membersPermissions,
     super.adminsPermissions,
     super.groupCreatedAt,
+    super.isMuted,
+    super.lastMessageStatus,
+    super.lastMessage,
+    super.lastMessageTime,
+    super.lastMessageType,
+    super.notificationCount,
+    super.isIncomingMessage,
+    super.isGroupOpen,
   });
 
   factory GroupModel.fromJson(Map<String, dynamic> map) {
@@ -33,6 +41,14 @@ class GroupModel extends GroupEntity {
         MembersGroupPermission.values,
       ),
       groupCreatedAt: map[dbGroupCreatedAt],
+      isMuted: map[dbIsGroupMuted],
+      lastMessageStatus: map[dbGroupLastMessageStatus],
+      lastMessage: map[dbGroupLastMessage],
+      lastMessageTime: map[dbGroupLastMessageTime],
+      lastMessageType: map[dbGroupLastMessageType],
+      notificationCount: map[dbGroupNotificationCount],
+      isIncomingMessage: map[dbGroupIsIncomingMessage],
+      isGroupOpen: map[dbIsGroupOpen],
     );
   }
 
@@ -47,6 +63,14 @@ class GroupModel extends GroupEntity {
       dbGroupAdminsPermissionList: enumListToStringList(adminsPermissions!),
       dbGroupMembersPermissionList: enumListToStringList(membersPermissions!),
       dbGroupCreatedAt: groupCreatedAt,
+      dbIsGroupOpen: isGroupOpen,
+      dbGroupIsIncomingMessage: isIncomingMessage,
+      dbGroupNotificationCount: notificationCount,
+      dbGroupLastMessageType: lastMessageType,
+      dbGroupLastMessageTime: lastMessageTime,
+      dbGroupLastMessage: lastMessage,
+      dbGroupLastMessageStatus: lastMessageStatus,
+      dbIsGroupMuted: isMuted,
     };
   }
 
@@ -60,6 +84,14 @@ class GroupModel extends GroupEntity {
     List<MembersGroupPermission>? membersPermissions,
     List<AdminsGroupPermission>? adminsPermissions,
     String? groupCreatedAt,
+    bool? isMuted,
+    MessageStatus? lastMessageStatus,
+    String? lastMessage,
+    String? lastMessageTime,
+    MessageType? lastMessageType,
+    int? notificationCount,
+    bool? isIncomingMessage,
+    bool? isGroupOpen,
   }) {
     return GroupModel(
       groupID: groupID ?? this.groupID,
@@ -71,6 +103,14 @@ class GroupModel extends GroupEntity {
       membersPermissions: membersPermissions ?? this.membersPermissions,
       adminsPermissions: adminsPermissions ?? this.adminsPermissions,
       groupCreatedAt: groupCreatedAt ?? this.groupCreatedAt,
+      isGroupOpen: isGroupOpen ?? this.isGroupOpen,
+      isIncomingMessage: isIncomingMessage ?? this.isIncomingMessage,
+      isMuted: isMuted ?? this.isMuted,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageStatus: lastMessageStatus ?? this.lastMessageStatus,
+      lastMessageTime: lastMessageTime ?? this.lastMessageTime,
+      lastMessageType: lastMessageType ?? this.lastMessageType,
+      notificationCount: notificationCount ?? this.notificationCount,
     );
   }
 }

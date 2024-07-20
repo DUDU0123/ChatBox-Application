@@ -6,6 +6,7 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
@@ -21,17 +22,21 @@ class ChatBarWidget extends StatefulWidget {
     super.key,
     required this.messageController,
     required this.isImojiButtonClicked,
-    required this.chatModel,
+    this.chatModel,
     required this.scrollController,
     required this.recorder,
-    required this.receiverContactName,
+    this.receiverContactName,
+    this.groupModel,
+    required this.isGroup,
   });
   final TextEditingController messageController;
   bool isImojiButtonClicked;
   final ScrollController scrollController;
   final FlutterSoundRecorder recorder;
   final ChatModel? chatModel;
+  final GroupModel? groupModel;
   final String? receiverContactName;
+  final bool isGroup;
 
   @override
   State<ChatBarWidget> createState() => _ChatBarWidgetState();
@@ -128,6 +133,8 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                               IconButton(
                                 onPressed: () async {
                                   videoOrPhotoTakeFromCameraSourceMethod(
+                                    isGroup: widget.isGroup,
+                                    groupModel: widget.groupModel,
                                     receiverContactName:
                                         widget.receiverContactName,
                                     chatModel: widget.chatModel,
@@ -161,16 +168,23 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             child: IconButton(
                           onPressed: () async {
                             if (widget.messageController.text.isNotEmpty) {
-                              sendMessage(
-                                receiverContactName: widget.receiverContactName,
-                                chatModel: widget.chatModel,
-                                context: context,
-                                messageController: widget.messageController,
-                                scrollController: widget.scrollController,
-                              );
+                             
+                                sendMessage(
+                                  isGroup: widget.isGroup,
+                                  groupModel: widget.groupModel,
+                                  receiverContactName:
+                                      widget.receiverContactName,
+                                  chatModel: widget.chatModel,
+                                  context: context,
+                                  messageController: widget.messageController,
+                                  scrollController: widget.scrollController,
+                                );
+                              
                             } else {
                               context.read<MessageBloc>().add(
                                     AudioRecordToggleEvent(
+                                      isGroup: widget.isGroup,
+                                      groupModel: widget.groupModel,
                                       receiverID:
                                           widget.chatModel?.receiverID ?? '',
                                       receiverContactName:
@@ -225,8 +239,12 @@ void sendMessage({
   required TextEditingController messageController,
   required ScrollController scrollController,
   required String? receiverContactName,
+  required bool isGroup,
+  GroupModel? groupModel,
 }) {
-  MessageModel message = MessageModel(
+  MessageModel message;
+  if(!isGroup){
+    message = MessageModel(
     messageId: DateTime.now().millisecondsSinceEpoch.toString(),
     senderID: chatModel?.senderID,
     receiverID: chatModel?.receiverID,
@@ -239,7 +257,20 @@ void sendMessage({
     messageType: MessageType.text,
     messageStatus: MessageStatus.sent,
   );
-  if (chatModel?.chatID != null) {
+  }else{
+    message = MessageModel(
+    senderID: firebaseAuth.currentUser?.uid,
+    messageTime: DateTime.now().toString(),
+    isPinnedMessage: false,
+    isStarredMessage: false,
+    isDeletedMessage: false,
+    isEditedMessage: false,
+    message: messageController.text,
+    messageType: MessageType.text,
+    messageStatus: MessageStatus.sent,
+  );
+  }
+  
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
@@ -247,6 +278,8 @@ void sendMessage({
     );
     context.read<MessageBloc>().add(
           MessageSentEvent(
+            isGroup: isGroup,
+            groupModel: groupModel,
             currentUserId: firebaseAuth.currentUser?.uid ?? '',
             receiverContactName: receiverContactName ?? '',
             receiverID: chatModel?.receiverID ?? '',
@@ -255,5 +288,4 @@ void sendMessage({
           ),
         );
     messageController.clear();
-  }
 }

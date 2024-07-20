@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/get_appbar_title.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
@@ -86,12 +87,12 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
         log(message.toString());
         if (message.toString().contains("resume") &&
             await AuthenticationRepoImpl.isConnected()) {
-          UserData.updateUserNetworkStatusInApp(isOnline: true);
+          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: true);
         } else if (message.toString().contains("pause") ||
             (message.toString().contains("pause") &&
                 !await AuthenticationRepoImpl.isConnected()) ||
             !await AuthenticationRepoImpl.isConnected()) {
-          UserData.updateUserNetworkStatusInApp(isOnline: false);
+          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: false);
         }
         AuthenticationRepoImpl.isConnected().then((v) => log(v.toString()));
         return Future.value(message);
@@ -101,18 +102,18 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserData.updateUserNetworkStatusInApp(isOnline: true);
+    CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: true);
     SystemChannels.lifecycle.setMessageHandler(
       (message) async {
         log(message.toString());
         if (message.toString().contains("resume") &&
             await AuthenticationRepoImpl.isConnected()) {
-          UserData.updateUserNetworkStatusInApp(isOnline: true);
+          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: true);
         } else if (message.toString().contains("pause") ||
             (message.toString().contains("pause") &&
                 !await AuthenticationRepoImpl.isConnected()) ||
             !await AuthenticationRepoImpl.isConnected()) {
-          UserData.updateUserNetworkStatusInApp(isOnline: false);
+          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: false);
         }
         AuthenticationRepoImpl.isConnected().then((v) => log(v.toString()));
         return Future.value(message);

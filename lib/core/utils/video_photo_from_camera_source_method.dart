@@ -1,7 +1,7 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_loaded_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,8 +9,10 @@ import 'package:image_picker/image_picker.dart';
 
 Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
   required BuildContext context,
-  required ChatModel? chatModel,
+  ChatModel? chatModel,
+  GroupModel? groupModel,
   required String? receiverContactName,
+  required bool isGroup,
 }) {
   return showDialog(
     context: context,
@@ -26,6 +28,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             onTap: () {
              chatModel!=null? context.read<MessageBloc>().add(
                     VideoMessageSendEvent(
+                      isGroup: isGroup,
                       receiverContactName: receiverContactName??"",
                       receiverID: chatModel.receiverID??"",
                       imageSource: ImageSource.camera,
@@ -42,6 +45,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             onTap: () {
             chatModel!=null?  context.read<MessageBloc>().add(
                     PhotoMessageSendEvent(
+                      isGroup: isGroup,
                       receiverContactName: receiverContactName??'',
                       receiverID: chatModel.receiverID??'',
                       imageSource: ImageSource.camera,
@@ -49,7 +53,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                     ),
                   ):null;
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
           ),
         ],

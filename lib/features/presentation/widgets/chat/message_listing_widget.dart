@@ -4,6 +4,7 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_container_widget.dart';
@@ -16,11 +17,13 @@ import 'package:video_player/video_player.dart';
 Widget messageListingWidget({
   required MessageState state,
   required ScrollController scrollController,
-  required ChatModel? chatModel,
-  required String receiverID,
+  ChatModel? chatModel,
+  String? receiverID,
   required Map<String, AudioPlayer> audioPlayers,
   required Map<String, VideoPlayerController> videoControllers,
   required BuildContext rootContext,
+  required bool isGroup,
+  GroupModel? groupModel,required bool isIncomingMessage
 }) {
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
@@ -30,6 +33,7 @@ Widget messageListingWidget({
         log("Snapshot message list data null");
         return zeroMeasureWidget;
       }
+      log(name:"Snap data:", snapshot.data.toString());
       return ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         controller: scrollController,
@@ -96,14 +100,17 @@ Widget messageListingWidget({
                       ? buttonSmallTextColor.withOpacity(0.3)
                       : kTransparent
                   : kTransparent,
-              child: MessageContainerWidget(
+              child:
+              MessageContainerWidget(
+                isIncomingMessage: isIncomingMessage,
+                isGroup: isGroup,
                 rootContext: rootContext,
-                receiverID: receiverID,
-                chatModel: chatModel,
+                receiverID: receiverID??'',
+                groupModel: groupModel,
                 message: message,
                 audioPlayers: audioPlayers,
                 videoControllers: videoControllers,
-              ),
+              )
             ),
           );
         },

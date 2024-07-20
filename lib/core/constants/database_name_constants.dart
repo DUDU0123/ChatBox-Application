@@ -65,6 +65,15 @@ const dbGroupAdminsPermissionList = 'group_admins_permissions';
 const dbGroupMembersPermissionList = 'group_members_permissions';
 const dbGroupCreatedAt = 'group_created_at';
 const dbGroupLastUpdatedDate = 'group_last_updated_date';
+const dbIsGroupMuted = 'is_muted_group';
+const dbGroupLastMessage = 'group_last_message';
+const dbGroupLastMessenger = 'group_last_messenger';
+const dbGroupLastMessageTime = 'group_last_message_time';
+const dbGroupLastMessageType = 'group_last_message_type';
+const dbGroupLastMessageStatus = 'group_last_message_status';
+const dbGroupNotificationCount = 'group_notification_count';
+const dbGroupIsIncomingMessage = 'is_incoming_group_message';
+const dbIsGroupOpen = 'is_group_open';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

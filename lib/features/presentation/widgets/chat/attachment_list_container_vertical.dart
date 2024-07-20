@@ -4,6 +4,7 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/location_pick/location_pick_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
@@ -16,11 +17,15 @@ import 'package:image_picker/image_picker.dart';
 class AttachmentListContainerVertical extends StatelessWidget {
   const AttachmentListContainerVertical({
     super.key,
-    required this.chatModel,
+    this.chatModel,
     this.receverContactName,
+    this.groupModel,
+    required this.isGroup,
   });
   final ChatModel? chatModel;
+  final GroupModel? groupModel;
   final String? receverContactName;
+  final bool isGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -55,73 +60,75 @@ class AttachmentListContainerVertical extends StatelessWidget {
                   switch (attachmentIcons[index].mediaType) {
                     case MediaType.camera:
                       await videoOrPhotoTakeFromCameraSourceMethod(
+                        isGroup: isGroup,
+                        groupModel: groupModel,
                         receiverContactName: receverContactName,
                         context: context,
                         chatModel: chatModel,
                       );
                       break;
                     case MediaType.gallery:
-                      chatModel != null
-                          ? context.read<MessageBloc>().add(
-                                PhotoMessageSendEvent(
-                                    receiverID: chatModel!.receiverID ?? '',
-                                    receiverContactName:
-                                        receverContactName ?? '',
-                                    chatModel: chatModel!,
-                                    imageSource: ImageSource.gallery),
-                              )
-                          : null;
+                      context.read<MessageBloc>().add(
+                            PhotoMessageSendEvent(
+                                isGroup: isGroup,
+                                groupModel: groupModel,
+                                receiverID: chatModel?.receiverID ?? '',
+                                receiverContactName: receverContactName ?? '',
+                                chatModel: chatModel,
+                                imageSource: ImageSource.gallery),
+                          );
+
                       break;
                     case MediaType.document:
-                      chatModel != null
-                          ? context.read<MessageBloc>().add(
-                                OpenDeviceFileAndSaveToDbEvent(
-                                  receiverID: chatModel!.receiverID ?? '',
-                                  receiverContactName: receverContactName ?? '',
-                                  messageType: MessageType.document,
-                                  chatModel: chatModel!,
-                                ),
-                              )
-                          : null;
+                      context.read<MessageBloc>().add(
+                            OpenDeviceFileAndSaveToDbEvent(
+                              isGroup: isGroup,
+                              groupModel: groupModel,
+                              receiverID: chatModel?.receiverID ?? '',
+                              receiverContactName: receverContactName ?? '',
+                              messageType: MessageType.document,
+                              chatModel: chatModel,
+                            ),
+                          );
+
                       break;
                     case MediaType.contact:
-                      chatModel != null
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return SelectContactPage(
-                                  pageType: PageTypeEnum.sendContactSelectPage,
-                                  receiverContactName: receverContactName,
-                                  chatModel: chatModel!,
-                                );
-                              }),
-                            )
-                          : null;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return SelectContactPage(
+                            isGroup: isGroup,
+                            groupModel: groupModel,
+                            pageType: PageTypeEnum.sendContactSelectPage,
+                            receiverContactName: receverContactName,
+                            chatModel: chatModel,
+                          );
+                        }),
+                      );
                       break;
                     case MediaType.location:
-                      chatModel != null
-                          ? Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LocationPickPage(
-                                  chatModel: chatModel!,
-                                ),
-                              ),
-                            )
-                          : null;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LocationPickPage(
+                            chatModel: chatModel,
+                            groupModel: groupModel,
+                          ),
+                        ),
+                      );
                       context.read<MessageBloc>().add(LocationPickEvent());
                       break;
                     case MediaType.audio:
-                      chatModel != null
-                          ? context.read<MessageBloc>().add(
-                                OpenDeviceFileAndSaveToDbEvent(
-                                  receiverID: chatModel?.receiverID ?? '',
-                                  receiverContactName: receverContactName ?? '',
-                                  messageType: MessageType.audio,
-                                  chatModel: chatModel!,
-                                ),
-                              )
-                          : null;
+                      context.read<MessageBloc>().add(
+                            OpenDeviceFileAndSaveToDbEvent(
+                              isGroup: isGroup,
+                              groupModel: groupModel,
+                              receiverID: chatModel?.receiverID ?? '',
+                              receiverContactName: receverContactName ?? '',
+                              messageType: MessageType.audio,
+                              chatModel: chatModel,
+                            ),
+                          );
                       break;
                     default:
                   }

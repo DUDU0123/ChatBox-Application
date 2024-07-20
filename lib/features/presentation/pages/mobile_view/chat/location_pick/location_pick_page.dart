@@ -3,6 +3,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LocationPickPage extends StatelessWidget {
-  const LocationPickPage({super.key, required this.chatModel});
-  final ChatModel chatModel;
+  const LocationPickPage({super.key,  this.chatModel, this.groupModel,});
+  final ChatModel? chatModel;
+  final GroupModel? groupModel;
 
   @override
   Widget build(BuildContext context) {

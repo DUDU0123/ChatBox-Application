@@ -27,13 +27,13 @@ class GroupData {
         log("group member empty, or null");
         return null;
       }
+      
       // Getting all user ids for creating group
       List<String> allUserIDs = [currentser.uid, ...newGroupData.groupMembers!];
 
       // here we are creating a group doc and getting the id for making the id of the group for all members the same
       final groupDocumentReference =
           firebaseFirestore.collection(groupsCollection).doc();
-
       // Group profile image upload to storage db and its url to firestore db
 
       final groupDocumentID = groupDocumentReference.id;
@@ -69,9 +69,6 @@ class GroupData {
             .doc(groupDocumentID);
         batch.set(
           newDocumentRefernce,
-          // {
-          //   dbGroupId: groupDocumentID,
-          // },
           updatedGroupData.toJson(),
         );
       }
@@ -138,9 +135,7 @@ class GroupData {
             .doc(updatedGroupModel.groupID);
         batch.set(
             updatedDocumentRefernce,
-            {
-              dbGroupId: updatedGroupModel.groupID,
-            },
+            updatedGroupModel.toJson(),
             SetOptions(merge: true));
       }
       await batch.commit();
@@ -157,6 +152,7 @@ class GroupData {
       {required String groupID}) async {
     try {
       final User? currentser = firebaseAuth.currentUser;
+
       await firebaseFirestore
           .collection(usersCollection)
           .doc(currentser?.uid)
