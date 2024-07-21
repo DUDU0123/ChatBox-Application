@@ -24,7 +24,9 @@ class FloatingDoneNavigateButton extends StatelessWidget {
     required this.pageType,
     this.icon,
     this.groupName,
-    this.pickedGroupImageFile, this.groupModel, required this.isGroup,
+    this.pickedGroupImageFile,
+    this.groupModel,
+    required this.isGroup,
   });
 
   final ChatModel? chatModel;
@@ -44,19 +46,17 @@ class FloatingDoneNavigateButton extends StatelessWidget {
         switch (pageType) {
           case PageTypeEnum.sendContactSelectPage:
             selectedContactList != null
-                ? chatModel != null
-                    ? receiverContactName != null
-                        ? context.read<MessageBloc>().add(
-                              ContactMessageSendEvent(
-                                isGroup: isGroup,
-                                groupModel: groupModel,
-                                receiverID: chatModel!.receiverID!,
-                                receiverContactName: receiverContactName!,
-                                contactListToSend: selectedContactList!,
-                                chatModel: chatModel!,
-                              ),
-                            )
-                        : null
+                ? receiverContactName != null
+                    ? context.read<MessageBloc>().add(
+                          ContactMessageSendEvent(
+                            isGroup: isGroup,
+                            groupModel: groupModel,
+                            receiverID: chatModel?.receiverID,
+                            receiverContactName: receiverContactName!,
+                            contactListToSend: selectedContactList!,
+                            chatModel: chatModel,
+                          ),
+                        )
                     : null
                 : null;
             Navigator.pop(context);
@@ -104,7 +104,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
               groupCreatedAt: DateTime.now().toString(),
               groupName: groupName,
               groupAdmins: [currentUser],
-              groupMembers: [currentUser,...selectUsersID],
+              groupMembers: [currentUser, ...selectUsersID],
               adminsPermissions: adminPermissions,
               membersPermissions: memberPermissions,
             );

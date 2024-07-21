@@ -1,4 +1,6 @@
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/one_to_one_chat_info_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_info_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,6 +25,13 @@ Widget oneToOneChatAppBarWidget({
           userId: chatModel?.receiverID ?? receiverID),
       builder: (context, snapshot) {
         return CommonAppBar(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OneToOneChatInfoPage(),
+                ));
+          },
           userProfileImage: chatModel?.receiverProfileImage,
           userStatus: snapshot.data != null
               ? snapshot.data!.userNetworkStatus != null
@@ -54,8 +63,15 @@ Widget groupChatAppBarWidget({
     return const TextWidgetCommon(text: "No Appbar");
   }
   return CommonAppBar(
+    onTap: () {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const GroupInfoPage(),
+          ));
+    },
     userProfileImage: groupModel.groupProfileImage,
-    appBarTitle: groupModel.groupName??'Group name',
+    appBarTitle: groupModel.groupName ?? 'Group name',
     pageType: PageTypeEnum.groupMessageInsidePage,
   );
 }

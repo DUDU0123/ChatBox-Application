@@ -80,14 +80,14 @@ class PhotoMessageSendEvent extends MessageEvent {
 
 class VideoMessageSendEvent extends MessageEvent {
   final ImageSource imageSource;
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final String receiverID;
   final String receiverContactName;
   final bool isGroup;
   final GroupModel? groupModel;
   const VideoMessageSendEvent({
     required this.imageSource,
-    required this.chatModel,
+    this.chatModel,
     required this.receiverID,
     required this.receiverContactName,
     required this.isGroup,
@@ -96,7 +96,7 @@ class VideoMessageSendEvent extends MessageEvent {
   @override
   List<Object> get props => [
         imageSource,
-        chatModel,
+        chatModel??const ChatModel(),
         isGroup,
         groupModel ?? const GroupModel(),
       ];
@@ -161,15 +161,15 @@ class AssetMessageEvent extends MessageEvent {
 
 class ContactMessageSendEvent extends MessageEvent {
   final List<ContactModel> contactListToSend;
-  final ChatModel chatModel;
-  final String receiverID;
+  final ChatModel? chatModel;
+  final String? receiverID;
   final String receiverContactName;
   final bool isGroup;
   final GroupModel? groupModel;
   const ContactMessageSendEvent({
     required this.contactListToSend,
-    required this.chatModel,
-    required this.receiverID,
+     this.chatModel,
+     this.receiverID,
     required this.receiverContactName,
     required this.isGroup,
     this.groupModel,
@@ -177,11 +177,11 @@ class ContactMessageSendEvent extends MessageEvent {
   @override
   List<Object> get props => [
         contactListToSend,
-        chatModel,
+        chatModel??const ChatModel(),
         groupModel ?? const GroupModel(),
         receiverContactName,
         isGroup,
-        receiverID,
+        receiverID??'',
       ];
 }
 

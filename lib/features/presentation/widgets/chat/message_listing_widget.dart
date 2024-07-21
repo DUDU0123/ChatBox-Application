@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -23,7 +24,7 @@ Widget messageListingWidget({
   required Map<String, VideoPlayerController> videoControllers,
   required BuildContext rootContext,
   required bool isGroup,
-  GroupModel? groupModel,required bool isIncomingMessage
+  GroupModel? groupModel,
 }) {
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
@@ -33,7 +34,7 @@ Widget messageListingWidget({
         log("Snapshot message list data null");
         return zeroMeasureWidget;
       }
-      log(name:"Snap data:", snapshot.data.toString());
+      log(name: "Snap data:", snapshot.data.toString());
       return ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         controller: scrollController,
@@ -94,24 +95,21 @@ Widget messageListingWidget({
                   : null;
             },
             child: Container(
-              width: screenWidth(context: context),
-              color: isSelected != null
-                  ? isSelected
-                      ? buttonSmallTextColor.withOpacity(0.3)
-                      : kTransparent
-                  : kTransparent,
-              child:
-              MessageContainerWidget(
-                isIncomingMessage: isIncomingMessage,
-                isGroup: isGroup,
-                rootContext: rootContext,
-                receiverID: receiverID??'',
-                groupModel: groupModel,
-                message: message,
-                audioPlayers: audioPlayers,
-                videoControllers: videoControllers,
-              )
-            ),
+                width: screenWidth(context: context),
+                color: isSelected != null
+                    ? isSelected
+                        ? buttonSmallTextColor.withOpacity(0.3)
+                        : kTransparent
+                    : kTransparent,
+                child: MessageContainerWidget(
+                  isGroup: isGroup,
+                  rootContext: rootContext,
+                  receiverID: receiverID ?? '',
+                  groupModel: groupModel,
+                  message: message,
+                  audioPlayers: audioPlayers,
+                  videoControllers: videoControllers,
+                )),
           );
         },
       );

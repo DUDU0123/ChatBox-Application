@@ -2,6 +2,7 @@ import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -24,7 +25,8 @@ class MessageContainerWidget extends StatelessWidget {
     required this.videoControllers,
     required this.audioPlayers,
     required this.receiverID,
-    required this.rootContext,required this.isGroup, required this.isIncomingMessage,
+    required this.rootContext,
+    required this.isGroup,
   });
   final MessageModel message;
   final ChatModel? chatModel;
@@ -34,33 +36,18 @@ class MessageContainerWidget extends StatelessWidget {
   final String receiverID;
   final BuildContext rootContext;
   final bool isGroup;
-  final bool isIncomingMessage;
-
-  
 
   @override
   Widget build(BuildContext context) {
     if (message.message == null) {
       return zeroMeasureWidget;
     }
-
-    bool isCurrentUserMessage;
-    if (isGroup && groupModel != null) {
-      isCurrentUserMessage = groupModel!.groupMembers!.contains(firebaseAuth.currentUser?.uid) &&
-                             message.senderID == firebaseAuth.currentUser?.uid;
-    } else {
-      isCurrentUserMessage = firebaseAuth.currentUser?.uid == message.senderID;
-    }
-
-    groupModel?.groupMembers?.where((memberID)=> memberID!=firebaseAuth.currentUser?.uid);
     return Align(
-      alignment: 
-      // firebaseAuth.currentUser?.uid == message.receiverID
-      //     ? Alignment.centerLeft
-      //     : Alignment.centerRight,
-      isCurrentUserMessage
-          ? Alignment.centerRight
-          : Alignment.centerLeft,
+      alignment:
+          // firebaseAuth.currentUser?.uid == message.receiverID
+          //     ? Alignment.centerLeft
+          //     : Alignment.centerRight,
+          checkIsIncomingMessage(isGroup: isGroup, message: message, groupModel: groupModel,) ? Alignment.centerRight : Alignment.centerLeft,
       child: Stack(
         children: [
           message.messageType == MessageType.audio
@@ -108,7 +95,8 @@ class MessageContainerWidget extends StatelessWidget {
                       ? textMessageWidget(message: message)
                       : message.messageType == MessageType.photo
                           ? photoMessageShowWidget(
-                            isGroup: isGroup,groupModel: groupModel,
+                              isGroup: isGroup,
+                              groupModel: groupModel,
                               receiverID: receiverID,
                               message: message,
                               chatModel: chatModel,
@@ -116,7 +104,8 @@ class MessageContainerWidget extends StatelessWidget {
                             )
                           : videoControllers[message.message!] != null
                               ? videoMessageShowWidget(
-                                isGroup: isGroup,groupModel: groupModel,
+                                  isGroup: isGroup,
+                                  groupModel: groupModel,
                                   receiverID: receiverID,
                                   chatModel: chatModel,
                                   videoControllers: videoControllers,
@@ -143,7 +132,7 @@ class MessageContainerWidget extends StatelessWidget {
                                             ),
                 ),
           messageStatusShowWidget(
-            isCurrentUserMessage: isCurrentUserMessage,
+            isCurrentUserMessage: checkIsIncomingMessage(isGroup: isGroup, message: message, groupModel: groupModel,),
             message: message,
           ),
         ],

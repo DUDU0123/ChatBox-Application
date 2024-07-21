@@ -34,7 +34,7 @@ class MessageRepoImpl extends MessageRepo {
 
   @override
   Stream<List<MessageModel>> getAllMessages({
-    required String chatId,
+    String? chatId,
     GroupModel? groupModel,
     required bool isGroup,
   }) {
@@ -71,9 +71,10 @@ class MessageRepoImpl extends MessageRepo {
 
   @override
   Future<String> sendAssetMessage(
-      {required String chatID, required File file}) {
+      {String? chatID, String? groupID, required File file}) {
     return messageData.sendAssetMessage(
       chatID: chatID,
+      groupID: groupID,
       file: file,
     );
   }

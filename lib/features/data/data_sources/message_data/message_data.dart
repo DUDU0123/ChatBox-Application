@@ -155,7 +155,8 @@ class MessageData {
   }
 
   Future<String> sendAssetMessage({
-    required String chatID,
+    String? chatID,
+    String? groupID,
     required File file,
   }) async {
     try {
@@ -237,7 +238,10 @@ class MessageData {
           dbGroupLastMessageTime: message.messageTime,
           dbGroupLastMessageStatus: messageStatus,
           dbGroupLastMessage: lastMessage,
-          isIncoming: message.senderID != userID
+          // isIncoming: message.senderID != userID
+          isIncoming: groupModel.groupMembers!
+                  .contains(FirebaseAuth.instance.currentUser?.uid) &&
+              message.senderID == FirebaseAuth.instance.currentUser?.uid
         });
 
         await FirebaseFirestore.instance
@@ -395,7 +399,7 @@ class MessageData {
   }
 
   Stream<List<MessageModel>> getAllMessagesFromDB({
-    required String chatId,
+    String? chatId,
     GroupModel? groupModel,
     required bool isGroup,
   }) {
@@ -486,78 +490,5 @@ class MessageData {
       log(e.toString());
       throw Exception(e.toString());
     }
-  }
-}
-
-// sample
-void updateChatMessageDataOfUser({
-  GroupModel? groupModel,
-  required MessageModel message,
-}) async {
-  if (groupModel == null) {
-    return;
-  }
-  if (groupModel.groupMembers == null || groupModel.groupMembers!.isEmpty) {
-    return;
-  }
-
-  String messageType = '';
-  String lastMessage = '';
-  String messageStatus = MessageStatus.none.name;
-
-  // Determine the message type and last message string
-  switch (message.messageType) {
-    case MessageType.audio:
-      messageType = 'audio';
-      lastMessage = '🎧Audio';
-      break;
-    case MessageType.contact:
-      messageType = 'contact';
-      lastMessage = '📞Contact';
-      break;
-    case MessageType.document:
-      messageType = 'document';
-      lastMessage = '📄Doc';
-      break;
-    case MessageType.photo:
-      messageType = 'photo';
-      lastMessage = '📷Photo';
-      break;
-    case MessageType.video:
-      messageType = 'video';
-      lastMessage = '🎥Video';
-      break;
-    case MessageType.location:
-      messageType = 'location';
-      lastMessage = '📌Location';
-      break;
-    default:
-      lastMessage = message.message ?? '';
-      messageType = 'text';
-  }
-  for (var userID in groupModel.groupMembers!) {
-    await FirebaseFirestore.instance
-        .collection(usersCollection)
-        .doc(userID)
-        .collection(groupsCollection)
-        .doc(groupModel.groupID)
-        .update({
-      dbGroupLastMessageType: messageType,
-      dbGroupLastMessageTime: message.messageTime,
-      dbGroupLastMessageStatus: messageStatus,
-      dbGroupLastMessage: lastMessage,
-      isIncoming: message.senderID != userID
-    });
-
-    await FirebaseFirestore.instance
-        .collection(usersCollection)
-        .doc(userID)
-        .collection(groupsCollection)
-        .doc(groupModel.groupID)
-        .collection(messagesCollection)
-        .doc(message.messageId)
-        .update({
-      dbMessageStatus: messageStatus,
-    });
   }
 }

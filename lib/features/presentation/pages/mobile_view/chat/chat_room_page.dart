@@ -28,14 +28,13 @@ class ChatRoomPage extends StatefulWidget {
     required this.isGroup,
     this.chatModel,
     this.groupModel,
-    this.receiverID, required this.isIncomingMessage,
+    this.receiverID,
   });
   final String userName;
   final ChatModel? chatModel;
   final GroupModel? groupModel;
   final bool isGroup;
   final String? receiverID;
-  final bool isIncomingMessage;
 
   @override
   State<ChatRoomPage> createState() => _ChatRoomPageState();
@@ -127,7 +126,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       return commonErrorWidget(message: state.message);
                     }
                     return messageListingWidget(
-                      isIncomingMessage: widget.isIncomingMessage,
                       rootContext: context,
                       isGroup: widget.isGroup,
                       receiverID: widget.receiverID,

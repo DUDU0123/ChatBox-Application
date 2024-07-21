@@ -26,15 +26,16 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             subtitle: "Take video",
             icon: Icons.video_call,
             onTap: () {
-             chatModel!=null? context.read<MessageBloc>().add(
+              context.read<MessageBloc>().add(
                     VideoMessageSendEvent(
                       isGroup: isGroup,
                       receiverContactName: receiverContactName??"",
-                      receiverID: chatModel.receiverID??"",
+                      receiverID: chatModel?.receiverID??"",
                       imageSource: ImageSource.camera,
                       chatModel: chatModel,
+                      groupModel: groupModel
                     ),
-                  ):null;
+                  );
               Navigator.pop(context);
               // Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },
@@ -43,15 +44,16 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             subtitle: "Take photo",
             icon: Icons.camera,
             onTap: () {
-            chatModel!=null?  context.read<MessageBloc>().add(
+            context.read<MessageBloc>().add(
                     PhotoMessageSendEvent(
                       isGroup: isGroup,
                       receiverContactName: receiverContactName??'',
-                      receiverID: chatModel.receiverID??'',
+                      receiverID: chatModel?.receiverID??'',
                       imageSource: ImageSource.camera,
                       chatModel: chatModel,
+                      groupModel: groupModel
                     ),
-                  ):null;
+                  );
               Navigator.pop(context);
               // Navigator.push(context, MaterialPageRoute(builder: (context) => AssetLoadedPage(),));
             },

@@ -4,35 +4,6 @@ import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_small_
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
-// messageStatusWidget({
-//   required MessageStatus messageStatus,
-//   // required bool isReceiverOnline,
-//   // required bool isSenderOnline,
-// }) {
-//   return Padding(
-//     padding: EdgeInsets.only(
-//         bottom: messageStatus == MessageStatus.sent ? 0 : 2.h,
-//         top: messageStatus == MessageStatus.sent ? 3.h : 0),
-//     child: Icon(
-//       messageStatus == MessageStatus.sent
-//           ? Icons.done
-//           : messageStatus == MessageStatus.delivered
-//               ? Icons.done_all
-//               : messageStatus == MessageStatus.read
-//                   ? Icons.done_all
-//                   : Icons.update,
-//       color: messageStatus == MessageStatus.sent
-//           ? iconGreyColor
-//           : messageStatus == MessageStatus.delivered
-//               ? iconGreyColor
-//               : messageStatus == MessageStatus.read
-//                   ? buttonSmallTextColor
-//                   : iconGreyColor,
-//       size: 18.sp,
-//     ),
-//   );
-// }
 Widget messageStatusWidget({
   required MessageStatus messageStatus,
 }) {

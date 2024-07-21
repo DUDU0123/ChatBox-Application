@@ -208,3 +208,20 @@ List<T> stringListToEnumList<T>(List<String> stringList, List<T> enumValues) {
         .firstWhere((enumValue) => enumValue.toString().split('.').last == e);
   }).toList();
 }
+
+// check message is incoming or not
+bool checkIsIncomingMessage({
+  GroupModel? groupModel,
+  required bool isGroup,
+  required MessageModel message,
+}) {
+  bool isCurrentUserMessage;
+  if (isGroup && groupModel != null) {
+    isCurrentUserMessage =
+        groupModel.groupMembers!.contains(firebaseAuth.currentUser?.uid) &&
+            message.senderID == firebaseAuth.currentUser?.uid;
+  } else {
+    isCurrentUserMessage = firebaseAuth.currentUser?.uid == message.senderID;
+  }
+  return isCurrentUserMessage;
+}

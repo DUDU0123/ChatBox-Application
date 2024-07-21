@@ -92,7 +92,6 @@ class ChatListTileWidget extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => ChatRoomPage(
-                  isIncomingMessage: isIncomingMessage??false,
                   groupModel: groupModel,
                   chatModel: chatModel,
                   userName: userName,

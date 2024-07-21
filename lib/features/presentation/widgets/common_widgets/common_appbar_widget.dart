@@ -12,12 +12,13 @@ class CommonAppBar extends StatelessWidget {
     required this.pageType,
     required this.appBarTitle,
     this.userStatus,
-    this.userProfileImage,
+    this.userProfileImage, this.onTap,
   });
   final PageTypeEnum pageType;
   final String appBarTitle;
   final String? userStatus;
   final String? userProfileImage;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -48,20 +49,23 @@ class CommonAppBar extends StatelessWidget {
                 ),
                 kWidth5,
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextWidgetCommon(
-                        overflow: TextOverflow.ellipsis,
-                        text: appBarTitle,
-                        fontSize: 18.sp,
-                      ),
-                    pageType!=PageTypeEnum.groupMessageInsidePage?  TextWidgetCommon(
-                        overflow: TextOverflow.ellipsis,
-                        text: userStatus ?? 'Last seen 10:00am',
-                        fontSize: 10.sp,
-                      ):zeroMeasureWidget,
-                    ],
+                  child: GestureDetector(
+                    onTap: onTap,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextWidgetCommon(
+                          overflow: TextOverflow.ellipsis,
+                          text: appBarTitle,
+                          fontSize: 18.sp,
+                        ),
+                      pageType!=PageTypeEnum.groupMessageInsidePage?  TextWidgetCommon(
+                          overflow: TextOverflow.ellipsis,
+                          text: userStatus ?? 'Last seen 10:00am',
+                          fontSize: 10.sp,
+                        ):zeroMeasureWidget,
+                      ],
+                    ),
                   ),
                 ),
               ],

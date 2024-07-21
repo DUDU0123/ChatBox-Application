@@ -42,16 +42,15 @@ class GroupModel extends GroupEntity {
       ),
       groupCreatedAt: map[dbGroupCreatedAt],
       isMuted: map[dbIsGroupMuted],
-      lastMessageStatus: map[dbGroupLastMessageStatus],
+      lastMessageStatus: MessageStatus.values.byName(map[dbGroupLastMessageStatus]),
       lastMessage: map[dbGroupLastMessage],
       lastMessageTime: map[dbGroupLastMessageTime],
-      lastMessageType: map[dbGroupLastMessageType],
+      lastMessageType: MessageType.values.byName(map[dbGroupLastMessageType]),
       notificationCount: map[dbGroupNotificationCount],
       isIncomingMessage: map[dbGroupIsIncomingMessage],
       isGroupOpen: map[dbIsGroupOpen],
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       dbGroupId: groupID,
@@ -66,10 +65,10 @@ class GroupModel extends GroupEntity {
       dbIsGroupOpen: isGroupOpen,
       dbGroupIsIncomingMessage: isIncomingMessage,
       dbGroupNotificationCount: notificationCount,
-      dbGroupLastMessageType: lastMessageType,
+      dbGroupLastMessageType: lastMessageType?.name,
       dbGroupLastMessageTime: lastMessageTime,
       dbGroupLastMessage: lastMessage,
-      dbGroupLastMessageStatus: lastMessageStatus,
+      dbGroupLastMessageStatus: lastMessageStatus?.name,
       dbIsGroupMuted: isMuted,
     };
   }

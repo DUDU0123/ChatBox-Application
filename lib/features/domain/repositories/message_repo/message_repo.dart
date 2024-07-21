@@ -16,7 +16,7 @@ abstract class MessageRepo {
   });
 
   Stream<List<MessageModel>> getAllMessages({
-    required String chatId,
+    String? chatId,
      GroupModel? groupModel,
     required bool isGroup,
   });
@@ -38,5 +38,5 @@ abstract class MessageRepo {
     required groupID,
     required MessageModel message,
   });
-  Future<String> sendAssetMessage({required String chatID, required File file});
+  Future<String> sendAssetMessage({String? chatID, String? groupID, required File file});
 }
