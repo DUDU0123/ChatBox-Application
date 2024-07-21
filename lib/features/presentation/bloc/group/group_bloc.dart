@@ -6,6 +6,7 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/domain/repositories/group_repo/group_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:flutter/material.dart';
 
 part 'group_event.dart';
 part 'group_state.dart';
@@ -39,13 +40,14 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
 
   Future<FutureOr<void>> createGroupEvent(
       CreateGroupEvent event, Emitter<GroupState> emit) async {
+    emit(GroupLoadingState());
     try {
       final File? groupImageFile = event.groupProfileImage;
       final value = await groupRepository.createGroup(
         groupImageFile: groupImageFile,
         newGroupData: event.newGroupData,
       );
-
+      Navigator.pop(event.context);
       log(name: "Create", value.toString());
       emit(state.copyWith(groupList: state.groupList));
     } catch (e) {
@@ -82,15 +84,19 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     }
   }
 
-  FutureOr<void> updateMemberPermissionEvent(UpdateMemberPermissionEvent event, Emitter<GroupState> emit) {
-    final updatedPermissions = Map<MembersGroupPermission, bool>.from(state.memberPermissions)
-      ..[event.permission] = event.isEnabled;
+  FutureOr<void> updateMemberPermissionEvent(
+      UpdateMemberPermissionEvent event, Emitter<GroupState> emit) {
+    final updatedPermissions =
+        Map<MembersGroupPermission, bool>.from(state.memberPermissions)
+          ..[event.permission] = event.isEnabled;
     emit(state.copyWith(memberPermissions: updatedPermissions));
   }
 
-  FutureOr<void> updateAdminPermissionEvent(UpdateAdminPermissionEvent event, Emitter<GroupState> emit) {
-    final updatedPermissions = Map<AdminsGroupPermission, bool>.from(state.adminPermissions)
-      ..[event.permission] = event.isEnabled;
+  FutureOr<void> updateAdminPermissionEvent(
+      UpdateAdminPermissionEvent event, Emitter<GroupState> emit) {
+    final updatedPermissions =
+        Map<AdminsGroupPermission, bool>.from(state.adminPermissions)
+          ..[event.permission] = event.isEnabled;
     emit(state.copyWith(adminPermissions: updatedPermissions));
   }
 

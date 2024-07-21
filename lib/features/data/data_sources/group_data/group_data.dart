@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -27,7 +29,7 @@ class GroupData {
         log("group member empty, or null");
         return null;
       }
-      
+
       // Getting all user ids for creating group
       List<String> allUserIDs = [currentser.uid, ...newGroupData.groupMembers!];
 
@@ -67,11 +69,24 @@ class GroupData {
             .doc(userID)
             .collection(groupsCollection)
             .doc(groupDocumentID);
+
+        final user =
+            await CommonDBFunctions.getOneUserDataFromDBFuture(userId: userID);
+        if (user != null) {
+          final userGroupIDList = user.userGroupIdList ?? [];
+          userGroupIDList.add(groupDocumentID);
+          final updatedUser = user.copyWith(userGroupIdList: userGroupIDList);
+          batch.update(
+            firebaseFirestore.collection(usersCollection).doc(userID),
+            updatedUser.toJson(),
+          );
+        }
         batch.set(
           newDocumentRefernce,
           updatedGroupData.toJson(),
         );
       }
+
       await batch.commit();
       log("Group created successfully with ID: $groupDocumentID");
       return groupDocumentID;
@@ -133,9 +148,7 @@ class GroupData {
             .doc(userID)
             .collection(groupsCollection)
             .doc(updatedGroupModel.groupID);
-        batch.set(
-            updatedDocumentRefernce,
-            updatedGroupModel.toJson(),
+        batch.set(updatedDocumentRefernce, updatedGroupModel.toJson(),
             SetOptions(merge: true));
       }
       await batch.commit();

@@ -36,8 +36,14 @@ class ChatModel extends ChatEntity {
       lastMessage: map[chatLastMessage],
       isMuted: map[chatMuted] ?? false,
       notificationCount: map[chatMessageNotificationCount],
-      lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
-      lastMessageType: MessageType.values.byName(map[lastChatType]),
+      // lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
+      lastMessageStatus: map[lastChatStatus] != null
+      ? MessageStatus.values.byName(map[lastChatStatus])
+      : null,
+      // lastMessageType: MessageType.values.byName(map[lastChatType]),
+      lastMessageType: map[lastChatType] != null
+      ? MessageType.values.byName(map[lastChatType])
+      : null,
       receiverName: map[receiverNameInChatList],
       isIncomingMessage: map[isIncoming],
       isChatOpen: map[isUserChatOpen] ?? false,

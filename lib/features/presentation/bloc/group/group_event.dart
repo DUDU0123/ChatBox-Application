@@ -9,13 +9,16 @@ sealed class GroupEvent extends Equatable {
 
 class CreateGroupEvent extends GroupEvent {
   final GroupModel newGroupData;
+  final BuildContext context;
   final File? groupProfileImage;
   const CreateGroupEvent({
     required this.newGroupData,
+    required this.context,
     this.groupProfileImage,
   });
   @override
   List<Object> get props => [
+    context,
         newGroupData,groupProfileImage??File('')
       ];
 }

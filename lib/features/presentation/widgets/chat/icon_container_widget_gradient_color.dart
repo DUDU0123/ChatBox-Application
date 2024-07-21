@@ -7,6 +7,7 @@ Widget iconContainerWidgetGradientColor({
   required String subtitle,
   required IconData icon,
   required void Function()? onTap,
+  double? size,
 }) {
   return SizedBox(
     height: 130.h,
@@ -15,10 +16,10 @@ Widget iconContainerWidgetGradientColor({
         GestureDetector(
           onTap: onTap,
           child: Container(
-            width: 100.w,
-            height: 100.w,
+            width: size?.w?? 100.w,
+            height: size?.h?? 100.w,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.sp),
+              borderRadius: BorderRadius.circular(14.sp),
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

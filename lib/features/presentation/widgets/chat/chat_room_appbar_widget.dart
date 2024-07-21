@@ -1,3 +1,4 @@
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/one_to_one_chat_info_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_info_page.dart';
@@ -25,11 +26,24 @@ Widget oneToOneChatAppBarWidget({
           userId: chatModel?.receiverID ?? receiverID),
       builder: (context, snapshot) {
         return CommonAppBar(
-          onTap: () {
+          onTap: () async {
+            if (chatModel == null) {
+              return;
+            }
+            if (chatModel.receiverID == null) {
+              return;
+            }
+            final UserModel? receiverData =
+                await CommonDBFunctions.getOneUserDataFromDBFuture(
+              userId: chatModel.receiverID!,
+            );
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const OneToOneChatInfoPage(),
+                  builder: (context) => OneToOneChatInfoPage(
+                    receiverContactName: userName,
+                    receiverData: receiverData,
+                  ),
                 ));
           },
           userProfileImage: chatModel?.receiverProfileImage,
@@ -67,7 +81,9 @@ Widget groupChatAppBarWidget({
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const GroupInfoPage(),
+            builder: (context) =>  GroupInfoPage(
+              groupData: groupModel,
+            ),
           ));
     },
     userProfileImage: groupModel.groupProfileImage,

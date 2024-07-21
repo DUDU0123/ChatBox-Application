@@ -83,6 +83,7 @@ class MessageData {
     try {
       final currentUserId = firebaseAuth.currentUser?.uid;
       if (currentUserId == null) {
+        log("Current user id null from getAllMessageOfAGroupChat");
         return null;
       }
       return firestore
@@ -102,6 +103,7 @@ class MessageData {
       log("Get all group message: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
+      log("Current user id null from getAllMessageOfAGroupChat");
       log(e.toString());
       throw Exception(e.toString());
     }

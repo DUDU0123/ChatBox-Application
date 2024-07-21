@@ -7,7 +7,7 @@ import 'package:flutter_svg/svg.dart';
 Widget messageStatusWidget({
   required MessageStatus messageStatus,
 }) {
-  IconData icon;
+  IconData? icon;
   Color iconColor;
 
   switch (messageStatus) {
@@ -24,7 +24,7 @@ Widget messageStatusWidget({
       iconColor = buttonSmallTextColor;
       break;
     default:
-      icon = Icons.update;
+      icon = null;
       iconColor = iconGreyColor;
       break;
   }

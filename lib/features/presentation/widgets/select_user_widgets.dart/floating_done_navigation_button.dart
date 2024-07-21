@@ -112,6 +112,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
                 ? groupName!.isNotEmpty
                     ? context.read<GroupBloc>().add(
                           CreateGroupEvent(
+                            context: context,
                             newGroupData: newGroupData,
                             groupProfileImage: pickedGroupImageFile,
                           ),

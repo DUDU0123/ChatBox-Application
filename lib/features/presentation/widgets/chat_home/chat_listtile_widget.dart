@@ -28,7 +28,7 @@ class ChatListTileWidget extends StatelessWidget {
     required this.messageStatus,
     this.chatModel,
     this.groupModel,
-    this.receiverID,
+    this.receiverID, this.contentPadding,
   });
 
   final String userName;
@@ -45,6 +45,7 @@ class ChatListTileWidget extends StatelessWidget {
   final GroupModel? groupModel;
   final MessageStatus messageStatus;
   final String? receiverID;
+  final EdgeInsetsGeometry? contentPadding;
 
   bool? getUserNetworkStatus({required String userID}) {
     bool? isOnline = false;
@@ -87,6 +88,7 @@ class ChatListTileWidget extends StatelessWidget {
         }
       },
       child: ListTile(
+        contentPadding: contentPadding,
         onTap: () {
             Navigator.push(
               context,

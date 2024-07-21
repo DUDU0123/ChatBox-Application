@@ -41,14 +41,18 @@ class GroupModel extends GroupEntity {
         MembersGroupPermission.values,
       ),
       groupCreatedAt: map[dbGroupCreatedAt],
-      isMuted: map[dbIsGroupMuted],
-      lastMessageStatus: MessageStatus.values.byName(map[dbGroupLastMessageStatus]),
+      isMuted: map[dbIsGroupMuted]??false,
+      lastMessageStatus: map[dbGroupLastMessageStatus] != null
+      ? MessageStatus.values.byName(map[dbGroupLastMessageStatus])
+      : null,
       lastMessage: map[dbGroupLastMessage],
       lastMessageTime: map[dbGroupLastMessageTime],
-      lastMessageType: MessageType.values.byName(map[dbGroupLastMessageType]),
-      notificationCount: map[dbGroupNotificationCount],
-      isIncomingMessage: map[dbGroupIsIncomingMessage],
-      isGroupOpen: map[dbIsGroupOpen],
+      lastMessageType: map[dbGroupLastMessageType] != null
+      ? MessageType.values.byName(map[dbGroupLastMessageType])
+      : null,
+      notificationCount: map[dbGroupNotificationCount]??0,
+      isIncomingMessage: map[dbGroupIsIncomingMessage]??false,
+      isGroupOpen: map[dbIsGroupOpen]??false,
     );
   }
   Map<String, dynamic> toJson() {
