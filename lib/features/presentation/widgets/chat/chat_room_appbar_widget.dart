@@ -1,12 +1,8 @@
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/one_to_one_chat_info_page.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_info_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_info_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
-import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
@@ -35,12 +31,13 @@ Widget oneToOneChatAppBarWidget({
             }
             final UserModel? receiverData =
                 await CommonDBFunctions.getOneUserDataFromDBFuture(
-              userId: chatModel.receiverID!,
+              userId: chatModel.receiverID,
             );
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OneToOneChatInfoPage(
+                  builder: (context) => ChatInfoPage(
+                    isGroup: false,
                     receiverContactName: userName,
                     receiverData: receiverData,
                   ),
@@ -81,7 +78,8 @@ Widget groupChatAppBarWidget({
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>  GroupInfoPage(
+            builder: (context) => ChatInfoPage(
+              isGroup: true,
               groupData: groupModel,
             ),
           ));

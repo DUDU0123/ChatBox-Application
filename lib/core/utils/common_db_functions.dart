@@ -33,7 +33,7 @@ class CommonDBFunctions {
 
   //get one user data as future
   static Future<UserModel?> getOneUserDataFromDBFuture(
-      {required String userId}) async {
+      {required String? userId}) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
           await fireStore.collection(usersCollection).doc(userId).get();
