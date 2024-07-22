@@ -4,6 +4,7 @@ class UserEntity extends Equatable {
   String? id;
   String? userName;
   String? phoneNumber;
+  String? contactName;
   String? userEmailId;
   String? userAbout;
   String? userProfileImage;
@@ -20,6 +21,7 @@ class UserEntity extends Equatable {
     this.phoneNumber,
     this.userEmailId,
     this.userAbout,
+    this.contactName,
     this.userProfileImage,
     this.userNetworkStatus,
     this.createdAt,
@@ -37,6 +39,7 @@ class UserEntity extends Equatable {
       userName,
       phoneNumber,
       userEmailId,
+      contactName,
       userAbout,
       userProfileImage,
       userNetworkStatus,

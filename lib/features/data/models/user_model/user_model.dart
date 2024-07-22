@@ -16,6 +16,7 @@ class UserModel extends UserEntity {
     super.userGroupIdList,
     super.isDisabled,
     super.lastActiveTime,
+    super.contactName,
   });
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
@@ -33,6 +34,7 @@ class UserModel extends UserEntity {
       userGroupIdList: map[userDbGroupIdList]??[],
       isDisabled: map[isUserDisabled]??false,
       lastActiveTime: map[userDbLastActiveTime]??'00:00',
+      contactName: map[userDbContactName]??'',
     );
   }
 
@@ -51,6 +53,7 @@ class UserModel extends UserEntity {
       userDbGroupIdList: userGroupIdList,
       isUserDisabled: isDisabled,
       userDbLastActiveTime: lastActiveTime,
+      userDbContactName:contactName,
     };
   }
   
@@ -69,7 +72,7 @@ class UserModel extends UserEntity {
     List<dynamic>? userGroupIdList,
     bool? isDisabled,
     String? lastActiveTime,
-
+    String? contactName,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -85,6 +88,7 @@ class UserModel extends UserEntity {
       userGroupIdList: userGroupIdList??this.userGroupIdList,
       isDisabled: isDisabled??this.isDisabled,
       lastActiveTime: lastActiveTime??this.lastActiveTime,
+      contactName: contactName??this.contactName,
     );
   }
 

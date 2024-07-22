@@ -30,6 +30,7 @@ Widget audioMessageWidget({
   return Container(
     height: 75.h,
     width: screenWidth(context: context) / 1.26,
+    margin: EdgeInsets.symmetric(vertical: 3.h),
     padding: EdgeInsets.all(6.w),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10.sp),

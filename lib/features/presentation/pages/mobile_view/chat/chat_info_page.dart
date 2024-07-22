@@ -116,10 +116,12 @@ class ChatInfoPage extends StatelessWidget {
                           receiverData: receiverData,
                         )
                       : infoPageGroupMembersList(
+                        context: context,
                           groupData: groupData,
                         ),
                 ],
               ),
+              kHeight20,
               infoPageListTileWidget(
                 context: context,
                 isGroup: isGroup,

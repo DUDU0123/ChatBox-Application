@@ -29,25 +29,20 @@ Widget messageListingWidget({
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
     builder: (context, snapshot) {
-      log("Inside stream builder");
       if (snapshot.data == null) {
         log("Snapshot message list data null");
         return zeroMeasureWidget;
       }
-      log(name: "Snap data:", snapshot.data.toString());
       return ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         controller: scrollController,
         separatorBuilder: (context, index) => kHeight2,
         itemCount: snapshot.data!.length,
         itemBuilder: (context, index) {
-          log("Inside listview builder");
-          log(snapshot.data!.length.toString());
           final message = snapshot.data![index];
           context.read<MessageBloc>().add(GetMessageDateEvent(
               currentMessageDate: DateProvider.convertDateToFormatted(
                   date: message.messageTime.toString())));
-          log("Messagroom : status of message: ${message.messageStatus}");
           if (message.messageType == MessageType.video &&
               !videoControllers.containsKey(message.message)) {
             videoControllers[message.message!] =

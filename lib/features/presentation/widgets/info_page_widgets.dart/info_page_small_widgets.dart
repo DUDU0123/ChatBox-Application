@@ -1,9 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
-import 'package:chatbox/features/data/models/group_model/group_model.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
-import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

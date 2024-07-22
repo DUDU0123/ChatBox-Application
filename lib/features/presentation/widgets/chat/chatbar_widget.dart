@@ -4,6 +4,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
+import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -165,10 +166,9 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                           shape: BoxShape.circle,
                         ),
                         child: Center(
-                            child: IconButton(
-                          onPressed: () async {
-                            if (widget.messageController.text.isNotEmpty) {
-                             
+                          child: IconButton(
+                            onPressed: () async {
+                              if (widget.messageController.text.isNotEmpty) {
                                 sendMessage(
                                   isGroup: widget.isGroup,
                                   groupModel: widget.groupModel,
@@ -179,44 +179,44 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                   messageController: widget.messageController,
                                   scrollController: widget.scrollController,
                                 );
-                              
-                            } else {
-                              context.read<MessageBloc>().add(
-                                    AudioRecordToggleEvent(
-                                      isGroup: widget.isGroup,
-                                      groupModel: widget.groupModel,
-                                      receiverID:
-                                          widget.chatModel?.receiverID ?? '',
-                                      receiverContactName:
-                                          widget.receiverContactName ?? '',
-                                      chatModel: widget.chatModel,
-                                      recorder: widget.recorder,
-                                    ),
-                                  );
-                            }
-                          },
-                          icon: BlocBuilder<MessageBloc, MessageState>(
-                            builder: (context, state) {
-                              return !state.isRecording!
-                                  ? SvgPicture.asset(
-                                      width: 24.w,
-                                      height: 24.h,
-                                      colorFilter: ColorFilter.mode(
-                                          kBlack, BlendMode.srcIn),
-                                      state.isTyped ??
-                                              false ||
-                                                  widget.messageController.text
-                                                      .isNotEmpty
-                                          ? sendIcon
-                                          : microphoneFilled,
-                                    )
-                                  : Icon(
-                                      Icons.stop,
-                                      color: kBlack,
+                              } else {
+                                context.read<MessageBloc>().add(
+                                      AudioRecordToggleEvent(
+                                        isGroup: widget.isGroup,
+                                        groupModel: widget.groupModel,
+                                        receiverID:
+                                            widget.chatModel?.receiverID ?? '',
+                                        receiverContactName:
+                                            widget.receiverContactName ?? '',
+                                        chatModel: widget.chatModel,
+                                        recorder: widget.recorder,
+                                      ),
                                     );
+                              }
                             },
+                            icon: BlocBuilder<MessageBloc, MessageState>(
+                              builder: (context, state) {
+                                return !state.isRecording!
+                                    ? SvgPicture.asset(
+                                        width: 24.w,
+                                        height: 24.h,
+                                        colorFilter: ColorFilter.mode(
+                                            kBlack, BlendMode.srcIn),
+                                        state.isTyped ??
+                                                false ||
+                                                    widget.messageController
+                                                        .text.isNotEmpty
+                                            ? sendIcon
+                                            : microphoneFilled,
+                                      )
+                                    : Icon(
+                                        Icons.stop,
+                                        color: kBlack,
+                                      );
+                              },
+                            ),
                           ),
-                        )),
+                        ),
                       ),
                     )
                   ],
@@ -243,49 +243,49 @@ void sendMessage({
   GroupModel? groupModel,
 }) {
   MessageModel message;
-  if(!isGroup){
+  if (!isGroup) {
     message = MessageModel(
-    messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-    senderID: chatModel?.senderID,
-    receiverID: chatModel?.receiverID,
-    messageTime: DateTime.now().toString(),
-    isPinnedMessage: false,
-    isStarredMessage: false,
-    isDeletedMessage: false,
-    isEditedMessage: false,
-    message: messageController.text,
-    messageType: MessageType.text,
-    messageStatus: MessageStatus.sent,
-  );
-  }else{
-    message = MessageModel(
-    senderID: firebaseAuth.currentUser?.uid,
-    messageTime: DateTime.now().toString(),
-    isPinnedMessage: false,
-    isStarredMessage: false,
-    isDeletedMessage: false,
-    isEditedMessage: false,
-    message: messageController.text,
-    messageType: MessageType.text,
-    messageStatus: MessageStatus.sent,
-  );
-  }
-  
-    scrollController.animateTo(
-      scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
+      messageId: DateTime.now().millisecondsSinceEpoch.toString(),
+      senderID: chatModel?.senderID,
+      receiverID: chatModel?.receiverID,
+      messageTime: DateTime.now().toString(),
+      isPinnedMessage: false,
+      isStarredMessage: false,
+      isDeletedMessage: false,
+      isEditedMessage: false,
+      message: messageController.text,
+      messageType: MessageType.text,
+      messageStatus: MessageStatus.sent,
     );
-    context.read<MessageBloc>().add(
-          MessageSentEvent(
-            isGroup: isGroup,
-            groupModel: groupModel,
-            currentUserId: firebaseAuth.currentUser?.uid ?? '',
-            receiverContactName: receiverContactName ?? '',
-            receiverID: chatModel?.receiverID ?? '',
-            chatModel: chatModel,
-            message: message,
-          ),
-        );
-    messageController.clear();
+  } else {
+    message = MessageModel(
+      senderID: firebaseAuth.currentUser?.uid,
+      messageTime: DateTime.now().toString(),
+      isPinnedMessage: false,
+      isStarredMessage: false,
+      isDeletedMessage: false,
+      isEditedMessage: false,
+      message: messageController.text,
+      messageType: MessageType.text,
+      messageStatus: MessageStatus.sent,
+    );
+  }
+
+  scrollController.animateTo(
+    scrollController.position.maxScrollExtent,
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.easeOut,
+  );
+  context.read<MessageBloc>().add(
+        MessageSentEvent(
+          isGroup: isGroup,
+          groupModel: groupModel,
+          currentUserId: firebaseAuth.currentUser?.uid ?? '',
+          receiverContactName: receiverContactName ?? '',
+          receiverID: chatModel?.receiverID ?? '',
+          chatModel: chatModel,
+          message: message,
+        ),
+      );
+  messageController.clear();
 }

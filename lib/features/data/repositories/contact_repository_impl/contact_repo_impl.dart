@@ -1,3 +1,4 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chatbox/features/data/data_sources/contact_data/contact_data.dart';
@@ -11,7 +12,7 @@ class ContactRepoImpl extends ContactRepository {
     required this.contactData,
     required this.firebaseFirestore,
   });
-   @override
+  @override
   Future<List<ContactModel>> getAccessToUserContacts() async {
     List<ContactModel> contactsModelList = [];
     try {
@@ -51,6 +52,13 @@ class ContactRepoImpl extends ContactRepository {
             userContactNumber: contactModel.userContactNumber,
             isChatBoxUser: true,
           );
+
+          await fireStore
+              .collection(usersCollection)
+              .doc(contactModel.chatBoxUserId)
+              .update({
+            userDbContactName: contactModel.userContactName,
+          });
         }
         contactsModelList.add(contactModel);
       }
