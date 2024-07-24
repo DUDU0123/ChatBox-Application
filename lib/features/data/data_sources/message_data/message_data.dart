@@ -180,7 +180,8 @@ class MessageData {
     required MessageModel message,
     required bool isGroup,
   }) async {
-    if ((chatModel?.senderID == null || chatModel?.receiverID == null)&&!isGroup) {
+    if ((chatModel?.senderID == null || chatModel?.receiverID == null) &&
+        !isGroup) {
       return;
     }
     if (chatModel == null && !isGroup) {
@@ -449,48 +450,149 @@ class MessageData {
     }
   }
 
-  Future<void> deleteMessageInAChat(
-      {required String chatId, required String messageId}) async {
+  Future<bool> editMessageInAChat({
+    GroupModel? groupModel,
+    ChatModel? chatModel,
+    required String messageId,
+    required MessageModel updatedData,
+    required bool isGroup,
+  }) async {
     try {
-      String currentUserId = firebaseAuth.currentUser!.uid;
-      await firestore
-          .collection(usersCollection)
-          .doc(currentUserId)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .doc(messageId)
-          .delete();
+      if (chatModel == null && !isGroup) {
+        return false;
+      }
+      if (groupModel == null && isGroup) {
+        return false;
+      }
+      if (!isGroup) {
+        await firestore
+            .collection(usersCollection)
+            .doc(chatModel?.senderID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(messageId)
+            .update(updatedData.toJson());
+        await firestore
+            .collection(usersCollection)
+            .doc(chatModel?.receiverID)
+            .collection(chatsCollection)
+            .doc(chatId)
+            .collection(messagesCollection)
+            .doc(messageId)
+            .update(updatedData.toJson());
+        return true;
+      } else {
+        for (var memberID in groupModel!.groupMembers!) {
+          await firestore
+              .collection(usersCollection)
+              .doc(memberID)
+              .collection(groupsCollection)
+              .doc(groupModel.groupID)
+              .collection(messagesCollection)
+              .doc(messageId)
+              .update(
+                updatedData.toJson()
+              );
+        }
+        return true;
+      }
     } on FirebaseException catch (e) {
-      log("From Chat Data: 262: ${e.message}");
-      throw Exception(e.message);
+      log("From edit message: ${e.message}");
+      return false;
     } catch (e) {
-      log(e.toString());
-      throw Exception(e.toString());
+      log("From edit message catch: $e");
+      return false;
     }
   }
 
-  Future<void> editMessageInAChat({
-    required String chatId,
-    required String messageId,
-    required MessageModel updatedData,
+  Future<bool> deleteMessageForEveryOne({
+    GroupModel? groupModel,
+    required String messageID,
+    required bool isGroup,
+    ChatModel? chatModel,
+  }) async {
+    if (groupModel == null && isGroup) {
+      return false;
+    }
+    if (chatModel == null && !isGroup) {
+      return false;
+    }
+    try {
+      if (isGroup) {
+        for (final memberID in groupModel!.groupMembers!) {
+          await firestore
+              .collection(usersCollection)
+              .doc(memberID)
+              .collection(groupsCollection)
+              .doc(groupModel.groupID)
+              .collection(messagesCollection)
+              .doc(messageID)
+              .delete();
+        }
+        return true;
+      } else {
+        await firestore
+            .collection(usersCollection)
+            .doc(chatModel?.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel?.chatID)
+            .collection(messagesCollection)
+            .doc(messageID)
+            .delete();
+        await firestore
+            .collection(usersCollection)
+            .doc(chatModel?.receiverID)
+            .collection(chatsCollection)
+            .doc(chatModel?.chatID)
+            .collection(messagesCollection)
+            .doc(messageID)
+            .delete();
+        return true;
+      }
+    } on FirebaseException catch (e) {
+      log("delete message for everyone error: ${e.toString()}");
+      return false;
+    } catch (e) {
+      log("delete message for everyone error: ${e.toString()}");
+      return false;
+    }
+  }
+
+  Future<bool> deleteMultipleMessageForParticularUser({
+    GroupModel? groupModel,
+    ChatModel? chatModel,
+    required List<String> messageIdList,
+    required bool isGroup,
+    required String userID,
   }) async {
     try {
-      String currentUserId = firebaseAuth.currentUser!.uid;
-      await firestore
-          .collection(usersCollection)
-          .doc(currentUserId)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .doc(messageId)
-          .update(updatedData.toJson());
+      for (var messageID in messageIdList) {
+        isGroup
+            ? await firestore
+                .collection(usersCollection)
+                .doc(userID)
+                .collection(groupsCollection)
+                .doc(groupModel?.groupID)
+                .collection(messagesCollection)
+                .doc(messageID)
+                .delete()
+            : await firestore
+                .collection(usersCollection)
+                .doc(userID)
+                .collection(chatsCollection)
+                .doc(chatModel?.chatID)
+                .collection(messagesCollection)
+                .doc(messageID)
+                .delete();
+      }
+      return true;
     } on FirebaseException catch (e) {
-      log("From Chat Data: 286: ${e.message}");
-      throw Exception(e.message);
+      log("Delete multiple message error: ${e.toString()}");
+      return false;
     } catch (e) {
-      log(e.toString());
-      throw Exception(e.toString());
+      log("Delete multiple message error: ${e.toString()}");
+      return false;
     }
   }
 }

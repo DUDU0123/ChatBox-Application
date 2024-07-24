@@ -1,13 +1,14 @@
 part of 'group_bloc.dart';
 
-
 class GroupState extends Equatable {
   final Stream<List<GroupModel>>? groupList;
   final File? groupPickedImageFile;
   final Map<MembersGroupPermission, bool> memberPermissions;
   final Map<AdminsGroupPermission, bool> adminPermissions;
+  final bool? isLoading;
 
   const GroupState({
+    this.isLoading = false,
     this.groupList,
     this.groupPickedImageFile,
     this.memberPermissions = const {
@@ -29,19 +30,25 @@ class GroupState extends Equatable {
     File? groupPickedImageFile,
     Map<MembersGroupPermission, bool>? memberPermissions,
     Map<AdminsGroupPermission, bool>? adminPermissions,
+    bool? isLoading,
   }) {
     return GroupState(
       groupList: groupList ?? this.groupList,
       groupPickedImageFile: groupPickedImageFile ?? this.groupPickedImageFile,
       memberPermissions: memberPermissions ?? this.memberPermissions,
       adminPermissions: adminPermissions ?? this.adminPermissions,
+      isLoading: isLoading??this.isLoading,
     );
   }
 
   @override
-  List<Object> get props => [groupList ?? [], groupPickedImageFile ?? '', memberPermissions, adminPermissions];
+  List<Object> get props => [
+        groupList ?? [],
+        groupPickedImageFile ?? '',
+        memberPermissions,
+        adminPermissions,isLoading??false
+      ];
 }
-
 
 final class GroupInitial extends GroupState {}
 

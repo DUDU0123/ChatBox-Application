@@ -1,9 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
-import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -16,22 +14,19 @@ class GroupData {
     required this.firebaseAuth,
     required this.firebaseFirestore,
   });
-  Future<String?> createNewGroup(
+  Future<bool?> createNewGroup(
       {required GroupModel newGroupData, required File? groupImageFile}) async {
     try {
       final User? currentser = firebaseAuth.currentUser;
       if (currentser == null) {
         log("Current user is null");
-        return null;
+        return false;
       }
       if (newGroupData.groupMembers == null ||
           newGroupData.groupMembers!.isEmpty) {
         log("group member empty, or null");
-        return null;
+        return false;
       }
-
-      // Getting all user ids for creating group
-      List<String> allUserIDs = [currentser.uid, ...newGroupData.groupMembers!];
 
       // here we are creating a group doc and getting the id for making the id of the group for all members the same
       final groupDocumentReference =
@@ -63,7 +58,7 @@ class GroupData {
       batch.set(groupDocumentReference, updatedGroupData.toJson());
 
       // iterating through each user id and creating group in their groups collection using the id of the group doc before created
-      for (String userID in allUserIDs) {
+      for (String userID in newGroupData.groupMembers!) {
         final newDocumentRefernce = firebaseFirestore
             .collection(usersCollection)
             .doc(userID)
@@ -89,14 +84,14 @@ class GroupData {
 
       await batch.commit();
       log("Group created successfully with ID: $groupDocumentID");
-      return groupDocumentID;
+      return true;
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
     }
     log("Can't do try ctach");
-    return null;
+    return false;
   }
 
   // read all groups of current user to display in application UI

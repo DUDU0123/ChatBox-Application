@@ -133,8 +133,22 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> getOneMessageEvent(
       GetOneMessageEvent event, Emitter<MessageState> emit) {}
 
-  FutureOr<void> messageEditEvent(
-      MessageEditEvent event, Emitter<MessageState> emit) {}
+  Future<FutureOr<void>> messageEditEvent(
+      MessageEditEvent event, Emitter<MessageState> emit) async {
+    try {
+     final value = await messageRepository.editMessage(
+        messageId: event.messageID,
+        updatedMessage: event.updatedMessage,
+        isGroup: event.isGroup,
+        chatModel: event.chatModel,
+        groupModel: event.groupModel,
+      );
+      log(value.toString());
+      emit(state.copyWith(messages: state.messages));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
 
   FutureOr<void> messageDeleteEvent(
       MessageDeleteEvent event, Emitter<MessageState> emit) {}
@@ -239,7 +253,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         MessageData.updateChatMessageDataOfUser(
           chatModel: event.chatModel,
           isGroup: event.isGroup,
-          message: photoMessage,groupModel: event.groupModel,
+          message: photoMessage,
+          groupModel: event.groupModel,
         );
         final messages = messageRepository.getAllMessages(
           isGroup: event.isGroup,
@@ -316,7 +331,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
         MessageData.updateChatMessageDataOfUser(
           isGroup: event.isGroup,
-          chatModel: event.chatModel,groupModel: event.groupModel,
+          chatModel: event.chatModel,
+          groupModel: event.groupModel,
           message: videoMessage,
         );
         final messages = messageRepository.getAllMessages(
@@ -428,7 +444,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         }
         MessageData.updateChatMessageDataOfUser(
             isGroup: event.isGroup,
-            chatModel: event.chatModel,groupModel: event.groupModel,
+            chatModel: event.chatModel,
+            groupModel: event.groupModel,
             message: message);
         final messages = messageRepository.getAllMessages(
           isGroup: event.isGroup,
@@ -510,7 +527,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           }
           MessageData.updateChatMessageDataOfUser(
               isGroup: event.isGroup,
-              chatModel: event.chatModel,groupModel: event.groupModel,
+              chatModel: event.chatModel,
+              groupModel: event.groupModel,
               message: message);
           final messages = messageRepository.getAllMessages(
             isGroup: event.isGroup,
@@ -624,7 +642,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       MessageData.updateChatMessageDataOfUser(
         isGroup: event.isGroup,
         chatModel: event.chatModel,
-        message: message,groupModel: event.groupModel,
+        message: message,
+        groupModel: event.groupModel,
       );
       final messages = messageRepository.getAllMessages(
         isGroup: event.isGroup,
@@ -730,7 +749,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       }
 
       MessageData.updateChatMessageDataOfUser(
-          isGroup: event.isGroup, chatModel: event.chatModel, message: message, groupModel: event.groupModel,);
+        isGroup: event.isGroup,
+        chatModel: event.chatModel,
+        message: message,
+        groupModel: event.groupModel,
+      );
       final messages = messageRepository.getAllMessages(
         isGroup: event.isGroup,
         groupModel: event.groupModel,

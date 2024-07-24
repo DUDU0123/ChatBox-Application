@@ -18,7 +18,7 @@ Widget commonListTile({
   return GestureDetector(
     onTap: onTap,
     child: SizedBox(
-      height: 50.h,
+      height: 55.h,
       //color: Colors.amber,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +49,7 @@ Widget commonListTile({
                             overflow: TextOverflow.ellipsis,
                             text: subtitle,
                             fontSize: isSmallTitle
-                                ? 18.sp
+                                ? 16.sp
                                 : isSwitchTile != null
                                     ? !isSwitchTile
                                         ? 16.sp

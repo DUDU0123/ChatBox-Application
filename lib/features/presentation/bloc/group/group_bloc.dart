@@ -49,7 +49,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       );
       Navigator.pop(event.context);
       log(name: "Create", value.toString());
-      emit(state.copyWith(groupList: state.groupList));
+      emit(state.copyWith(groupList: state.groupList, isLoading: value,));
     } catch (e) {
       log("Create group Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));

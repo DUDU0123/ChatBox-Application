@@ -11,7 +11,7 @@ class GroupRepoImpl extends GroupRepository {
   });
 
   @override
-  Future<String?> createGroup(
+  Future<bool?> createGroup(
       {required GroupModel newGroupData, required File? groupImageFile}) async {
     return await groupData.createNewGroup(
       newGroupData: newGroupData,

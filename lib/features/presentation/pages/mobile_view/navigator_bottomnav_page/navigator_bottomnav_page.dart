@@ -6,6 +6,7 @@ import 'package:chatbox/core/utils/get_appbar_title.dart';
 import 'package:chatbox/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
 import 'package:chatbox/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/calls/call_home_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_home_page.dart';
@@ -153,6 +154,8 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
               onPageChanged: (index) {
                 if (index == 0) {
                   context.read<ChatBloc>().add(GetAllChatsEvent());
+                }else if(index==1){
+                  context.read<GroupBloc>().add(GetAllGroupsEvent());
                 }
                 bottomNavBloc.add(
                   BottomNavIconClickedEvent(

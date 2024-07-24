@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chatbox/features/data/data_sources/message_data/message_data.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/domain/repositories/message_repo/message_repo.dart';
@@ -10,23 +11,18 @@ class MessageRepoImpl extends MessageRepo {
   MessageRepoImpl({
     required this.messageData,
   });
-  @override
-  Future<void> deleteMessage({
-    required String chatId,
-    required String messageId,
-  }) async {
-    await messageData.deleteMessageInAChat(
-        chatId: chatId, messageId: messageId);
-  }
 
   @override
-  Future<void> editMessage({
-    required String chatId,
+  Future<bool> editMessage({
+    GroupModel? groupModel,
+    ChatModel? chatModel,
     required String messageId,
     required MessageModel updatedMessage,
+    required bool isGroup,
   }) async {
-    await messageData.editMessageInAChat(
-      chatId: chatId,
+    return await messageData.editMessageInAChat(
+      isGroup: isGroup,
+      chatModel: chatModel,
       messageId: messageId,
       updatedData: updatedMessage,
     );
@@ -93,6 +89,36 @@ class MessageRepoImpl extends MessageRepo {
       {required String groupID}) {
     return messageData.getAllMessageOfAGroupChat(
       groupID: groupID,
+    );
+  }
+
+  @override
+  Future<bool> deleteForEveryOne({
+    GroupModel? groupModel,
+    required String messageID,
+    required bool isGroup,
+    ChatModel? chatModel,
+  }) async {
+    return await messageData.deleteMessageForEveryOne(
+      messageID: messageID,
+      isGroup: isGroup,
+      chatModel: chatModel,
+      groupModel: groupModel,
+    );
+  }
+
+  @override
+  Future<bool> deleteMultipleMessageForOneUser({
+    GroupModel? groupModel,
+    ChatModel? chatModel,
+    required List<String> messageIdList,
+    required bool isGroup,
+    required String userID,
+  }) async {
+    return await messageData.deleteMultipleMessageForParticularUser(
+      messageIdList: messageIdList,
+      isGroup: isGroup,
+      userID: userID,
     );
   }
 }
