@@ -7,10 +7,12 @@ import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/widgets/chat/contact_message_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/audio_message_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/different_message_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_status_show_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
@@ -47,7 +49,13 @@ class MessageContainerWidget extends StatelessWidget {
           // firebaseAuth.currentUser?.uid == message.receiverID
           //     ? Alignment.centerLeft
           //     : Alignment.centerRight,
-          checkIsIncomingMessage(isGroup: isGroup, message: message, groupModel: groupModel,) ? Alignment.centerRight : Alignment.centerLeft,
+          checkIsIncomingMessage(
+        isGroup: isGroup,
+        message: message,
+        groupModel: groupModel,
+      )
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
       child: Stack(
         children: [
           message.messageType == MessageType.audio
@@ -61,10 +69,11 @@ class MessageContainerWidget extends StatelessWidget {
                           message.messageType == MessageType.video
                       ? 250.h
                       : null,
-                  width: message.message!.length > 20 ||
-                          message.messageType == MessageType.contact
-                      ? screenWidth(context: context) / 1.6
-                      : screenWidth(context: context) / 2.6,
+                  // width: message.message!.length > 20 ||
+                  //         message.messageType == MessageType.contact
+                  //     ? screenWidth(context: context) / 1.6
+                  //     : screenWidth(context: context) / 2.6,
+                  width: isGroup? screenWidth(context: context) / 1.8: message.message!.length>20?screenWidth(context: context)/1.8:message.message!.length<10?90.w:null,
                   margin: EdgeInsets.symmetric(vertical: 4.h),
                   padding: message.messageType == MessageType.photo ||
                           message.messageType == MessageType.video
@@ -72,67 +81,115 @@ class MessageContainerWidget extends StatelessWidget {
                       : EdgeInsets.only(
                           left: 10.w,
                           right: 10.w,
-                          top: 10.h,
+                          top:isGroup? 5.h:10.h,
                           bottom: 15.h,
                         ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.sp),
-                    gradient: message.messageType != MessageType.location
+                    gradient: checkIsIncomingMessage(
+                      isGroup: isGroup,
+                      message: message,
+                      groupModel: groupModel,
+                    )
                         ? LinearGradient(
                             colors: [
-                              lightLinearGradientColorOne,
-                              lightLinearGradientColorTwo,
+                              // lightLinearGradientColorOne,
+                              // lightLinearGradientColorTwo,
+                              darkSwitchColor, lightLinearGradientColorTwo,
                             ],
                           )
                         : LinearGradient(
                             colors: [
-                              lightLinearGradientColorOne,
-                              lightLinearGradientColorTwo,
+                              kBlack,
+                              darkSwitchColor,
                             ],
                           ),
                   ),
-                  child: message.messageType == MessageType.text
-                      ? textMessageWidget(message: message)
-                      : message.messageType == MessageType.photo
-                          ? photoMessageShowWidget(
-                              isGroup: isGroup,
-                              groupModel: groupModel,
-                              receiverID: receiverID,
-                              message: message,
-                              chatModel: chatModel,
-                              context: context,
-                            )
-                          : videoControllers[message.message!] != null
-                              ? videoMessageShowWidget(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                     isGroup? StreamBuilder<UserModel?>(
+                       stream: CommonDBFunctions.getOneUserDataFromDataBaseAsStream(userId: firebaseAuth.currentUser!.uid),
+                       builder: (context, snapshot) {
+                        if (snapshot.data==null) {
+                          return zeroMeasureWidget;
+                        }
+                        final contactName = snapshot.data?.contactName;
+                        String prefix = '';
+                        if (contactName==null || contactName.isEmpty) {
+                          prefix = '~';
+                        }
+                         return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: TextWidgetCommon(
+                                  text: "$prefix${snapshot.data?.contactName??snapshot.data!.userName??''}",
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 10.sp,
+                                ),
+                              ),
+                              kWidth2,
+                              TextWidgetCommon(
+                                text: snapshot.data?.phoneNumber??"",
+                                fontSize: 10.sp,
+                              )
+                            ],
+                          );
+                       }
+                     ):zeroMeasureWidget,
+                      isGroup? kHeight5:zeroMeasureWidget,
+                      message.messageType == MessageType.text
+                          ? textMessageWidget(message: message)
+                          : message.messageType == MessageType.photo
+                              ? photoMessageShowWidget(
                                   isGroup: isGroup,
                                   groupModel: groupModel,
                                   receiverID: receiverID,
-                                  chatModel: chatModel,
-                                  videoControllers: videoControllers,
-                                  context: context,
                                   message: message,
+                                  chatModel: chatModel,
+                                  context: context,
                                 )
-                              : message.messageType == MessageType.contact
-                                  ? contactMessageWidget(
+                              : videoControllers[message.message!] != null
+                                  ? videoMessageShowWidget(
+                                      isGroup: isGroup,
+                                      groupModel: groupModel,
+                                      receiverID: receiverID,
+                                      chatModel: chatModel,
+                                      videoControllers: videoControllers,
                                       context: context,
                                       message: message,
                                     )
-                                  : message.messageType == MessageType.document
-                                      ? documentMessageWidget(
+                                  : message.messageType == MessageType.contact
+                                      ? contactMessageWidget(
+                                          context: context,
                                           message: message,
                                         )
                                       : message.messageType ==
-                                              MessageType.location
-                                          ? locationMessageWidget(
+                                              MessageType.document
+                                          ? documentMessageWidget(
                                               message: message,
                                             )
-                                          : commonAnimationWidget(
-                                              context: context,
-                                              isTextNeeded: false,
-                                            ),
+                                          : message.messageType ==
+                                                  MessageType.location
+                                              ? locationMessageWidget(
+                                                  message: message,
+                                                )
+                                              : commonAnimationWidget(
+                                                  context: context,
+                                                  isTextNeeded: false,
+                                                ),
+                    ],
+                  ),
                 ),
           messageStatusShowWidget(
-            isCurrentUserMessage: checkIsIncomingMessage(isGroup: isGroup, message: message, groupModel: groupModel,),
+            isCurrentUserMessage: checkIsIncomingMessage(
+              isGroup: isGroup,
+              message: message,
+              groupModel: groupModel,
+            ),
             message: message,
           ),
         ],

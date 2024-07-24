@@ -18,7 +18,7 @@ Widget messageStatusShowWidget({
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextWidgetCommon(
-          text: DateProvider.take24HourTimeFromTimeStamp(
+          text: DateProvider.take12HourTimeFromTimeStamp(
             timeStamp: message.messageTime.toString(),
           ),
           fontSize: 10.sp,

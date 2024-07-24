@@ -91,10 +91,8 @@ Widget messageListingWidget({
             },
             child: Container(
                 width: screenWidth(context: context),
-                color: isSelected != null
-                    ? isSelected
-                        ? buttonSmallTextColor.withOpacity(0.3)
-                        : kTransparent
+                color: isSelected
+                    ? buttonSmallTextColor.withOpacity(0.3)
                     : kTransparent,
                 child: MessageContainerWidget(
                   isGroup: isGroup,

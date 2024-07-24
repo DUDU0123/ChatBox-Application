@@ -129,9 +129,45 @@ class GetAllMessageEvent extends MessageEvent {
       ];
 }
 
-class MessageDeleteEvent extends MessageEvent {
+class MessageDeleteForEveryOneEvent extends MessageEvent {
+  final bool isGroup;
+  final GroupModel? groupModel;
+  final ChatModel? chatModel;
+  final String messageID;
+  const MessageDeleteForEveryOneEvent({
+    required this.isGroup,
+    this.groupModel,
+    this.chatModel,
+    required this.messageID,
+  });
   @override
-  List<Object> get props => [];
+  List<Object> get props => [
+        isGroup,
+        groupModel ?? const GroupModel(),
+        chatModel ?? const ChatModel(),
+        messageID,
+      ];
+}
+class MessageDeleteForOne extends MessageEvent {
+  final bool isGroup;
+  final GroupModel? groupModel;
+  final ChatModel? chatModel;
+  final List<String> messageIdList;
+  final String userID;
+  const MessageDeleteForOne({
+    required this.isGroup,
+    this.groupModel,
+    this.chatModel,
+    required this.messageIdList,
+    required this.userID,
+  });
+  @override
+  List<Object> get props => [
+        isGroup,
+        groupModel ?? const GroupModel(),
+        chatModel ?? const ChatModel(),
+        messageIdList,userID
+      ];
 }
 
 class MessageEditEvent extends MessageEvent {

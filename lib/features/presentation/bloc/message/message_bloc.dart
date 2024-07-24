@@ -39,7 +39,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<GetAllMessageEvent>(getAllMessageEvent);
     on<GetOneMessageEvent>(getOneMessageEvent);
     on<MessageEditEvent>(messageEditEvent);
-    on<MessageDeleteEvent>(messageDeleteEvent);
+    on<MessageDeleteForEveryOneEvent>(messageDeleteForEveryOneEvent);
+    on<MessageDeleteForOne>(messageDeleteForOne);
     on<PhotoMessageSendEvent>(photoMessageSendEvent);
     on<VideoMessageSendEvent>(videoMessageSendEvent);
     on<ContactMessageSendEvent>(contactMessageSendEvent);
@@ -136,7 +137,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> messageEditEvent(
       MessageEditEvent event, Emitter<MessageState> emit) async {
     try {
-     final value = await messageRepository.editMessage(
+      final value = await messageRepository.editMessage(
         messageId: event.messageID,
         updatedMessage: event.updatedMessage,
         isGroup: event.isGroup,
@@ -150,8 +151,38 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
-  FutureOr<void> messageDeleteEvent(
-      MessageDeleteEvent event, Emitter<MessageState> emit) {}
+  FutureOr<void> messageDeleteForEveryOneEvent(
+      MessageDeleteForEveryOneEvent event, Emitter<MessageState> emit) async {
+    try {
+      final value = await messageRepository.deleteForEveryOne(
+        messageID: event.messageID,
+        isGroup: event.isGroup,
+        chatModel: event.chatModel,
+        groupModel: event.groupModel,
+      );
+      log(value.toString());
+      emit(state.copyWith(messages: state.messages));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> messageDeleteForOne(
+      MessageDeleteForOne event, Emitter<MessageState> emit) async {
+    try {
+      final value = await messageRepository.deleteMultipleMessageForOneUser(
+        messageIdList: event.messageIdList,
+        isGroup: event.isGroup,
+        userID: event.userID,
+        groupModel: event.groupModel,
+        chatModel: event.chatModel,
+      );
+      log(value.toString());
+      emit(state.copyWith(messages: state.messages));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
 
   Future<FutureOr<void>> messageSentEvent(
       MessageSentEvent event, Emitter<MessageState> emit) async {

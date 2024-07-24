@@ -46,8 +46,10 @@ class DateProvider {
         messageDateTime.month == now.month &&
         messageDateTime.year == now.year) {
       // Today
-      return DateFormat.Hm()
-          .format(messageDateTime); // 24-hour time format (e.g., 10:00)
+      // return DateFormat.Hm()
+      //     .format(messageDateTime); // 24-hour time format (e.g., 10:00)
+          return DateFormat.jm()
+          .format(messageDateTime);
     } else if (messageDateTime.day == yesterday.day &&
         messageDateTime.month == yesterday.month &&
         messageDateTime.year == yesterday.year) {
