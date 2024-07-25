@@ -72,7 +72,7 @@ Widget chatTileActionButtonWidget({
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 10.w),
     decoration: BoxDecoration(
-        color: kBlack, borderRadius: BorderRadius.circular(20.sp)),
+        color: iconGreyColor, borderRadius: BorderRadius.circular(20.sp)),
     height: 80.h,
     child: Column(
       children: [
@@ -92,8 +92,8 @@ Widget chatTileActionButtonWidget({
             Navigator.pop(context);
           },
           icon: Icon(
-            buttonIcon,
-            color: buttonSmallTextColor,
+            buttonIcon,size: 30.sp,
+            color: kWhite,
           ),
         ),
         TextWidgetCommon(

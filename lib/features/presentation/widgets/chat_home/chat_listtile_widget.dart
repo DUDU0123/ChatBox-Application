@@ -28,7 +28,8 @@ class ChatListTileWidget extends StatelessWidget {
     required this.messageStatus,
     this.chatModel,
     this.groupModel,
-    this.receiverID, this.contentPadding,
+    this.receiverID,
+    this.contentPadding,
   });
 
   final String userName;
@@ -70,14 +71,13 @@ class ChatListTileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-          context.read<MessageBloc>().add(GetAllMessageEvent(
-            groupModel: groupModel,
-            isGroup: isGroup,
-                chatId: chatModel?.chatID,
-                currentUserId: firebaseAuth.currentUser?.uid ?? '',
-                receiverId: receiverID ?? "",
-              ));
-        
+        context.read<MessageBloc>().add(GetAllMessageEvent(
+              groupModel: groupModel,
+              isGroup: isGroup,
+              chatId: chatModel?.chatID,
+              currentUserId: firebaseAuth.currentUser?.uid ?? '',
+              receiverId: receiverID ?? "",
+            ));
       },
       onLongPress: () {
         if (chatModel != null) {
@@ -90,18 +90,18 @@ class ChatListTileWidget extends StatelessWidget {
       child: ListTile(
         contentPadding: contentPadding,
         onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatRoomPage(
-                  groupModel: groupModel,
-                  chatModel: chatModel,
-                  userName: userName,
-                  isGroup: isGroup,
-                  receiverID: receiverID,
-                ),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatRoomPage(
+                groupModel: groupModel,
+                chatModel: chatModel,
+                userName: userName,
+                isGroup: isGroup,
+                receiverID: receiverID,
               ),
-            );
+            ),
+          );
         },
         leading: GestureDetector(
           onTap: () {

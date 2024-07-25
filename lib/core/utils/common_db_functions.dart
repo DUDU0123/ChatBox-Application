@@ -31,6 +31,46 @@ class CommonDBFunctions {
     }
   }
 
+  static Future<MessageModel?> getOneMessageByItsId({
+    required String messageID,
+    ChatModel? chatModel,
+    GroupModel? groupModel,
+    required bool isGroup,
+  }) async {
+    try {
+      final messageMapDoc = !isGroup
+          ? await fireStore
+              .collection(usersCollection)
+              .doc()
+              .collection(chatsCollection)
+              .doc(chatModel?.chatID)
+              .collection(messagesCollection)
+              .doc(messageID)
+              .get()
+          : await fireStore
+              .collection(usersCollection)
+              .doc()
+              .collection(groupsCollection)
+              .doc(groupModel?.groupID)
+              .collection(messagesCollection)
+              .doc(messageID)
+              .get();
+      if (messageMapDoc.exists) {
+        return MessageModel.fromJson(map: messageMapDoc.data()!);
+      } else {
+        return null;
+      }
+    } on FirebaseException catch (e) {
+      log(
+        'Firebase Auth exception: $e',
+      );
+      throw Exception("Error while fetching message data: $e");
+    } catch (e, stackTrace) {
+      log('Error while fetching message data: $e', stackTrace: stackTrace);
+      throw Exception("Error while fetching message data: $e");
+    }
+  }
+
   //get one user data as future
   static Future<UserModel?> getOneUserDataFromDBFuture(
       {required String? userId}) async {
@@ -116,6 +156,7 @@ class CommonDBFunctions {
       throw Exception(e.toString());
     }
   }
+
   // get all messages of a one to one chat as stream
   static Stream<MessageModel> getMessageStreamChatsCollection(
       String chatID, String messageID) {

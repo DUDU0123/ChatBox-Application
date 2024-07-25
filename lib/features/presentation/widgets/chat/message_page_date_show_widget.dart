@@ -12,7 +12,7 @@ class MessagePageDateShowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 3.h),
+      margin: EdgeInsets.symmetric(vertical: 10.h),
       padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
       decoration: BoxDecoration(
         color: iconGreyColor.withAlpha(150),

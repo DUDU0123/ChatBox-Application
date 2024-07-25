@@ -16,6 +16,7 @@ import 'package:equatable/equatable.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -160,6 +161,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatModel: event.chatModel,
         groupModel: event.groupModel,
       );
+      add(MessageSelectedEvent(messageId: event.messageID));
       log(value.toString());
       emit(state.copyWith(messages: state.messages));
     } catch (e) {
@@ -177,6 +179,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         groupModel: event.groupModel,
         chatModel: event.chatModel,
       );
+      for (var messageId in event.messageIdList) {
+        add(MessageSelectedEvent(messageId: messageId));
+      }
       log(value.toString());
       emit(state.copyWith(messages: state.messages));
     } catch (e) {
@@ -838,12 +843,14 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     try {
       final updatedSelectedIds =
           Set<String>.from(state.selectedMessageIds as Iterable);
-      if (updatedSelectedIds.contains(event.messageModel.messageId)) {
-        updatedSelectedIds.remove(event.messageModel.messageId);
+      if (updatedSelectedIds.contains(event.messageModel?.messageId ?? event.messageId)) {
+        updatedSelectedIds
+            .remove(event.messageModel?.messageId ?? event.messageId);
       } else {
-        updatedSelectedIds.add(event.messageModel.messageId ?? '');
+        updatedSelectedIds
+            .add(event.messageModel?.messageId ?? event.messageId ?? '');
       }
-      emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
+      emit(state.copyWith(selectedMessageIds: updatedSelectedIds, messagemodel: event.messageModel));
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));
     }

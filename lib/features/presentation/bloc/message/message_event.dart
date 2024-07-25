@@ -134,6 +134,7 @@ class MessageDeleteForEveryOneEvent extends MessageEvent {
   final GroupModel? groupModel;
   final ChatModel? chatModel;
   final String messageID;
+  // final List<String> messageIdList;
   const MessageDeleteForEveryOneEvent({
     required this.isGroup,
     this.groupModel,
@@ -166,7 +167,8 @@ class MessageDeleteForOne extends MessageEvent {
         isGroup,
         groupModel ?? const GroupModel(),
         chatModel ?? const ChatModel(),
-        messageIdList,userID
+        messageIdList,
+        userID
       ];
 }
 
@@ -399,13 +401,15 @@ class AudioPlayerCompletedEvent extends MessageEvent {
 }
 
 class MessageSelectedEvent extends MessageEvent {
-  final MessageModel messageModel;
+  final MessageModel? messageModel;
+  final String? messageId;
   const MessageSelectedEvent({
-    required this.messageModel,
+    this.messageModel,
+    this.messageId,
   });
   @override
   List<Object> get props => [
-        messageModel,
+        messageModel??const MessageModel(),messageId??''
       ];
 }
 

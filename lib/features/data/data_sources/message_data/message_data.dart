@@ -222,43 +222,43 @@ class MessageData {
         messageType = 'text';
     }
 
-    if (isGroup) {
-      if (groupModel == null) {
-        return;
-      }
-      if (groupModel.groupMembers == null || groupModel.groupMembers!.isEmpty) {
-        return;
-      }
-      // group message important fields update
-      for (var userID in groupModel.groupMembers!) {
-        await FirebaseFirestore.instance
-            .collection(usersCollection)
-            .doc(userID)
-            .collection(groupsCollection)
-            .doc(groupModel.groupID)
-            .update({
-          dbGroupLastMessageType: messageType,
-          dbGroupLastMessageTime: message.messageTime,
-          dbGroupLastMessageStatus: messageStatus,
-          dbGroupLastMessage: lastMessage,
-          // isIncoming: message.senderID != userID
-          isIncoming: groupModel.groupMembers!
-                  .contains(FirebaseAuth.instance.currentUser?.uid) &&
-              message.senderID == FirebaseAuth.instance.currentUser?.uid
-        });
+    // if (isGroup) {
+    //   if (groupModel == null) {
+    //     return;
+    //   }
+    //   if (groupModel.groupMembers == null || groupModel.groupMembers!.isEmpty) {
+    //     return;
+    //   }
+    //   // group message important fields update
+    //   for (var userID in groupModel.groupMembers!) {
+    //     await FirebaseFirestore.instance
+    //         .collection(usersCollection)
+    //         .doc(userID)
+    //         .collection(groupsCollection)
+    //         .doc(groupModel.groupID)
+    //         .update({
+    //       dbGroupLastMessageType: messageType,
+    //       dbGroupLastMessageTime: message.messageTime,
+    //       dbGroupLastMessageStatus: messageStatus,
+    //       dbGroupLastMessage: lastMessage,
+    //       // isIncoming: message.senderID != userID
+    //       isIncoming: groupModel.groupMembers!
+    //               .contains(FirebaseAuth.instance.currentUser?.uid) &&
+    //           message.senderID == FirebaseAuth.instance.currentUser?.uid
+    //     });
 
-        await FirebaseFirestore.instance
-            .collection(usersCollection)
-            .doc(userID)
-            .collection(groupsCollection)
-            .doc(groupModel.groupID)
-            .collection(messagesCollection)
-            .doc(message.messageId)
-            .update({
-          dbMessageStatus: messageStatus,
-        });
-      }
-    }
+    //     await FirebaseFirestore.instance
+    //         .collection(usersCollection)
+    //         .doc(userID)
+    //         .collection(groupsCollection)
+    //         .doc(groupModel.groupID)
+    //         .collection(messagesCollection)
+    //         .doc(message.messageId)
+    //         .update({
+    //       dbMessageStatus: messageStatus,
+    //     });
+    //   }
+    // }
 
     // Listen to receiver's network status and chat state
     FirebaseFirestore.instance
@@ -568,6 +568,7 @@ class MessageData {
   }) async {
     try {
       for (var messageID in messageIdList) {
+        String currentUserId = firebaseAuth.currentUser!.uid;
         isGroup
             ? await firestore
                 .collection(usersCollection)
@@ -579,7 +580,7 @@ class MessageData {
                 .delete()
             : await firestore
                 .collection(usersCollection)
-                .doc(userID)
+                .doc(chatModel?.senderID)
                 .collection(chatsCollection)
                 .doc(chatModel?.chatID)
                 .collection(messagesCollection)

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -9,6 +8,7 @@ import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_container_widget.dart';
+import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,46 +33,57 @@ Widget messageListingWidget({
         log("Snapshot message list data null");
         return zeroMeasureWidget;
       }
-      return ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
-        controller: scrollController,
-        separatorBuilder: (context, index) => kHeight2,
-        itemCount: snapshot.data!.length,
-        itemBuilder: (context, index) {
-          final message = snapshot.data![index];
-          context.read<MessageBloc>().add(GetMessageDateEvent(
-              currentMessageDate: DateProvider.convertDateToFormatted(
-                  date: message.messageTime.toString())));
-          if (message.messageType == MessageType.video &&
-              !videoControllers.containsKey(message.message)) {
-            videoControllers[message.message!] =
-                VideoPlayerController.networkUrl(
-              Uri.parse(message.message!),
-            )..initialize().then((_) {});
-          }
-          if (message.messageType == MessageType.audio &&
-              !audioPlayers.containsKey(message.message)) {
-            final player = AudioPlayer();
-            audioPlayers[message.message!] = player;
 
-            player.durationStream.listen((duration) {
-              if (duration != null) {
-                context.read<MessageBloc>().add(AudioPlayerDurationChangedEvent(
-                    message.message!, duration));
-              }
-            });
-            player.positionStream.listen((position) {
+      final messages = snapshot.data!;
+      List<Widget> messageWidgets = [];
+      String? currentDate;
+
+      for (int i = 0; i < messages.length; i++) {
+        final message = messages[i];
+        final messageDate = DateProvider.formatMessageDateTime(
+          isInsideChat: true,
+          messageDateTimeString: message.messageTime.toString(),
+        );
+
+        if (currentDate != messageDate) {
+          currentDate = messageDate;
+          messageWidgets.add(
+            Center(
+              child: MessagePageDateShowWidget(date: messageDate),
+            ),
+          );
+        }
+
+        if (message.messageType == MessageType.video &&
+            !videoControllers.containsKey(message.message)) {
+          videoControllers[message.message!] = VideoPlayerController.networkUrl(
+            Uri.parse(message.message!),
+          )..initialize().then((_) {});
+        }
+        if (message.messageType == MessageType.audio &&
+            !audioPlayers.containsKey(message.message)) {
+          final player = AudioPlayer();
+          audioPlayers[message.message!] = player;
+
+          player.durationStream.listen((duration) {
+            if (duration != null) {
               context.read<MessageBloc>().add(
-                  AudioPlayerPositionChangedEvent(message.message!, position));
-            });
-            player.playingStream.listen((isPlaying) {
-              context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(
-                  message.message!, isPlaying));
-            });
-          }
-          bool isSelected =
-              state.selectedMessageIds?.contains(message.messageId) ?? false;
-          return GestureDetector(
+                  AudioPlayerDurationChangedEvent(message.message!, duration));
+            }
+          });
+          player.positionStream.listen((position) {
+            context.read<MessageBloc>().add(
+                AudioPlayerPositionChangedEvent(message.message!, position));
+          });
+          player.playingStream.listen((isPlaying) {
+            context.read<MessageBloc>().add(
+                AudioPlayerPlayStateChangedEvent(message.message!, isPlaying));
+          });
+        }
+        bool isSelected =
+            state.selectedMessageIds?.contains(message.messageId) ?? false;
+        messageWidgets.add(
+          GestureDetector(
             onLongPress: () {
               context.read<MessageBloc>().add(
                     MessageSelectedEvent(
@@ -103,7 +114,16 @@ Widget messageListingWidget({
                   audioPlayers: audioPlayers,
                   videoControllers: videoControllers,
                 )),
-          );
+          ),
+        );
+      }
+
+      return ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        controller: scrollController,
+        itemCount: messageWidgets.length,
+        itemBuilder: (context, index) {
+          return messageWidgets[index];
         },
       );
     },

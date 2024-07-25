@@ -1,6 +1,8 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/app_bar_icon_list_messaging_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +14,14 @@ class CommonAppBar extends StatelessWidget {
     required this.pageType,
     required this.appBarTitle,
     this.userStatus,
-    this.userProfileImage, this.onTap,
+    this.userProfileImage, this.onTap, this.groupModel, this.chatModel,  this.isGroup,
   });
   final PageTypeEnum pageType;
   final String appBarTitle;
   final String? userStatus;
   final String? userProfileImage;
   final void Function()? onTap;
+  final GroupModel? groupModel;final ChatModel? chatModel; final bool? isGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +78,7 @@ class CommonAppBar extends StatelessWidget {
             ),
       actions: !(pageType == PageTypeEnum.settingsPage)
           ? appBarIconListMessagingPage(
+            chatModel: chatModel,groupModel: groupModel,isGroup: isGroup??false,
               pageType: pageType,
               context: context,
             )
