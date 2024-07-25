@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -9,6 +11,7 @@ import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_p
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,7 +21,10 @@ Widget infoPageGroupMembersList({
 }) {
   return Column(
     children: [
-      addGroupMembersTile(context: context),
+      addGroupMembersTile(
+        context: context,
+        groupModel: groupData,
+      ),
       ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -52,7 +58,22 @@ Widget infoPageGroupMembersList({
 
 Widget addGroupMembersTile({
   required BuildContext context,
+  required GroupModel? groupModel,
 }) {
+  if (groupModel == null) {
+    return zeroMeasureWidget;
+  }
+  return !groupModel.membersPermissions!
+              .contains(MembersGroupPermission.addMembers) &&
+          groupModel.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+      ? addMemberTile(context: context)
+      : groupModel.membersPermissions!
+              .contains(MembersGroupPermission.addMembers)
+          ? addMemberTile(context: context)
+          : zeroMeasureWidget;
+}
+
+Widget addMemberTile({required BuildContext context}) {
   return ListTile(
     contentPadding: const EdgeInsets.all(0),
     leading: Container(
@@ -86,6 +107,8 @@ Widget groupMemberListTileWidget({
   required AsyncSnapshot<UserModel?> snapshot,
   required GroupModel groupData,
 }) {
+  final String? groupMemberName =
+      snapshot.data?.contactName ?? snapshot.data?.userName;
   return ListTile(
     contentPadding: const EdgeInsets.all(0),
     leading: GestureDetector(
@@ -101,25 +124,46 @@ Widget groupMemberListTileWidget({
         context: context,
       ),
     ),
-    title: TextWidgetCommon(
-        text: snapshot.data?.contactName ?? snapshot.data?.userName ?? ''),
+    title: TextWidgetCommon(text: groupMemberName ?? ''),
     trailing: groupData.groupAdmins!.contains(snapshot.data?.id)
-        ? Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.sp),
-              color: buttonSmallTextColor.withOpacity(0.3),
-            ),
-            height: 20.h,
-            width: 100.w,
-            child: Center(
-              child: TextWidgetCommon(
-                text: "Group Admin",
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          )
-        : zeroMeasureWidget,
+        ? commonContainerChip(chipText: "Group Admin")
+        : groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+            ? commonContainerChip(
+                chipText: "Remove",
+                onTap: () {
+                  normalDialogBoxWidget(
+                      context: context,
+                      title: "Remove $groupMemberName",
+                      subtitle:
+                          "$groupMemberName will permanently removed from this group",
+                      onPressed: () {},
+                      actionButtonName: "Remove");
+                },
+              )
+            : zeroMeasureWidget,
+  );
+}
+
+Widget commonContainerChip({void Function()? onTap, required String chipText}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.sp),
+        color: chipText == "Remove"
+            ? kRed.withOpacity(0.3)
+            : buttonSmallTextColor.withOpacity(0.3),
+      ),
+      height: 20.h,
+      width: chipText == "Remove" ? 80.w : 100.w,
+      child: Center(
+        child: TextWidgetCommon(
+          text: chipText,
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    ),
   );
 }
 

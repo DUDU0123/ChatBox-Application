@@ -6,6 +6,17 @@ sealed class GroupEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+class LoadGroupPermissionsEvent extends GroupEvent {
+  final GroupModel groupModel;
+  final PageTypeEnum pageTypeEnum;
+  const LoadGroupPermissionsEvent({
+    required this.groupModel,
+    required this.pageTypeEnum,
+  });
+
+  @override
+  List<Object> get props => [groupModel, pageTypeEnum];
+}
 
 class CreateGroupEvent extends GroupEvent {
   final GroupModel newGroupData;
@@ -55,30 +66,38 @@ class GroupImagePickEvent extends GroupEvent {
   @override
   List<Object> get props => [pickedFile??''];
 }
-class ResetPickedFileEvent extends GroupEvent{}
+// class ResetPickedFileEvent extends GroupEvent{}
 
 class UpdateMemberPermissionEvent extends GroupEvent {
   final MembersGroupPermission permission;
   final bool isEnabled;
+  final PageTypeEnum pageTypeEnum;
+  final GroupModel? groupModel;
 
   const UpdateMemberPermissionEvent({
     required this.permission,
     required this.isEnabled,
+    required this.pageTypeEnum,
+    this.groupModel,
   });
 
   @override
-  List<Object> get props => [permission, isEnabled];
+  List<Object> get props => [permission, isEnabled, pageTypeEnum,groupModel??const GroupModel(),];
 }
 
 class UpdateAdminPermissionEvent extends GroupEvent {
   final AdminsGroupPermission permission;
   final bool isEnabled;
+  final PageTypeEnum pageTypeEnum;
+  final GroupModel? groupModel;
 
- const UpdateAdminPermissionEvent({
+  const UpdateAdminPermissionEvent({
     required this.permission,
     required this.isEnabled,
+    required this.pageTypeEnum,
+    this.groupModel,
   });
 
   @override
-  List<Object> get props => [permission, isEnabled];
+  List<Object> get props => [permission, isEnabled, pageTypeEnum,groupModel??const GroupModel(),];
 }

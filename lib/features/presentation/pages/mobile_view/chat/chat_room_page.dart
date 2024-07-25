@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
@@ -14,6 +15,7 @@ import 'package:chatbox/features/presentation/widgets/chat/attachment_list_conta
 import 'package:chatbox/features/presentation/widgets/chat/chat_room_bg_image_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/chatbar_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -138,16 +140,34 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   },
                 ),
               ),
-              ChatBarWidget(
-                isGroup: widget.isGroup,
-                groupModel: widget.groupModel,
-                receiverContactName: widget.userName,
-                recorder: recorder,
-                scrollController: scrollController,
-                chatModel: widget.chatModel,
-                isImojiButtonClicked: false,
-                messageController: messageController,
-              ),
+              widget.isGroup &&
+                      !widget.groupModel!.membersPermissions!
+                          .contains(MembersGroupPermission.sendMessages) &&
+                      !widget.groupModel!.groupAdmins!
+                          .contains(firebaseAuth.currentUser?.uid)
+                  ? Container(
+                      width: screenWidth(context: context),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 5.h,
+                      ),
+                      color: darkSwitchColor.withOpacity(0.3),
+                      child: TextWidgetCommon(
+                        text: "Only Admins can send messages",
+                        textColor: buttonSmallTextColor,
+                        textAlign: TextAlign.center,
+                        fontSize: 14.sp,
+                      ),
+                    )
+                  : ChatBarWidget(
+                      isGroup: widget.isGroup,
+                      groupModel: widget.groupModel,
+                      receiverContactName: widget.userName,
+                      recorder: recorder,
+                      scrollController: scrollController,
+                      chatModel: widget.chatModel,
+                      isImojiButtonClicked: false,
+                      messageController: messageController,
+                    ),
             ],
           ),
           Positioned(

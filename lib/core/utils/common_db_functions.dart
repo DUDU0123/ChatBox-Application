@@ -127,9 +127,38 @@ class CommonDBFunctions {
         .get();
 
     if (groupDoc.exists) {
-      return GroupModel.fromJson(groupDoc.data()!);
+      return GroupModel.fromJson(map: groupDoc.data()!);
     } else {
       return null;
+    }
+  }
+
+  static Stream<GroupModel?> getOneGroupDataByStream({
+    required String userID,
+    required String groupID,
+  }) {
+    try {
+      return fireStore
+          .collection(usersCollection)
+          .doc(userID)
+          .collection(groupsCollection)
+          .doc(groupID)
+          .snapshots()
+          .map((snapshot) {
+        if (snapshot.exists) {
+          return GroupModel.fromJson(map: snapshot.data()!);
+        } else {
+          return null;
+        }
+      });
+    } on FirebaseException catch (e) {
+      log(
+        'Firebase Auth exception: $e',
+      );
+      throw Exception("Error while fetching user data: $e");
+    } catch (e, stackTrace) {
+      log('Error while fetching user data: $e', stackTrace: stackTrace);
+      throw Exception("Error while fetching user data: $e");
     }
   }
 

@@ -56,7 +56,10 @@ Widget infoPageUserDetailsPart({
         kHeight10,
         TextWidgetCommon(
           textAlign: TextAlign.center,
-          text: isGroup? "Created at ${DateProvider.convertDateToFormatted(date: groupData!.groupCreatedAt.toString())}":'',
+          text: isGroup? 
+          "Created at ${DateProvider.convertDateToFormatted(date: groupData!.groupCreatedAt.toString())}"
+          // "Created at ${DateProvider.formatMessageDateTime(isInsideChat: true, messageDateTimeString: groupData!.groupCreatedAt.toString())}"
+          :'',
           overflow: TextOverflow.ellipsis,
           fontSize: 14.sp,
           textColor: iconGreyColor,

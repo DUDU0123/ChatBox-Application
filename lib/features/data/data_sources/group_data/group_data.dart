@@ -105,7 +105,7 @@ class GroupData {
           .snapshots()
           .map((groupSnapShot) {
         return groupSnapShot.docs.map((doc) {
-          return GroupModel.fromJson(doc.data());
+          return GroupModel.fromJson(map: doc.data());
         }).toList();
       });
     } on FirebaseException catch (e) {
@@ -118,26 +118,20 @@ class GroupData {
 
   Future<bool> updateGroupData({required GroupModel updatedGroupModel}) async {
     try {
-      final User? currentser = firebaseAuth.currentUser;
-      if (currentser == null) {
+      final User? currentUser = firebaseAuth.currentUser;
+      if (currentUser == null) {
         return false;
       }
       if (updatedGroupModel.groupMembers == null ||
           updatedGroupModel.groupMembers!.isEmpty) {
         return false;
       }
-      // Getting all user ids for creating group
-      List<String> allUserIDs = [
-        currentser.uid,
-        ...updatedGroupModel.groupMembers!
-      ];
       WriteBatch batch = firebaseFirestore.batch();
       DocumentReference groupDocRef = firebaseFirestore
           .collection(groupsCollection)
           .doc(updatedGroupModel.groupID);
       batch.update(groupDocRef, updatedGroupModel.toJson());
-      // iterating through each user id and creating group in their groups collection using the id of the group doc before created
-      for (String userID in allUserIDs) {
+      for (String userID in updatedGroupModel.groupMembers!) {
         final updatedDocumentRefernce = firebaseFirestore
             .collection(usersCollection)
             .doc(userID)

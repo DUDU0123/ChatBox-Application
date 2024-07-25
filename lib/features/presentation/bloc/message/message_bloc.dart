@@ -101,10 +101,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> getAllMessageEvent(
       GetAllMessageEvent event, Emitter<MessageState> emit) async {
     try {
-      if (event.isGroup == null) {
+      if (event.isGroup == null && event.groupModel==null) {
         return;
       }
-      if (event.isGroup! && event.groupModel != null) {
+      if (!event.isGroup! && event.chatId==null) {
+        return;
+      }
+      if (event.isGroup!) {
         if (event.groupModel?.groupID != null) {
           log(name: "get all", "${event.groupModel}");
           final messages = messageRepository.getAllMessageOfAGroupChat(
@@ -118,13 +121,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           return;
         }
       } else {
-        if (event.chatId != null && !event.isGroup!) {
+        // if (event.chatId != null && !event.isGroup!) {
           final messages = messageRepository.getAllMessages(
             isGroup: event.isGroup ?? false,
             chatId: event.chatId!,
           );
           emit(MessageState(messages: messages));
-        }
+      // }
       }
     } catch (e) {
       log("Get message error: ${e.toString()}");

@@ -30,17 +30,17 @@ Widget oneToOneChatAppBarWidget({
             if (chatModel.receiverID == null) {
               return;
             }
-            final UserModel? receiverData =
-                await CommonDBFunctions.getOneUserDataFromDBFuture(
-              userId: chatModel.receiverID,
-            );
+            // final UserModel? receiverData =
+            //     await CommonDBFunctions.getOneUserDataFromDBFuture(
+            //   userId: chatModel.receiverID,
+            // );
             Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChatInfoPage(
                     isGroup: false,
                     receiverContactName: userName,
-                    receiverData: receiverData,
+                    receiverData: snapshot.data,
                   ),
                 ));
           },

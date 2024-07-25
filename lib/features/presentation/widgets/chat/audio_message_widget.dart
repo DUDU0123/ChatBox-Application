@@ -32,9 +32,10 @@ Widget audioMessageWidget({
       }
     });
   return Container(
-    height: !isGroup?
-     70.h
-     :80.h,
+    // height: !isGroup?
+    //  70.h
+    //  :null,
+    height: null,
     width: screenWidth(context: context) / 1.26,
     margin: EdgeInsets.symmetric(vertical: 3.h),
     padding: EdgeInsets.all(6.w),

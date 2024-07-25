@@ -22,6 +22,7 @@ enum PageTypeEnum {
   broadCastSettingsPage,
   broadCastMessageInsidePage,
   groupDetailsAddPage,
+  groupInfoPage,
   none,
 }
 

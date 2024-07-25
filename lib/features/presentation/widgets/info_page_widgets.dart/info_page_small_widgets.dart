@@ -56,35 +56,18 @@ Widget infoPageActionIconsBlueGradient({required bool isGroup}) {
     children: [
       iconContainerWidgetGradientColor(
         size: 70,
-        subtitle: "Audio",
+        subtitle:"Audio",
         icon: Icons.call,
         onTap: () {},
       ),
       kWidth10,
       iconContainerWidgetGradientColor(
         size: 70,
-        subtitle: "Video",
-        icon: Icons.videocam_outlined,
+        subtitle:!isGroup? "Video":"Chat",
+        icon: !isGroup? Icons.videocam_outlined: Icons.chat_outlined,
         onTap: () {},
       ),
       kWidth10,
-      isGroup
-          ? iconContainerWidgetGradientColor(
-              size: 70,
-              subtitle: "Audio",
-              icon: Icons.call,
-              onTap: () {},
-            )
-          : zeroMeasureWidget,
-      isGroup ? kWidth10 : zeroMeasureWidget,
-      isGroup
-          ? iconContainerWidgetGradientColor(
-              size: 70,
-              subtitle: "Video",
-              icon: Icons.videocam_outlined,
-              onTap: () {},
-            )
-          : zeroMeasureWidget,
     ],
   );
 }

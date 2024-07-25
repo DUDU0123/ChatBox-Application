@@ -21,9 +21,10 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     on<UpdateGroupEvent>(updateGroupEvent);
     on<DeleteGroupEvent>(deleteGroupEvent);
     on<GroupImagePickEvent>(groupImagePickEvent);
-    on<ResetPickedFileEvent>(resetPickedFileEvent);
+    // on<ResetPickedFileEvent>(resetPickedFileEvent);
     on<UpdateMemberPermissionEvent>(updateMemberPermissionEvent);
     on<UpdateAdminPermissionEvent>(updateAdminPermissionEvent);
+    on<LoadGroupPermissionsEvent>(loadGroupPermissionsEvent);
   }
 
   FutureOr<void> getAllGroupsEvent(
@@ -49,7 +50,10 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       );
       Navigator.pop(event.context);
       log(name: "Create", value.toString());
-      emit(state.copyWith(groupList: state.groupList, isLoading: value,));
+      emit(state.copyWith(
+        groupList: state.groupList,
+        isLoading: value,
+      ));
     } catch (e) {
       log("Create group Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
@@ -89,7 +93,25 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     final updatedPermissions =
         Map<MembersGroupPermission, bool>.from(state.memberPermissions)
           ..[event.permission] = event.isEnabled;
-    emit(state.copyWith(memberPermissions: updatedPermissions));
+    if (event.pageTypeEnum == PageTypeEnum.groupInfoPage) {
+      log("Editing members perm");
+      final enabledPermissions = updatedPermissions.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList();
+      final updatedGroupData =
+          event.groupModel?.copyWith(membersPermissions: enabledPermissions);
+      if (updatedGroupData != null) {
+        log("Editing members perm not null");
+        add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
+      }
+      emit(
+      state.copyWith(memberPermissions: updatedPermissions),
+    );
+    }
+    emit(
+      state.copyWith(memberPermissions: updatedPermissions),
+    );
   }
 
   FutureOr<void> updateAdminPermissionEvent(
@@ -97,6 +119,20 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     final updatedPermissions =
         Map<AdminsGroupPermission, bool>.from(state.adminPermissions)
           ..[event.permission] = event.isEnabled;
+    if (event.pageTypeEnum == PageTypeEnum.groupInfoPage) {
+      log("Editing admin perm");
+      final enabledPermissions = updatedPermissions.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList();
+      final updatedGroupData =
+          event.groupModel?.copyWith(adminsPermissions: enabledPermissions);
+      if (updatedGroupData != null) {
+        log("Editing admin perm not null");
+        add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
+      }
+      emit(state.copyWith(adminPermissions: updatedPermissions));
+    }
     emit(state.copyWith(adminPermissions: updatedPermissions));
   }
 
@@ -111,13 +147,42 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     }
   }
 
-  FutureOr<void> resetPickedFileEvent(
-      ResetPickedFileEvent event, Emitter<GroupState> emit) {
-    try {
+  // FutureOr<void> resetPickedFileEvent(
+  //     ResetPickedFileEvent event, Emitter<GroupState> emit) {
+  //   try {
+  //     emit(state.copyWith(
+  //         groupList: state.groupList, groupPickedImageFile: null));
+  //   } catch (e) {
+  //     emit(GroupErrorState(message: e.toString()));
+  //   }
+  // }
+
+  FutureOr<void> loadGroupPermissionsEvent(
+      LoadGroupPermissionsEvent event, Emitter<GroupState> emit) {
+    if (event.pageTypeEnum == PageTypeEnum.groupInfoPage) {
+      final Map<MembersGroupPermission, bool> initialMemberPermissions = {
+        for (var permission in MembersGroupPermission.values)
+          permission:
+              event.groupModel.membersPermissions?.contains(permission) ??
+                  false,
+      };
+
+      final Map<AdminsGroupPermission, bool> initialAdminPermissions = {
+        for (var permission in AdminsGroupPermission.values)
+          permission:
+              event.groupModel.adminsPermissions?.contains(permission) ?? false,
+      };
+
       emit(state.copyWith(
-          groupList: state.groupList, groupPickedImageFile: null));
-    } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+        memberPermissions: initialMemberPermissions,
+        adminPermissions: initialAdminPermissions,
+      ));
+    } else {
+      // Reset permissions for new group creation
+      emit(state.copyWith(
+        memberPermissions: {},
+        adminPermissions: {},
+      ));
     }
   }
 }

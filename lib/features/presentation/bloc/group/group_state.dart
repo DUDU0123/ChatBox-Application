@@ -19,9 +19,9 @@ class GroupState extends Equatable {
     this.adminPermissions = const {
       AdminsGroupPermission.viewMembers: false,
       AdminsGroupPermission.approveMembers: false,
-      AdminsGroupPermission.editGroupSettings: false,
-      AdminsGroupPermission.sendMessages: false,
-      AdminsGroupPermission.addMembers: false,
+      AdminsGroupPermission.editGroupSettings: true,
+      AdminsGroupPermission.sendMessages: true,
+      AdminsGroupPermission.addMembers: true,
     },
   });
 

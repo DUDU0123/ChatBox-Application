@@ -29,20 +29,31 @@ Widget iconContainerWidgetGradientColor({
                 ],
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 30.sp,
+            child: TextButton(
+              style:TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14.sp)
                 ),
-                TextWidgetCommon(
-                  text: subtitle,
-                  fontSize: 16.sp,
-                  textColor: kWhite,
-                  fontWeight: FontWeight.w500,
-                ),
-              ],
+              ),
+              onPressed: () {
+              
+            },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    icon,
+                    size: 30.sp,
+                    color: kWhite,
+                  ),
+                  TextWidgetCommon(
+                    text: subtitle,
+                    fontSize: 16.sp,
+                    textColor: kWhite,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

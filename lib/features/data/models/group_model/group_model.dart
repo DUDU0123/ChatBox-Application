@@ -24,7 +24,7 @@ class GroupModel extends GroupEntity {
     super.isGroupOpen,
   });
 
-  factory GroupModel.fromJson(Map<String, dynamic> map) {
+  factory GroupModel.fromJson({required Map<String, dynamic> map}) {
     return GroupModel(
       groupID: map[dbGroupId],
       groupName: map[dbGroupName] ?? "ChatBoxGroup",

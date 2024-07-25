@@ -1,5 +1,8 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/features/data/data_sources/group_data/group_data.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_permissions_page.dart';
@@ -28,6 +31,10 @@ class ChatInfoPage extends StatelessWidget {
   final bool isGroup;
   @override
   Widget build(BuildContext context) {
+    List<String>? groupAdmins = groupData?.groupAdmins;
+    bool isAdmin =
+        groupAdmins?.contains(firebaseAuth.currentUser?.uid) ?? false;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -69,59 +76,35 @@ class ChatInfoPage extends StatelessWidget {
                 groupDescription: groupData?.groupDescription,
               ),
               kHeight20,
-              !isGroup?
-              CommonGradientTileWidget(
-              onTap: () {
-              },
-              rootContext: context,
-              isSmallTitle: false,
-              title: "Media,links and docs",
-              trailing: Icon(
-               Icons.arrow_forward_ios,
-                color: kWhite,
-              ),
-            )
-              : CommonGradientTileWidget(
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const GroupPermissionsPage(),
-                //   ),
-                // );
-              },
-              rootContext: context,
-              isSmallTitle: false,
-              title: "Group Permissions",
-              trailing: Icon(
-                Icons.settings,
-                color: kWhite,
-              ),
-            ),
+              !isGroup
+                  ? chatMediaGradientContainerWidget(context: context)
+                  : isAdmin
+                      ? groupPermissionGraientContainerWidget(
+                          context: context, groupData: groupData)
+                      : zeroMeasureWidget,
               kHeight20,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextWidgetCommon(
-                    text: receiverData != null
-                        ? "Groups in common (${receiverData?.userGroupIdList?.length})"
-                        : "${groupData?.groupMembers?.length} Members",
-                    overflow: TextOverflow.ellipsis,
-                    fontSize: 14.sp,
-                    textColor: iconGreyColor,
-                  ),
-                  kHeight15,
-                  receiverData != null
-                      ? infoPageCommonGroupList(
-                          receiverData: receiverData,
+              membersListOrGroupListWidget(
+                context: context,
+                receiverData: receiverData,
+                groupData: groupData,
+              ),
+              kHeight20,
+              isGroup && groupAdmins != null
+                  ? groupAdmins.contains(firebaseAuth.currentUser?.uid)
+                      ? commonListTile(
+                          leading: Icon(
+                            Icons.delete_outline,
+                            color: kRed,
+                            size: 28.sp,
+                          ),
+                          color: kRed,
+                          onTap: () {},
+                          title: "Delete Group",
+                          isSmallTitle: false,
+                          context: context,
                         )
-                      : infoPageGroupMembersList(
-                        context: context,
-                          groupData: groupData,
-                        ),
-                ],
-              ),
-              kHeight20,
+                      : zeroMeasureWidget
+                  : zeroMeasureWidget,
               infoPageListTileWidget(
                 context: context,
                 isGroup: isGroup,
@@ -140,4 +123,78 @@ class ChatInfoPage extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget groupPermissionGraientContainerWidget({
+  required BuildContext context,
+  required GroupModel? groupData,
+}) {
+  return CommonGradientTileWidget(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GroupPermissionsPage(
+            pageType: PageTypeEnum.groupInfoPage,
+            groupModel: groupData,
+          ),
+        ),
+      );
+    },
+    rootContext: context,
+    isSmallTitle: false,
+    title: "Group Permissions",
+    trailing: Icon(
+      Icons.settings,
+      color: kWhite,
+    ),
+  );
+}
+
+Widget chatMediaGradientContainerWidget({
+  required BuildContext context,
+}) {
+  return CommonGradientTileWidget(
+    onTap: () {},
+    rootContext: context,
+    isSmallTitle: false,
+    title: "Media,links and docs",
+    trailing: Icon(
+      Icons.arrow_forward_ios,
+      color: kWhite,
+    ),
+  );
+}
+
+Widget membersListOrGroupListWidget({
+  required BuildContext context,
+  required UserModel? receiverData,
+  required GroupModel? groupData,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextWidgetCommon(
+        text: receiverData != null
+            ? "Groups in common (${receiverData.userGroupIdList?.length})"
+            : "${groupData?.groupMembers?.length} Members",
+        overflow: TextOverflow.ellipsis,
+        fontSize: 14.sp,
+        textColor: iconGreyColor,
+      ),
+      kHeight15,
+      receiverData != null
+          ? infoPageCommonGroupList(
+              receiverData: receiverData,
+            )
+          : groupData!.adminsPermissions!
+                      .contains(AdminsGroupPermission.viewMembers) &&
+                  !groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+              ? zeroMeasureWidget
+              : infoPageGroupMembersList(
+                  context: context,
+                  groupData: groupData,
+                )
+    ],
+  );
 }
