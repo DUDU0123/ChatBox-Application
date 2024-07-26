@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatbox/config/common_provider/common_provider.dart';
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/chat_asset_send_methods.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
@@ -9,10 +11,13 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_show_page.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/readmore_button_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
 
@@ -46,12 +51,27 @@ Widget locationMessageWidget({required MessageModel message}) {
 
 Widget textMessageWidget({
   required MessageModel message,
+  required BuildContext context,
 }) {
-  return TextWidgetCommon(
-    fontSize: 16.sp,
-    maxLines: null,
-    text: message.message ?? '',
-    textColor: kWhite,
+  final commonProvider = Provider.of<CommonProvider>(context, listen: true);
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      TextWidgetCommon(
+        fontSize: 16.sp,
+        maxLines: !commonProvider.isExpandedMessage(message.messageId!) ? 30 : null,
+        text: message.message ?? '',
+        textColor: kWhite,
+      ),
+     message.message!=null && message.message!.length > 1000
+          ? readMoreButton(
+              context: context,
+              commonProvider: commonProvider,
+              fontSize: 16,
+              isInMessageList: true,
+              messageID: message.messageId)
+          : zeroMeasureWidget,
+    ],
   );
 }
 
@@ -102,7 +122,8 @@ Widget photoMessageShowWidget({
           context,
           MaterialPageRoute(
             builder: (context) => AssetShowPage(
-              isGroup: isGroup,groupModel: groupModel,
+              isGroup: isGroup,
+              groupModel: groupModel,
               receiverID: receiverID,
               messageType: MessageType.photo,
               chatID: chatModel?.chatID ?? '',

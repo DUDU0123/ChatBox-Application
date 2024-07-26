@@ -1,4 +1,3 @@
-import 'package:chatbox/config/restart/restart_provider.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -6,7 +5,6 @@ import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/splash_screen/splash_screen.dart';
-import 'package:chatbox/features/presentation/root_widget_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_button_container.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/phone_number_recieve_field.dart';
@@ -14,7 +12,6 @@ import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
 class DeleteAccountPage extends StatelessWidget {
   DeleteAccountPage({super.key});
@@ -40,7 +37,6 @@ class DeleteAccountPage extends StatelessWidget {
             ),
             (route) => false,
           );
-          // Provider.of<RestartProvider>(context, listen: false).reset();
         }
         if (state is AuthenticationErrorState) {
           commonSnackBarWidget(context: context, contentText: state.message);

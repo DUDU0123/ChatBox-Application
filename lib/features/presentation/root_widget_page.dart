@@ -1,5 +1,5 @@
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
-import 'package:chatbox/config/restart/restart_provider.dart';
+import 'package:chatbox/config/common_provider/common_provider.dart';
 import 'package:chatbox/config/theme/theme_constants.dart';
 import 'package:chatbox/config/theme/theme_manager.dart';
 import 'package:chatbox/features/presentation/pages/main_page/main_page.dart';
@@ -9,6 +9,7 @@ import 'package:chatbox/features/presentation/pages/mobile_view/navigator_bottom
 import 'package:chatbox/features/presentation/pages/mobile_view/number_verify/number_verify_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/search_page/search_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/settings/settings_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/status/status_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,8 +25,11 @@ class RootWidgetPage extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ThemeManager()..init(),
         ),
+        // ChangeNotifierProvider(
+        //   create: (_) => RestartProvider(),
+        // ),
         ChangeNotifierProvider(
-          create: (_) => RestartProvider(),
+          create: (_) => CommonProvider(),
         ),
       ],
       child: ScreenUtilInit(builder: (context, child) {

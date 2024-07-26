@@ -77,9 +77,9 @@ class MessageContainerWidget extends StatelessWidget {
                   //     ? screenWidth(context: context) / 1.6
                   //     : screenWidth(context: context) / 2.6,
                   width: isGroup
-                      ? screenWidth(context: context) / 1.8
+                      ? screenWidth(context: context) / 1.4
                       : message.message!.length > 20
-                          ? screenWidth(context: context) / 1.8
+                          ? screenWidth(context: context) / 1.3
                           : message.message!.length < 10
                               ? 90.w
                               : null,
@@ -123,7 +123,7 @@ class MessageContainerWidget extends StatelessWidget {
                           : zeroMeasureWidget,
                       isGroup ? kHeight5 : zeroMeasureWidget,
                       message.messageType == MessageType.text
-                          ? textMessageWidget(message: message)
+                          ? textMessageWidget(message: message, context: context)
                           : message.messageType == MessageType.photo
                               ? photoMessageShowWidget(
                                   isGroup: isGroup,
