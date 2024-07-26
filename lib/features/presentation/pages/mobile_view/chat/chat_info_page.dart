@@ -71,18 +71,25 @@ class ChatInfoPage extends StatelessWidget {
                 isGroup: isGroup,
               ),
               chatDescriptionOrAbout(
+                context: context,
                 isGroup: isGroup,
                 receiverAbout: receiverData?.userAbout,
                 groupDescription: groupData?.groupDescription,
               ),
-              kHeight20,
+              heightWidgetReturnOnCondition(
+                isGroup: isGroup,
+                groupData: groupData,
+              ),
               !isGroup
                   ? chatMediaGradientContainerWidget(context: context)
                   : isAdmin
                       ? groupPermissionGraientContainerWidget(
                           context: context, groupData: groupData)
                       : zeroMeasureWidget,
-              kHeight20,
+              heightWidgetReturnOnCondition(
+                isGroup: isGroup,
+                groupData: groupData,
+              ),
               membersListOrGroupListWidget(
                 context: context,
                 receiverData: receiverData,
@@ -123,6 +130,19 @@ class ChatInfoPage extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget heightWidgetReturnOnCondition({
+  required bool isGroup,
+  required GroupModel? groupData,
+}) {
+  return isGroup
+      ? groupData!.adminsPermissions!
+                  .contains(AdminsGroupPermission.viewMembers) &&
+              !groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+          ? zeroMeasureWidget
+          : kHeight20
+      : kHeight20;
 }
 
 Widget groupPermissionGraientContainerWidget({
@@ -177,21 +197,25 @@ Widget membersListOrGroupListWidget({
       TextWidgetCommon(
         text: receiverData != null
             ? "Groups in common (${receiverData.userGroupIdList?.length})"
-            : "${groupData?.groupMembers?.length} Members",
+            : groupData!.adminsPermissions!
+                        .contains(AdminsGroupPermission.viewMembers) &&
+                    !groupData.groupAdmins!
+                        .contains(firebaseAuth.currentUser?.uid)
+                ? ""
+                : "${groupData?.groupMembers?.length} Members",
         overflow: TextOverflow.ellipsis,
         fontSize: 14.sp,
         textColor: iconGreyColor,
       ),
       kHeight15,
-      receiverData != null
-          ? infoPageCommonGroupList(
+      if(receiverData != null)
+           infoPageCommonGroupList(
               receiverData: receiverData,
-            )
-          : groupData!.adminsPermissions!
-                      .contains(AdminsGroupPermission.viewMembers) &&
-                  !groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
-              ? zeroMeasureWidget
-              : infoPageGroupMembersList(
+            ),
+          
+     
+          if(groupData!=null)
+              infoPageGroupMembersList(
                   context: context,
                   groupData: groupData,
                 )

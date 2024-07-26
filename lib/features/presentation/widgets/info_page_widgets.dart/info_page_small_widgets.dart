@@ -2,6 +2,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/group_description_add_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,6 +24,7 @@ Widget chatDescriptionOrAbout({
   required bool isGroup,
   String? receiverAbout,
   String? groupDescription,
+  required BuildContext context,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,6 +32,13 @@ Widget chatDescriptionOrAbout({
       GestureDetector(
         onTap: () {
           // logic for add group description
+          isGroup
+              ? Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GroupDescriptionAddPage(),
+                  ))
+              : null;
         },
         child: TextWidgetCommon(
           text: !isGroup ? "About" : "Add Group Description",
@@ -55,16 +64,16 @@ Widget infoPageActionIconsBlueGradient({required bool isGroup}) {
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       iconContainerWidgetGradientColor(
-        size: 70,
-        subtitle:"Audio",
+        size: 75.sp,
+        subtitle: "Audio",
         icon: Icons.call,
         onTap: () {},
       ),
       kWidth10,
       iconContainerWidgetGradientColor(
-        size: 70,
-        subtitle:!isGroup? "Video":"Chat",
-        icon: !isGroup? Icons.videocam_outlined: Icons.chat_outlined,
+        size: 75.sp,
+        subtitle: !isGroup ? "Video" : "Chat",
+        icon: !isGroup ? Icons.videocam_outlined : Icons.chat_outlined,
         onTap: () {},
       ),
       kWidth10,

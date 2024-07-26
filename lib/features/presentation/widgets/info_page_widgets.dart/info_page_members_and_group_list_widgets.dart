@@ -25,33 +25,38 @@ Widget infoPageGroupMembersList({
         context: context,
         groupModel: groupData,
       ),
-      ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return FutureBuilder<UserModel?>(
-              future: CommonDBFunctions.getOneUserDataFromDBFuture(
-                  userId: groupData.groupMembers![index]),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  log("Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
-                  return commonErrorWidget(
-                      message:
-                          "Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
-                }
-                if (snapshot.data == null || !snapshot.hasData) {
-                  return commonErrorWidget(message: "No group Data Available");
-                }
-                return groupMemberListTileWidget(
-                  context: context,
-                  snapshot: snapshot,
-                  groupData: groupData,
-                );
-              });
-        },
-        separatorBuilder: (context, index) => kHeight5,
-        itemCount: groupData!.groupMembers!.length,
-      ),
+      groupData!.adminsPermissions!
+                  .contains(AdminsGroupPermission.viewMembers) &&
+              !groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+          ? zeroMeasureWidget
+          : ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return FutureBuilder<UserModel?>(
+                    future: CommonDBFunctions.getOneUserDataFromDBFuture(
+                        userId: groupData.groupMembers![index]),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        log("Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
+                        return commonErrorWidget(
+                            message:
+                                "Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
+                      }
+                      if (snapshot.data == null || !snapshot.hasData) {
+                        return commonErrorWidget(
+                            message: "No group Data Available");
+                      }
+                      return groupMemberListTileWidget(
+                        context: context,
+                        snapshot: snapshot,
+                        groupData: groupData,
+                      );
+                    });
+              },
+              separatorBuilder: (context, index) => kHeight5,
+              itemCount: groupData.groupMembers!.length,
+            ),
     ],
   );
 }
@@ -66,14 +71,17 @@ Widget addGroupMembersTile({
   return !groupModel.membersPermissions!
               .contains(MembersGroupPermission.addMembers) &&
           groupModel.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
-      ? addMemberTile(context: context)
+      ? addTile(context: context)
       : groupModel.membersPermissions!
               .contains(MembersGroupPermission.addMembers)
-          ? addMemberTile(context: context)
+          ? addTile(context: context)
           : zeroMeasureWidget;
 }
 
-Widget addMemberTile({required BuildContext context}) {
+Widget addTile({
+  required BuildContext context,
+  String? tileText,
+}) {
   return ListTile(
     contentPadding: const EdgeInsets.all(0),
     leading: Container(
@@ -96,7 +104,7 @@ Widget addMemberTile({required BuildContext context}) {
       ),
     ),
     title: TextWidgetCommon(
-      text: "Add members",
+      text: tileText ?? "Add members",
       textColor: Theme.of(context).colorScheme.onPrimary,
     ),
   );
@@ -126,36 +134,65 @@ Widget groupMemberListTileWidget({
     ),
     title: TextWidgetCommon(text: groupMemberName ?? ''),
     trailing: groupData.groupAdmins!.contains(snapshot.data?.id)
-        ? commonContainerChip(chipText: "Group Admin")
+        ? commonContainerChip(
+            chipText: "Group Admin",
+            chipColor: buttonSmallTextColor.withOpacity(0.3),
+            chipWidth: 100.w,
+          )
         : groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
-            ? commonContainerChip(
-                chipText: "Remove",
-                onTap: () {
-                  normalDialogBoxWidget(
-                      context: context,
-                      title: "Remove $groupMemberName",
-                      subtitle:
-                          "$groupMemberName will permanently removed from this group",
-                      onPressed: () {},
-                      actionButtonName: "Remove");
-                },
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        normalDialogBoxWidget(
+                          context: context,
+                          title: "Remove $groupMemberName",
+                          subtitle:
+                              "$groupMemberName will permanently removed from this group",
+                          onPressed: () {},
+                          actionButtonName: "Remove",
+                        );
+                      },
+                      icon: Icon(
+                        Icons.remove_circle,
+                        color: kRed.withOpacity(0.6),
+                      )),
+                  commonContainerChip(
+                    chipWidth: 80.w,
+                    chipColor: buttonSmallTextColor.withOpacity(0.3),
+                    chipText: "as admin",
+                    onTap: () {
+                      normalDialogBoxWidget(
+                          context: context,
+                          title: "Make $groupMemberName as admin",
+                          subtitle:
+                              "$groupMemberName will be able to manage this group data",
+                          onPressed: () {},
+                          actionButtonName: "Make as admin");
+                    },
+                  ),
+                ],
               )
             : zeroMeasureWidget,
   );
 }
 
-Widget commonContainerChip({void Function()? onTap, required String chipText}) {
+Widget commonContainerChip(
+    {void Function()? onTap,
+    required String chipText,
+    required Color chipColor,
+    required double chipWidth}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5.sp),
-        color: chipText == "Remove"
-            ? kRed.withOpacity(0.3)
-            : buttonSmallTextColor.withOpacity(0.3),
+        color: chipColor,
       ),
       height: 20.h,
-      width: chipText == "Remove" ? 80.w : 100.w,
+      width: chipWidth,
+      //  chipText == "Remove" ? 80.w : 100.w,
       child: Center(
         child: TextWidgetCommon(
           text: chipText,
