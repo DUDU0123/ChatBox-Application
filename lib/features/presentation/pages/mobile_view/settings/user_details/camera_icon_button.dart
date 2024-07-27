@@ -6,8 +6,9 @@ import 'package:flutter_svg/svg.dart';
 
 class CameraIconButton extends StatelessWidget {
   const CameraIconButton({
-    super.key,
+    super.key, required this.onPressed,
   });
+  final void Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +23,7 @@ class CameraIconButton extends StatelessWidget {
           ])),
       child: Center(
         child: IconButton(
-          onPressed: () {
-            profileImageSelectorBottomSheet(context: context);
-          },
+          onPressed: onPressed,
           icon: SvgPicture.asset(
             cameraIcon,
             height: 30.h,

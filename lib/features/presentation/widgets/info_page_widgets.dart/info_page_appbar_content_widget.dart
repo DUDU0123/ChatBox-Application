@@ -1,4 +1,6 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
@@ -29,23 +31,51 @@ Widget infoPageAppBarContentWidget({
           ? userProfileImageShowWidget(
               context: context, imageUrl: receiverData!.userProfileImage!)
           : groupData?.groupProfileImage != null && isGroup
-              ? userProfileImageShowWidget(
-                  context: context,
-                  imageUrl: groupData!.groupProfileImage!,
-                )
+              ? StreamBuilder<GroupModel?>(
+                  stream: CommonDBFunctions.getOneGroupDataByStream(
+                    userID: firebaseAuth.currentUser!.uid,
+                    groupID: groupData?.groupID ?? '',
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return nullImageReplaceWidget(
+                        containerRadius: 45,
+                        context: context,
+                      );
+                    }
+                    if (snapshot.data!.groupProfileImage == null) {
+                      return nullImageReplaceWidget(
+                        containerRadius: 45,
+                        context: context,
+                      );
+                    }
+                    return userProfileImageShowWidget(
+                      context: context,
+                      imageUrl: snapshot.data!.groupProfileImage!,
+                    );
+                  })
               : nullImageReplaceWidget(
                   containerRadius: 45,
                   context: context,
                 ),
       kWidth2,
       Expanded(
-        child: TextWidgetCommon(
-          text: !isGroup
-              ? receiverContactName ?? receiverData?.userName ?? ''
-              : groupData?.groupName ?? '',
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        ),
+        child: StreamBuilder<GroupModel?>(
+            stream: isGroup
+                ? CommonDBFunctions.getOneGroupDataByStream(
+                    userID: firebaseAuth.currentUser!.uid,
+                    groupID: groupData?.groupID ?? '',
+                  )
+                : null,
+            builder: (context, snapshot) {
+              return TextWidgetCommon(
+                text: !isGroup
+                    ? receiverContactName ?? receiverData?.userName ?? ''
+                    : snapshot.data?.groupName ?? '',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              );
+            }),
       )
     ],
   );

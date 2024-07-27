@@ -8,6 +8,7 @@ import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -71,16 +72,17 @@ Widget addGroupMembersTile({
   return !groupModel.membersPermissions!
               .contains(MembersGroupPermission.addMembers) &&
           groupModel.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
-      ? addTile(context: context)
+      ? addTile(context: context, groupmodel: groupModel)
       : groupModel.membersPermissions!
               .contains(MembersGroupPermission.addMembers)
-          ? addTile(context: context)
+          ? addTile(context: context, groupmodel: groupModel)
           : zeroMeasureWidget;
 }
 
 Widget addTile({
   required BuildContext context,
-  String? tileText,
+  String? tileText = "Add members",
+  required GroupModel groupmodel
 }) {
   return ListTile(
     contentPadding: const EdgeInsets.all(0),
@@ -94,7 +96,20 @@ Widget addTile({
       ),
       child: Center(
         child: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            if (tileText == "Add members") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SelectContactPage(
+                    pageType: PageTypeEnum.groupInfoPage,
+                    isGroup: true,
+                    groupModel: groupmodel,
+                  ),
+                ),
+              );
+            }
+          },
           icon: Icon(
             Icons.add,
             color: kBlack,

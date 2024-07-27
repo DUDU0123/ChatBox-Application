@@ -2,6 +2,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/camera_icon_button.dart';
+import 'package:chatbox/features/presentation/widgets/settings/profile_image_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,9 +33,11 @@ Widget userProfileImageContainerWidget(
                   ),
                 ),
                 child: containerRadius >= 160
-                    ? const Align(
+                    ? Align(
                         alignment: Alignment.bottomRight,
-                        child: CameraIconButton(),
+                        child: CameraIconButton(onPressed: () {
+                          profileImageSelectorBottomSheet(context: context);
+                        },),
                       )
                     : zeroMeasureWidget,
               )
@@ -69,9 +72,13 @@ Widget nullImageReplaceWidget(
               ),
             ),
             containerRadius >= 160
-                ? const Align(
+                ? Align(
                     alignment: Alignment.bottomRight,
-                    child: CameraIconButton(),
+                    child: CameraIconButton(
+                      onPressed: () {
+                        profileImageSelectorBottomSheet(context: context);
+                      },
+                    ),
                   )
                 : zeroMeasureWidget,
           ],

@@ -1,3 +1,4 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_info_page.dart';
@@ -22,7 +23,8 @@ Widget oneToOneChatAppBarWidget({
           userId: chatModel?.receiverID ?? receiverID),
       builder: (context, snapshot) {
         return CommonAppBar(
-          isGroup: false,chatModel: chatModel,
+          isGroup: false,
+          chatModel: chatModel,
           onTap: () async {
             if (chatModel == null) {
               return;
@@ -74,21 +76,29 @@ Widget groupChatAppBarWidget({
   if (groupModel == null) {
     return const TextWidgetCommon(text: "No Appbar");
   }
-  return CommonAppBar(
-    isGroup: true,
-    groupModel: groupModel,
-    onTap: () {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatInfoPage(
-              isGroup: true,
-              groupData: groupModel,
-            ),
-          ));
-    },
-    userProfileImage: groupModel.groupProfileImage,
-    appBarTitle: groupModel.groupName ?? 'Group name',
-    pageType: PageTypeEnum.groupMessageInsidePage,
-  );
+  return StreamBuilder<GroupModel?>(
+      stream: groupModel!=null? CommonDBFunctions.getOneGroupDataByStream(
+        userID: firebaseAuth.currentUser!.uid,
+        groupID: groupModel.groupID!,
+      ):null,
+      builder: (context, snapshot) {
+        return CommonAppBar(
+          isGroup: true,
+          groupModel: groupModel,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatInfoPage(
+                  isGroup: true,
+                  groupData: groupModel,
+                ),
+              ),
+            );
+          },
+          userProfileImage: snapshot.data?.groupProfileImage,
+          appBarTitle: snapshot.data?.groupName ?? 'Group name',
+          pageType: PageTypeEnum.groupMessageInsidePage,
+        );
+      });
 }

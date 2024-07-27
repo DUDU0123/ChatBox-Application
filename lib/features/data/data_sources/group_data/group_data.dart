@@ -116,7 +116,7 @@ class GroupData {
     return null;
   }
 
-  Future<bool> updateGroupData({required GroupModel updatedGroupModel}) async {
+  Future<bool> updateGroupData({required GroupModel updatedGroupModel, required File? groupImageFile,}) async {
     try {
       final User? currentUser = firebaseAuth.currentUser;
       if (currentUser == null) {
@@ -126,18 +126,45 @@ class GroupData {
           updatedGroupModel.groupMembers!.isEmpty) {
         return false;
       }
+
+      String groupProfilePhotoUrl = '';
+      if (groupImageFile != null) {
+        groupProfilePhotoUrl =
+            await CommonDBFunctions.saveUserFileToDataBaseStorage(
+          ref: "GroupsProfilePhotoFolder/${updatedGroupModel.groupID}",
+          file: groupImageFile,
+        );
+      }
+
+      GroupModel updatedGroupData = updatedGroupModel.copyWith(
+        groupProfileImage:
+            groupProfilePhotoUrl.isNotEmpty ? groupProfilePhotoUrl : updatedGroupModel.groupProfileImage,
+      );
       WriteBatch batch = firebaseFirestore.batch();
+      // DocumentReference groupDocRef = firebaseFirestore
+      //     .collection(groupsCollection)
+      //     .doc(updatedGroupModel.groupID);
+      // batch.update(groupDocRef, updatedGroupModel.toJson());
+      // for (String userID in updatedGroupModel.groupMembers!) {
+      //   final updatedDocumentRefernce = firebaseFirestore
+      //       .collection(usersCollection)
+      //       .doc(userID)
+      //       .collection(groupsCollection)
+      //       .doc(updatedGroupModel.groupID);
+      //   batch.set(updatedDocumentRefernce, updatedGroupModel.toJson(),
+      //       SetOptions(merge: true));
+      // }
       DocumentReference groupDocRef = firebaseFirestore
           .collection(groupsCollection)
-          .doc(updatedGroupModel.groupID);
-      batch.update(groupDocRef, updatedGroupModel.toJson());
-      for (String userID in updatedGroupModel.groupMembers!) {
+          .doc(updatedGroupData.groupID);
+      batch.update(groupDocRef, updatedGroupData.toJson());
+      for (String userID in updatedGroupData.groupMembers!) {
         final updatedDocumentRefernce = firebaseFirestore
             .collection(usersCollection)
             .doc(userID)
             .collection(groupsCollection)
-            .doc(updatedGroupModel.groupID);
-        batch.set(updatedDocumentRefernce, updatedGroupModel.toJson(),
+            .doc(updatedGroupData.groupID);
+        batch.set(updatedDocumentRefernce, updatedGroupData.toJson(),
             SetOptions(merge: true));
       }
       await batch.commit();

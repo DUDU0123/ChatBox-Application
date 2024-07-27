@@ -25,8 +25,8 @@ class GroupRepoImpl extends GroupRepository {
   }
 
   @override
-  Future<bool> updateGroupData({required GroupModel updatedGroupData}) async {
-    return await groupData.updateGroupData(updatedGroupModel: updatedGroupData);
+  Future<bool> updateGroupData({required GroupModel updatedGroupData, required File? groupImageFile,}) async {
+    return await groupData.updateGroupData(updatedGroupModel: updatedGroupData, groupImageFile: groupImageFile,);
   }
 
   @override

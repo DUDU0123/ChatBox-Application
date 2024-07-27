@@ -3,24 +3,29 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/common_gradient_tile_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/group_permission_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 class GroupPermissionsPage extends StatelessWidget {
-  const GroupPermissionsPage({super.key, this.pageType = PageTypeEnum.groupDetailsAddPage, this.groupModel,});
-
+  const GroupPermissionsPage({
+    super.key,
+    this.pageType = PageTypeEnum.groupDetailsAddPage,
+    this.groupModel,
+  });
   final PageTypeEnum? pageType;
   final GroupModel? groupModel;
-
   @override
   Widget build(BuildContext context) {
     if (pageType == PageTypeEnum.groupInfoPage && groupModel != null) {
-      context.read<GroupBloc>().add(LoadGroupPermissionsEvent(groupModel: groupModel!, pageTypeEnum: pageType!));
+      context.read<GroupBloc>().add(LoadGroupPermissionsEvent(
+          groupModel: groupModel!, pageTypeEnum: pageType!));
     } else {
-      context.read<GroupBloc>().add(LoadGroupPermissionsEvent(groupModel: const GroupModel(), pageTypeEnum: pageType!));
+      context.read<GroupBloc>().add(LoadGroupPermissionsEvent(
+          groupModel: const GroupModel(), pageTypeEnum: pageType!));
     }
+
     return Scaffold(
       appBar: AppBar(
         title: const TextWidgetCommon(text: "Group Permission"),
@@ -36,107 +41,53 @@ class GroupPermissionsPage extends StatelessWidget {
                   text: "Members can:",
                 ),
                 kHeight10,
-                CommonGradientTileWidget(
-                  trailing: Switch(
-                    value:
-                    //  pageType==PageTypeEnum.groupInfoPage?:
-                     state.memberPermissions[
-                            MembersGroupPermission.editGroupSettings] 
-                            ??false,
-                    onChanged: (value) {
-                      context.read<GroupBloc>().add(UpdateMemberPermissionEvent(
-                         groupModel: groupModel,
-                        pageTypeEnum: pageType??PageTypeEnum.groupDetailsAddPage,
-                            permission:
-                                MembersGroupPermission.editGroupSettings,
-                            isEnabled: value,
-                          ));
-                    },
-                  ),
-                  isSwitchTile: true,
-                  rootContext: context,
-                  isSmallTitle: false,
+                buildMemberPermissionSwitch(
+                  context: context,
+                  groupModel: groupModel,
+                  pageType: pageType,
+                  state: state,
                   title: "Edit group settings",
+                  permission: MembersGroupPermission.editGroupSettings,
                 ),
                 kHeight10,
-                CommonGradientTileWidget(
-                  trailing: Switch(
-                    value: state.memberPermissions[
-                            MembersGroupPermission.sendMessages] 
-                            ??false,
-                    onChanged: (value) {
-                      context.read<GroupBloc>().add(UpdateMemberPermissionEvent(
-                         groupModel: groupModel,
-                        pageTypeEnum: pageType??PageTypeEnum.groupDetailsAddPage,
-                            permission: MembersGroupPermission.sendMessages,
-                            isEnabled: value,
-                          ));
-                    },
-                  ),
-                  rootContext: context,
-                  isSmallTitle: false,
+                buildMemberPermissionSwitch(
+                  context: context,
+                  groupModel: groupModel,
+                  pageType: pageType,
+                  state: state,
                   title: "Send messages",
+                  permission: MembersGroupPermission.sendMessages,
                 ),
                 kHeight10,
-                CommonGradientTileWidget(
-                  trailing: Switch(
-                    value: state.memberPermissions[
-                            MembersGroupPermission.addMembers] ??
-                        false,
-                    onChanged: (value) {
-                      context.read<GroupBloc>().add(UpdateMemberPermissionEvent(
-                        groupModel: groupModel,
-                        pageTypeEnum: pageType??PageTypeEnum.groupDetailsAddPage,
-                            permission: MembersGroupPermission.addMembers,
-                            isEnabled: value,
-                          ));
-                    },
-                  ),
-                  rootContext: context,
-                  isSmallTitle: false,
+                buildMemberPermissionSwitch(
+                  context: context,
+                  groupModel: groupModel,
+                  pageType: pageType,
+                  state: state,
                   title: "Add members",
+                  permission: MembersGroupPermission.addMembers,
                 ),
                 kHeight20,
                 smallGreyMediumBoldTextWidget(
                   text: "Only Admins can:",
                 ),
                 kHeight10,
-                CommonGradientTileWidget(
-                  trailing: Switch(
-                    value: state.adminPermissions[
-                            AdminsGroupPermission.approveMembers] ??
-                        false,
-                    onChanged: (value) {
-                      context.read<GroupBloc>().add(UpdateAdminPermissionEvent(
-                         groupModel: groupModel,
-                        pageTypeEnum: pageType??PageTypeEnum.groupDetailsAddPage,
-                            permission: AdminsGroupPermission.approveMembers,
-                            isEnabled: value,
-                          ));
-                    },
-                  ),
-                  rootContext: context,
-                  isSmallTitle: false,
+                buildAdminPermissionSwitch(
+                  context: context,
+                  groupModel: groupModel,
+                  pageType: pageType,
+                  state: state,
                   title: "Approve members",
+                  permission: AdminsGroupPermission.approveMembers,
                 ),
                 kHeight10,
-                CommonGradientTileWidget(
-                  trailing: Switch(
-                    value: state.adminPermissions[
-                            AdminsGroupPermission.viewMembers] ??
-                        false,
-                    onChanged: (value) {
-                      context.read<GroupBloc>().add(UpdateAdminPermissionEvent(
-                         groupModel: groupModel,
-                        pageTypeEnum: pageType??PageTypeEnum.groupDetailsAddPage,
-                            permission: AdminsGroupPermission.viewMembers,
-                            isEnabled: value,
-                          ));
-                    },
-                  ),
-                  rootContext: context,
-                  isSmallTitle: false,
+                buildAdminPermissionSwitch(
+                  context: context,
+                  groupModel: groupModel,
+                  pageType: pageType,
+                  state: state,
                   title: "View members",
+                  permission: AdminsGroupPermission.viewMembers,
                 ),
               ],
             );

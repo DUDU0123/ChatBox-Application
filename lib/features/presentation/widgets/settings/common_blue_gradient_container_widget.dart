@@ -3,9 +3,8 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_butttons_common.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/dialog_widgets/data_edit_dialog_box.dart';
 import 'package:flutter/material.dart';
 import 'package:chatbox/core/service/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +31,14 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (pageType==PageTypeEnum.settingEditProfilePage) {
+      final currentState =
+        context.read<UserBloc>().state as CurrentUserLoadedState;
+    controller?.text = fieldTypeSettings == FieldTypeSettings.name
+        ? currentState.currentUserData.userName ?? ""
+        : currentState.currentUserData.userAbout ?? "";
+    }
+    
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
       decoration: BoxDecoration(
@@ -104,97 +111,12 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
           pageType == PageTypeEnum.settingEditProfilePage
               ? IconButton(
                   onPressed: () {
-                    userDataEditDialogBox(
-                      controller: controller,
-                      context: context,
-                      fieldTitle: fieldTypeSettings == FieldTypeSettings.name
-                          ? "Enter your name"
-                          : "About",
-                      hintText: fieldTypeSettings == FieldTypeSettings.name
-                          ? "Enter name"
-                          : "Enter about",
-                      fieldTypeSettings: fieldTypeSettings,
-                    );
-                  },
-                  icon: Icon(
-                    Icons.edit,
-                    color: kWhite,
-                  ),
-                )
-              : zeroMeasureWidget,
-        ],
-      ),
-    );
-  }
-
-  Future<dynamic> userDataEditDialogBox({
-    required BuildContext context,
-    required String fieldTitle,
-    required String hintText,
-    TextEditingController? controller,
-    required FieldTypeSettings? fieldTypeSettings,
-  }) {
-    final currentState =
-        context.read<UserBloc>().state as CurrentUserLoadedState;
-    controller?.text = fieldTypeSettings == FieldTypeSettings.name
-        ? currentState.currentUserData.userName ?? ""
-        : currentState.currentUserData.userAbout ?? "";
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(
-              20.sp,
-            ),
-          ),
-          backgroundColor: darkGreyColor,
-          child: Container(
-            padding: EdgeInsets.only(
-                top: 20.h, left: 30.w, right: 20.w, bottom: 10.h),
-            height: screenHeight(context: context) / 4,
-            decoration: BoxDecoration(
-              color: darkGreyColor,
-              borderRadius: BorderRadius.circular(
-                20.sp,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextWidgetCommon(
-                  textColor: kWhite,
-                  text: fieldTypeSettings == FieldTypeSettings.name
-                      ? "Enter your name"
-                      : "About",
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-                if (controller != null)
-                  SizedBox(
-                    height: 50.h,
-                    child: TextFieldCommon(
-                      minLines: 1,
-                      maxLines: fieldTitle == "About" ? 5 : 1,
-                      style: TextStyle(
-                        color: kWhite,
-                      ),
-                      border: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                        color: buttonSmallTextColor,
-                      )),
-                      cursorColor: buttonSmallTextColor,
-                      hintText: fieldTypeSettings == FieldTypeSettings.name
-                          ? "Enter name"
-                          : "Enter about",
-                      controller: controller,
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                const Spacer(),
-                TextButtonsCommon(
-                  onPressed: () {
-                    UserModel currentUser = getItInstance<UserModel>();
+                    dataEditDialogBox(
+                      maxLines: fieldTypeSettings == FieldTypeSettings.name
+                          ? 1
+                          : 5,
+                      onPressed: () {
+                        UserModel currentUser = getItInstance<UserModel>();
                     UserModel updateUser =
                         fieldTypeSettings == FieldTypeSettings.name
                             ? currentUser.copyWith(
@@ -207,14 +129,25 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                         .read<UserBloc>()
                         .add(EditCurrentUserData(userModel: updateUser));
                     Navigator.pop(context);
+                      },
+                      controller: controller,
+                      context: context,
+                      fieldTitle: fieldTypeSettings == FieldTypeSettings.name
+                          ? "Enter your name"
+                          : "About",
+                      hintText: fieldTypeSettings == FieldTypeSettings.name
+                          ? "Enter name"
+                          : "Enter about",
+                    );
                   },
-                  buttonName: "Save",
+                  icon: Icon(
+                    Icons.edit,
+                    color: kWhite,
+                  ),
                 )
-              ],
-            ),
-          ),
-        );
-      },
+              : zeroMeasureWidget,
+        ],
+      ),
     );
   }
 }

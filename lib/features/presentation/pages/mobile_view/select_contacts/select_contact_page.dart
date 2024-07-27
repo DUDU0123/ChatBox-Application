@@ -20,7 +20,9 @@ class SelectContactPage extends StatefulWidget {
     super.key,
     this.chatModel,
     this.receiverContactName,
-    required this.pageType, this.groupModel, required this.isGroup,
+    required this.pageType,
+    this.groupModel,
+    required this.isGroup,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
@@ -67,7 +69,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                     ? "Selected Contacts"
                     : widget.pageType == PageTypeEnum.groupMemberSelectPage
                         ? "New Group"
-                        : "New Broadcast"),
+                        : widget.pageType == PageTypeEnum.groupInfoPage
+                            ? "Add members"
+                            : "New Broadcast"),
             widget.pageType == PageTypeEnum.sendContactSelectPage
                 ? BlocBuilder<ContactBloc, ContactState>(
                     builder: (context, state) {
@@ -132,7 +136,6 @@ class _SelectContactPageState extends State<SelectContactPage> {
                     itemCount: chatBoxUsersList.length,
                     itemBuilder: (context, index) {
                       final contact = chatBoxUsersList[index];
-
                       return ContactSingleWidget(
                         key: ValueKey(contact.userContactNumber),
                         isSelected: state.selectedContactList != null
@@ -152,6 +155,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                   itemCount: state.contactList!.length,
                   itemBuilder: (context, index) {
                     final contact = state.contactList![index];
+                    if (widget.pageType == PageTypeEnum.groupInfoPage) {
+                      return zeroMeasureWidget;
+                    }
                     return ContactSingleWidget(
                       key: ValueKey(contact.userContactNumber),
                       isSelected: state.selectedContactList != null
@@ -173,6 +179,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
+            icon: widget.pageType == PageTypeEnum.groupInfoPage
+                ? Icons.done
+                : null,
             groupModel: widget.groupModel,
             isGroup: widget.isGroup,
             pageType: widget.pageType,

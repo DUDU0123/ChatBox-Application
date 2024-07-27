@@ -63,7 +63,9 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   Future<FutureOr<void>> updateGroupEvent(
       UpdateGroupEvent event, Emitter<GroupState> emit) async {
     try {
+      final File? groupImageFile = event.groupProfileImage;
       final value = await groupRepository.updateGroupData(
+        groupImageFile: groupImageFile,
         updatedGroupData: event.updatedGroupData,
       );
       log("Edit: $value");

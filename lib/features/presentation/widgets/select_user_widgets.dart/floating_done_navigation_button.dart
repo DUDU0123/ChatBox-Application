@@ -82,6 +82,18 @@ class FloatingDoneNavigateButton extends StatelessWidget {
                     context: context,
                   );
             break;
+
+          case PageTypeEnum.groupInfoPage:
+            final Set<String> updatedGroupMembers = Set<String>.from(groupModel?.groupMembers ?? []);
+            for(var selectedContact in selectedContactList!){
+              updatedGroupMembers.add(selectedContact.chatBoxUserId!);
+            }
+            final updatedGroupData = groupModel?.copyWith(
+              groupMembers: updatedGroupMembers.toList()
+            );
+            updatedGroupData!=null? context.read<GroupBloc>().add(UpdateGroupEvent(updatedGroupData: updatedGroupData,),):null;
+            Navigator.pop(context);
+            break;
           case PageTypeEnum.broadcastMembersSelectPage:
             break;
           case PageTypeEnum.groupDetailsAddPage:

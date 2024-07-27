@@ -41,12 +41,14 @@ class GetAllGroupsEvent extends GroupEvent {
 
 class UpdateGroupEvent extends GroupEvent {
   final GroupModel updatedGroupData;
+  final File? groupProfileImage;
   const UpdateGroupEvent({
     required this.updatedGroupData,
+    this.groupProfileImage,
   });
   @override
   List<Object> get props => [
-        updatedGroupData,
+        updatedGroupData,groupProfileImage??File(''),
       ];
 }
 
