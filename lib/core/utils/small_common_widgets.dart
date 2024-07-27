@@ -1,3 +1,4 @@
+import 'package:chatbox/config/common_provider/common_provider.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/presentation/bloc/authentication/authentication_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 Widget countrySelectedShowWidget() {
   return Padding(
@@ -39,34 +41,43 @@ Widget countrySelectedShowWidget() {
   );
 }
 
-Widget commonAnimationWidget({required BuildContext context, bool? isTextNeeded = true, String? text, double? fontSize, String? lottie}) {
-    return Center(
-      child: SizedBox(
-        width: 200.w,
-        // height: screenHeight(context: context) / 2.8,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if(isTextNeeded!=null)
-           isTextNeeded? TextWidgetCommon(
-            textAlign: TextAlign.center,
-              text: text??"Creating Otp...",
-              textColor: buttonSmallTextColor.withOpacity(0.8),
-              fontWeight: FontWeight.bold,
-              fontSize: fontSize?? 26.sp,
-            ):zeroMeasureWidget,
-            Lottie.network(
-             lottie?? 'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
-            ),
-          ],
-        ),
+Widget commonAnimationWidget(
+    {required BuildContext context,
+    bool? isTextNeeded = true,
+    String? text,
+    double? fontSize,
+    String? lottie}) {
+  return Center(
+    child: SizedBox(
+      width: 200.w,
+      // height: screenHeight(context: context) / 2.8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (isTextNeeded != null)
+            isTextNeeded
+                ? TextWidgetCommon(
+                    textAlign: TextAlign.center,
+                    text: text ?? "Creating Otp...",
+                    textColor: buttonSmallTextColor.withOpacity(0.8),
+                    fontWeight: FontWeight.bold,
+                    fontSize: fontSize ?? 26.sp,
+                  )
+                : zeroMeasureWidget,
+          Lottie.network(
+            lottie ??
+                'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget commonErrorWidget({String? message}) => Center(child: Text(message??'Unexpected error occured'));
+Widget commonErrorWidget({String? message}) =>
+    Center(child: Text(message ?? 'Unexpected error occured'));
 
-  Widget searchButton(
+Widget searchButton(
     {required ThemeData theme, required void Function()? onPressed}) {
   return CommonIconButtonWidget(
     theme: theme,
@@ -124,26 +135,24 @@ PopupMenuItem<dynamic> settingsNavigatorMenu(BuildContext context) {
   );
 }
 
-Widget emptyShowWidget(
-      {required BuildContext context, required String text}) {
-    return SizedBox(
-      width: screenWidth(context: context),
-      height: screenHeight(context: context),
-      child: Center(
-        child: SizedBox(
-          width: 250.w,
-          child: TextWidgetCommon(
-            textAlign: TextAlign.center,
-            text: text,
-            textColor:
-                Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
-            fontWeight: FontWeight.w400,
-            fontSize: 14.sp,
-          ),
+Widget emptyShowWidget({required BuildContext context, required String text}) {
+  return SizedBox(
+    width: screenWidth(context: context),
+    height: screenHeight(context: context),
+    child: Center(
+      child: SizedBox(
+        width: 250.w,
+        child: TextWidgetCommon(
+          textAlign: TextAlign.center,
+          text: text,
+          textColor: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
+          fontWeight: FontWeight.w400,
+          fontSize: 14.sp,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
 Widget commonProfileDefaultIconCircularCotainer(
     {required BuildContext context, double? containerConstraint}) {
@@ -161,13 +170,88 @@ Widget commonProfileDefaultIconCircularCotainer(
     ),
   );
 }
- Widget smallGreyMediumBoldTextWidget({
-    required String text,
-  }) {
-    return TextWidgetCommon(
-      text: text,
-      fontSize: 12.sp,
-      textColor: iconGreyColor,
-      fontWeight: FontWeight.w500,
-    );
-  }
+
+Widget smallGreyMediumBoldTextWidget({
+  required String text,
+}) {
+  return TextWidgetCommon(
+    text: text,
+    fontSize: 12.sp,
+    textColor: iconGreyColor,
+    fontWeight: FontWeight.w500,
+  );
+}
+
+PopupMenuItem<dynamic> commonPopUpMenuItem({
+  required BuildContext context,
+  required String menuText,
+  dynamic value,
+  void Function()? onTap,
+}) {
+  return PopupMenuItem(
+    value: value,
+    onTap: onTap,
+    child: TextWidgetCommon(
+      text: menuText,
+      textColor: Theme.of(context).colorScheme.onPrimary,
+    ),
+  );
+}
+
+Widget readMoreButton({
+  required BuildContext context,
+  required CommonProvider commonProvider,
+  double? fontSize,
+  bool? isInMessageList = false,
+  String? messageID,
+}) {
+  final isExpanded = commonProvider.isExpandedMessage(messageID ?? '');
+  return GestureDetector(
+    onTap: () {
+      !isInMessageList
+          ? Provider.of<CommonProvider>(context, listen: false).changeExpanded()
+          : Provider.of<CommonProvider>(context, listen: false)
+              .toggleExpand(messageID: messageID ?? '');
+    },
+    child: TextWidgetCommon(
+      text: !isInMessageList!
+          ? !commonProvider.isExpanded
+              ? "...read more"
+              : "read less"
+          : !isExpanded
+              ? "...read more"
+              : "read less",
+      textColor: buttonSmallTextColor,
+      fontSize: fontSize?.sp ?? 16.sp,
+    ),
+  );
+}
+listTileCommonWidget({
+  Widget? leading,
+  Widget? trailing,
+  double? fontSize,
+  required String tileText,
+  FontWeight? fontWeight,
+  Color? textColor,
+  TextAlign? textAlign,
+  Color? subTitleTextColor,
+  String? subTitleTileText,
+  Widget? subTitle,
+}) {
+  return ListTile(
+    leading: leading,
+    title: TextWidgetCommon(
+      textColor: textColor,
+      text: tileText,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      textAlign: textAlign,
+    ),
+    subtitle: subTitle ??
+        TextWidgetCommon(
+          textColor: subTitleTextColor ?? iconGreyColor,
+          text: subTitleTileText ?? '',
+        ),
+    trailing: trailing,
+  );
+}

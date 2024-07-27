@@ -141,19 +141,6 @@ class GroupData {
             groupProfilePhotoUrl.isNotEmpty ? groupProfilePhotoUrl : updatedGroupModel.groupProfileImage,
       );
       WriteBatch batch = firebaseFirestore.batch();
-      // DocumentReference groupDocRef = firebaseFirestore
-      //     .collection(groupsCollection)
-      //     .doc(updatedGroupModel.groupID);
-      // batch.update(groupDocRef, updatedGroupModel.toJson());
-      // for (String userID in updatedGroupModel.groupMembers!) {
-      //   final updatedDocumentRefernce = firebaseFirestore
-      //       .collection(usersCollection)
-      //       .doc(userID)
-      //       .collection(groupsCollection)
-      //       .doc(updatedGroupModel.groupID);
-      //   batch.set(updatedDocumentRefernce, updatedGroupModel.toJson(),
-      //       SetOptions(merge: true));
-      // }
       DocumentReference groupDocRef = firebaseFirestore
           .collection(groupsCollection)
           .doc(updatedGroupData.groupID);
@@ -196,6 +183,4 @@ class GroupData {
     }
     return "Can't delete";
   }
-
-  deleteGroupForAll() {}
 }

@@ -84,21 +84,41 @@ class FloatingDoneNavigateButton extends StatelessWidget {
             break;
 
           case PageTypeEnum.groupInfoPage:
-            final Set<String> updatedGroupMembers = Set<String>.from(groupModel?.groupMembers ?? []);
-            for(var selectedContact in selectedContactList!){
-              updatedGroupMembers.add(selectedContact.chatBoxUserId!);
+            if (selectedContactList != null) {
+              if (selectedContactList!.isNotEmpty) {
+                final Set<String> updatedGroupMembers =
+                    Set<String>.from(groupModel?.groupMembers ?? []);
+                for (var selectedContact in selectedContactList!) {
+                  updatedGroupMembers.add(selectedContact.chatBoxUserId!);
+                }
+                final updatedGroupData = groupModel?.copyWith(
+                    groupMembers: updatedGroupMembers.toList());
+                updatedGroupData != null
+                    ? context.read<GroupBloc>().add(
+                          UpdateGroupEvent(
+                            updatedGroupData: updatedGroupData,
+                          ),
+                        )
+                    : null;
+                    Navigator.pop(context);
+              } else {
+                commonSnackBarWidget(
+                  contentText: "Select atleast 1 members",
+                  context: context,
+                );
+              }
+            } else {
+              commonSnackBarWidget(
+                contentText: "Select atleast 1 members",
+                context: context,
+              );
             }
-            final updatedGroupData = groupModel?.copyWith(
-              groupMembers: updatedGroupMembers.toList()
-            );
-            updatedGroupData!=null? context.read<GroupBloc>().add(UpdateGroupEvent(updatedGroupData: updatedGroupData,),):null;
-            Navigator.pop(context);
             break;
           case PageTypeEnum.broadcastMembersSelectPage:
             break;
           case PageTypeEnum.groupDetailsAddPage:
-            final String? currentUser = firebaseAuth.currentUser?.uid;
-            if (currentUser == null) {
+            final String? currentUserId = firebaseAuth.currentUser?.uid;
+            if (currentUserId == null) {
               return;
             }
             List<String> selectUsersID = [];
@@ -116,8 +136,9 @@ class FloatingDoneNavigateButton extends StatelessWidget {
             GroupModel newGroupData = GroupModel(
               groupCreatedAt: DateTime.now().toString(),
               groupName: groupName,
-              groupAdmins: [currentUser],
-              groupMembers: [currentUser, ...selectUsersID],
+              groupAdmins: [currentUserId],
+              createdBy: currentUserId,
+              groupMembers: [currentUserId, ...selectUsersID],
               adminsPermissions: adminPermissions,
               membersPermissions: memberPermissions,
             );

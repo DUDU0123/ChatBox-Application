@@ -16,6 +16,7 @@ class GroupEntity extends Equatable {
   final bool? isIncomingMessage;
   final bool? isGroupOpen;
   final String? groupName;
+  final String? createdBy;
   final List<String>? groupMembers;
   final List<String>? groupAdmins;
   final String? groupDescription;
@@ -27,6 +28,7 @@ class GroupEntity extends Equatable {
     this.groupProfileImage,
     this.isMuted,
     this.lastMessageStatus,
+    this.createdBy,
     this.lastMessage,
     this.lastMessageTime,
     this.lastMessageType,
@@ -61,6 +63,7 @@ class GroupEntity extends Equatable {
       notificationCount,
       isIncomingMessage,
       isGroupOpen,
+      createdBy,
     ];
   }
 }

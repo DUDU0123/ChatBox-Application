@@ -52,7 +52,13 @@ Widget infoPageUserDetailsPart({
                           }
                           return userProfileImageShowWidget(
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => PhotoViewSection(imageToShow: snapshot.data!.groupProfileImage!),));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PhotoViewSection(
+                                        imageToShow:
+                                            snapshot.data!.groupProfileImage!),
+                                  ));
                             },
                             context: context,
                             imageUrl:
@@ -94,55 +100,74 @@ Widget infoPageUserDetailsPart({
             builder: (context, snapshot) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextWidgetCommon(
-                    textAlign: TextAlign.center,
-                    text: !isGroup
-                        ? receiverContactName ?? receiverData?.userName ?? ''
-                        : snapshot.data?.groupName ?? "",
-                    overflow: TextOverflow.ellipsis,
-                    fontSize: 20.sp,
+                  Flexible(
+                    child: TextWidgetCommon(
+                      textAlign: TextAlign.center,
+                      text: !isGroup
+                          ? receiverContactName ?? receiverData?.userName ?? ''
+                          : snapshot.data?.groupName ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 20.sp,
+                    ),
                   ),
-                 groupData!=null? groupData.groupAdmins!
-                          .contains(firebaseAuth.currentUser?.uid)
-                      ? IconButton(
-                          onPressed: () {
-                           groupData.groupName!=null? groupNameEditController.text = snapshot.data!.groupName!: '';
-                            dataEditDialogBox(
-                              maxLines: 1,
-                              controller: groupNameEditController,
-                              context: context,
-                              fieldTitle: "Group Name",
-                              hintText: "Enter group name",
-                              groupData: groupData,
+                  groupData != null
+                      ? groupData.groupAdmins!
+                              .contains(firebaseAuth.currentUser?.uid)
+                          ? IconButton(
                               onPressed: () {
-                                final updatedGroupData = groupData.copyWith(
-                                    groupName: groupNameEditController.text);
-                                context.read<GroupBloc>().add(UpdateGroupEvent(
-                                    updatedGroupData: updatedGroupData));
-                                Navigator.pop(context);
+                                groupData.groupName != null
+                                    ? groupNameEditController.text =
+                                        snapshot.data!.groupName!
+                                    : '';
+                                dataEditDialogBox(
+                                  maxLines: 1,
+                                  controller: groupNameEditController,
+                                  context: context,
+                                  fieldTitle: "Group Name",
+                                  hintText: "Enter group name",
+                                  groupData: groupData,
+                                  onPressed: () {
+                                    final updatedGroupData = groupData.copyWith(
+                                        groupName:
+                                            groupNameEditController.text);
+                                    context.read<GroupBloc>().add(
+                                        UpdateGroupEvent(
+                                            updatedGroupData:
+                                                updatedGroupData));
+                                    Navigator.pop(context);
+                                  },
+                                );
                               },
-                            );
-                          },
-                          icon: Icon(
-                            Icons.edit,
-                            color: iconGreyColor,
-                          ),
-                        )
-                      : zeroMeasureWidget:zeroMeasureWidget,
+                              icon: Icon(
+                                Icons.edit,
+                                color: iconGreyColor,
+                              ),
+                            )
+                          : zeroMeasureWidget
+                      : zeroMeasureWidget,
                 ],
               );
             }),
         isGroup ? zeroMeasureWidget : kHeight5,
-        TextWidgetCommon(
-          text: !isGroup
-              ? receiverData?.phoneNumber ?? ''
-              : "${groupData?.groupMembers?.length} Members",
-          textAlign: TextAlign.center,
-          textColor: iconGreyColor,
-          overflow: TextOverflow.ellipsis,
-          fontSize: !isGroup ? 20.sp : 13.sp,
-        ),
+        StreamBuilder<GroupModel?>(
+            stream: groupData != null
+                ? CommonDBFunctions.getOneGroupDataByStream(
+                    userID: firebaseAuth.currentUser!.uid,
+                    groupID: groupData.groupID ?? "")
+                : null,
+            builder: (context, snapshot) {
+              return TextWidgetCommon(
+                text: !isGroup
+                    ? receiverData?.phoneNumber ?? ''
+                    : "${snapshot.data?.groupMembers?.length ?? groupData?.groupMembers?.length} Members",
+                textAlign: TextAlign.center,
+                textColor: iconGreyColor,
+                overflow: TextOverflow.ellipsis,
+                fontSize: !isGroup ? 20.sp : 13.sp,
+              );
+            }),
         kHeight10,
         TextWidgetCommon(
           textAlign: TextAlign.center,
@@ -157,4 +182,3 @@ Widget infoPageUserDetailsPart({
     ),
   );
 }
-

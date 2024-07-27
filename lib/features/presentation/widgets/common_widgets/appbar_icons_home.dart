@@ -59,8 +59,9 @@ List<Widget> appBarIconsHome(
       itemBuilder: (context) {
         if (currentIndex == 0) {
           return [
-            PopupMenuItem(
-              child: const Text("New group"),
+            commonPopUpMenuItem(
+              context: context,
+              menuText: "New group",
               onTap: () {
                 Navigator.push(
                     context,
@@ -72,22 +73,10 @@ List<Widget> appBarIconsHome(
                     ));
               },
             ),
-            PopupMenuItem(
-              child: const Text("New broadcast"),
-              onTap: () {},
-            ),
-            PopupMenuItem(
-              child: const Text("Linked devices"),
-              onTap: () {},
-            ),
-            PopupMenuItem(
-              child: const Text("Starred messages"),
-              onTap: () {},
-            ),
-            PopupMenuItem(
-              child: const Text("Payments"),
-              onTap: () {},
-            ),
+            commonPopUpMenuItem(context: context, menuText: "New broadcast"),
+            commonPopUpMenuItem(context: context, menuText: "Linked devices"),
+            commonPopUpMenuItem(context: context, menuText: "Starred messages"),
+            commonPopUpMenuItem(context: context, menuText: "Payments"),
             settingsNavigatorMenu(context),
           ];
         }
@@ -97,10 +86,7 @@ List<Widget> appBarIconsHome(
           ];
         }
         return [
-          PopupMenuItem(
-            child: const Text("Clear call log"),
-            onTap: () {},
-          ),
+          commonPopUpMenuItem(context: context, menuText: "Clear call log"),
           settingsNavigatorMenu(context),
         ];
       },

@@ -8,6 +8,7 @@ import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_permissions_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_gradient_tile_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/group_member_tile_small_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/info_page_members_and_group_list_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -82,18 +83,23 @@ Widget membersListOrGroupListWidget({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      TextWidgetCommon(
-        text: receiverData != null
-            ? "Groups in common (${receiverData.userGroupIdList?.length})"
-            : groupData!.adminsPermissions!
-                        .contains(AdminsGroupPermission.viewMembers) &&
-                    !groupData.groupAdmins!
-                        .contains(firebaseAuth.currentUser?.uid)
-                ? ""
-                : "${groupData.groupMembers?.length} Members",
-        overflow: TextOverflow.ellipsis,
-        fontSize: 14.sp,
-        textColor: iconGreyColor,
+      StreamBuilder<GroupModel?>(
+        stream:groupData!=null? CommonDBFunctions.getOneGroupDataByStream(userID: firebaseAuth.currentUser!.uid, groupID: groupData.groupID??''):null,
+        builder: (context, snapshot) {
+          return TextWidgetCommon(
+            text: receiverData != null
+                ? "Groups in common (${receiverData.userGroupIdList?.length})"
+                : groupData!.adminsPermissions!
+                            .contains(AdminsGroupPermission.viewMembers) &&
+                        !groupData.groupAdmins!
+                            .contains(firebaseAuth.currentUser?.uid)
+                    ? ""
+                    : "${snapshot.data?.groupMembers?.length??groupData.groupMembers?.length} Members",
+            overflow: TextOverflow.ellipsis,
+            fontSize: 14.sp,
+            textColor: iconGreyColor,
+          );
+        }
       ),
       kHeight15,
       if (receiverData != null)

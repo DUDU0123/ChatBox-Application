@@ -135,17 +135,39 @@ class _SelectContactPageState extends State<SelectContactPage> {
                     padding: EdgeInsets.symmetric(vertical: 10.h),
                     itemCount: chatBoxUsersList.length,
                     itemBuilder: (context, index) {
-                      final contact = chatBoxUsersList[index];
-                      return ContactSingleWidget(
-                        key: ValueKey(contact.userContactNumber),
-                        isSelected: state.selectedContactList != null
-                            ? state.selectedContactList!.contains(contact)
-                            : false,
-                        contactModel: contact,
-                        contactNameorNumber: contact.userContactName ??
-                            contact.userContactNumber ??
-                            '',
-                      );
+                      var contact = chatBoxUsersList[index];
+
+                      // Check if the contact's ID is not in the groupModel.groupMembers
+                      if (widget.groupModel != null) {
+                        if (!widget.groupModel!.groupMembers!
+                            .any((member) => member == contact.chatBoxUserId)) {
+                          if (widget.pageType == PageTypeEnum.groupInfoPage) {
+                            return ContactSingleWidget(
+                              key: ValueKey(contact.userContactNumber),
+                              isSelected: state.selectedContactList != null
+                                  ? state.selectedContactList!.contains(contact)
+                                  : false,
+                              contactModel: contact,
+                              contactNameorNumber: contact.userContactName ??
+                                  contact.userContactNumber ??
+                                  '',
+                            );
+                          }
+                        } else {
+                          return Container();
+                        }
+                      } else {
+                        return ContactSingleWidget(
+                          key: ValueKey(contact.userContactNumber),
+                          isSelected: state.selectedContactList != null
+                              ? state.selectedContactList!.contains(contact)
+                              : false,
+                          contactModel: contact,
+                          contactNameorNumber: contact.userContactName ??
+                              contact.userContactNumber ??
+                              '',
+                        );
+                      }
                     },
                     separatorBuilder: (context, index) => kHeight2,
                   );

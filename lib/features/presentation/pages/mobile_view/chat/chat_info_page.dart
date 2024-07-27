@@ -3,6 +3,7 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat_info/chat_info_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/info_page_appbar_content_widget.dart';
@@ -11,6 +12,7 @@ import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/inf
 import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/info_page_user_details_part_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class ChatInfoPage extends StatelessWidget {
   const ChatInfoPage({
@@ -113,12 +115,14 @@ class ChatInfoPage extends StatelessWidget {
                       : zeroMeasureWidget
                   : zeroMeasureWidget,
               infoPageListTileWidget(
+                groupData: groupData,
                 context: context,
                 isGroup: isGroup,
                 receiverData: receiverData,
                 isFirstTile: true,
               ),
               infoPageListTileWidget(
+                groupData: groupData,
                 context: context,
                 isGroup: isGroup,
                 receiverData: receiverData,

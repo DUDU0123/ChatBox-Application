@@ -96,8 +96,8 @@ Widget groupChatAppBarWidget({
               ),
             );
           },
-          userProfileImage: snapshot.data?.groupProfileImage,
-          appBarTitle: snapshot.data?.groupName ?? 'Group name',
+          userProfileImage: snapshot.data!=null?snapshot.data?.groupProfileImage:groupModel.groupProfileImage,
+          appBarTitle:snapshot.data!=null? snapshot.data?.groupName ?? "Group name":groupModel.groupName??"Group name",
           pageType: PageTypeEnum.groupMessageInsidePage,
         );
       });

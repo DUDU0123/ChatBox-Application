@@ -75,6 +75,7 @@ const dbGroupLastMessageStatus = 'group_last_message_status';
 const dbGroupNotificationCount = 'group_notification_count';
 const dbGroupIsIncomingMessage = 'is_incoming_group_message';
 const dbIsGroupOpen = 'is_group_open';
+const dbGroupCreatedBy = 'group_created_by';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

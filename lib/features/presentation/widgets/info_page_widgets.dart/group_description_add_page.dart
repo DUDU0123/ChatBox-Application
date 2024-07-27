@@ -28,27 +28,40 @@ class GroupDescriptionAddPage extends StatelessWidget {
       body: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           width: screenWidth(context: context),
-          height: screenHeight(context: context) / 2.8,
+          height: screenHeight(context: context) / 2.5,
           child: StreamBuilder<GroupModel?>(
-            stream: groupModel.groupID!=null? CommonDBFunctions.getOneGroupDataByStream(userID: firebaseAuth.currentUser!.uid, groupID: groupModel.groupID!,):null,
-            builder: (context, snapshot) {
-            snapshot.data?.groupDescription!=null?  groupDescriptionController.text = snapshot.data!.groupDescription!:"";
-              return TextFieldCommon(
-                hintText: "Enter description",
-                maxLines: 20,
-                controller: groupDescriptionController,
-                textAlign: TextAlign.start,
-                border: UnderlineInputBorder(borderSide: BorderSide(color: buttonSmallTextColor)),
-              );
-            }
-          )),
+              stream: groupModel.groupID != null
+                  ? CommonDBFunctions.getOneGroupDataByStream(
+                      userID: firebaseAuth.currentUser!.uid,
+                      groupID: groupModel.groupID!,
+                    )
+                  : null,
+              builder: (context, snapshot) {
+                snapshot.data?.groupDescription != null
+                    ? groupDescriptionController.text =
+                        snapshot.data!.groupDescription!
+                    : "";
+                return TextFieldCommon(
+                  hintText: "Enter description",
+                  maxLines: 20,
+                  controller: groupDescriptionController,
+                  textAlign: TextAlign.start,
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: buttonSmallTextColor,
+                    ),
+                  ),
+                );
+              })),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: lightLinearGradientColorTwo,
         onPressed: () {
           final updatedGroupData = groupModel.copyWith(
             groupDescription: groupDescriptionController.text,
           );
-          context.read<GroupBloc>().add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
+          context
+              .read<GroupBloc>()
+              .add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
           Navigator.pop(context);
         },
         label: TextWidgetCommon(
