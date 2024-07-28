@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 class CommonProvider extends ChangeNotifier {
   bool isExpanded = false;
+  bool isEmptyList = false;
   Set<String> expandedMessages = {};
+  void changeIsEmpty(){
+    isEmptyList = !isEmptyList;
+    notifyListeners();
+  }
   void changeExpanded() {
     isExpanded = !isExpanded;
     notifyListeners();

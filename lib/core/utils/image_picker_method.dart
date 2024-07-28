@@ -25,6 +25,19 @@ Future<File?> selectAsset({
   }
 }
 
+Future<File?> pickAsset({
+  required StatusType? assetSelected,
+}) async {
+  switch (assetSelected) {
+    case StatusType.image:
+      return pickImage(imageSource: ImageSource.gallery);
+    case StatusType.video:
+      return takeVideoAsset(imageSource: ImageSource.gallery);
+    default:
+      return null;
+  }
+}
+
 Future<File?> pickImage({required ImageSource imageSource}) async {
   try {
     File? file;
@@ -40,6 +53,7 @@ Future<File?> pickImage({required ImageSource imageSource}) async {
     throw Exception(e);
   }
 }
+
 
 Future<File?> takeVideoAsset({required ImageSource imageSource}) async {
   try {

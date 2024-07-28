@@ -13,4 +13,5 @@ abstract class GroupRepository {
   Future<String> deleteAGroupOnlyForCurrentUser({
     required String groupID,
   });
+  Future<void> groupClearChatMethod({required String groupID});
 }

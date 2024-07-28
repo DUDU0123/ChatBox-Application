@@ -116,7 +116,10 @@ class GroupData {
     return null;
   }
 
-  Future<bool> updateGroupData({required GroupModel updatedGroupModel, required File? groupImageFile,}) async {
+  Future<bool> updateGroupData({
+    required GroupModel updatedGroupModel,
+    required File? groupImageFile,
+  }) async {
     try {
       final User? currentUser = firebaseAuth.currentUser;
       if (currentUser == null) {
@@ -137,8 +140,9 @@ class GroupData {
       }
 
       GroupModel updatedGroupData = updatedGroupModel.copyWith(
-        groupProfileImage:
-            groupProfilePhotoUrl.isNotEmpty ? groupProfilePhotoUrl : updatedGroupModel.groupProfileImage,
+        groupProfileImage: groupProfilePhotoUrl.isNotEmpty
+            ? groupProfilePhotoUrl
+            : updatedGroupModel.groupProfileImage,
       );
       WriteBatch batch = firebaseFirestore.batch();
       DocumentReference groupDocRef = firebaseFirestore
@@ -167,11 +171,11 @@ class GroupData {
   Future<String> deleteAgroupFromGroupsCurrentUser(
       {required String groupID}) async {
     try {
-      final User? currentser = firebaseAuth.currentUser;
+      final User? currentUser = firebaseAuth.currentUser;
 
       await firebaseFirestore
           .collection(usersCollection)
-          .doc(currentser?.uid)
+          .doc(currentUser?.uid)
           .collection(groupsCollection)
           .doc(groupID)
           .delete();
@@ -182,5 +186,29 @@ class GroupData {
       log("From new group creation catch: ${e.toString()}");
     }
     return "Can't delete";
+  }
+
+  Future<void> clearGroupChat({required String groupID}) async {
+    try {
+      final User? currentUser = firebaseAuth.currentUser;
+    final messageCollectionSnapshot = await firebaseFirestore
+        .collection(usersCollection)
+        .doc(currentUser?.uid)
+        .collection(groupsCollection)
+        .doc(groupID)
+        .collection(messagesCollection)
+        .get();
+    final WriteBatch batch = firebaseFirestore.batch();
+    for (final DocumentSnapshot messageDoc in messageCollectionSnapshot.docs) {
+      batch.delete(messageDoc.reference);
+    }
+
+    // Commit the batch
+    await batch.commit();
+    } on FirebaseException catch (e) {
+      log("From new group creation firebase: ${e.toString()}");
+    } catch (e) {
+      log("From new group creation catch: ${e.toString()}");
+    }
   }
 }

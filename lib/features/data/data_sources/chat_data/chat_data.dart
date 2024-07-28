@@ -157,4 +157,27 @@ class ChatData {
       throw Exception(e.toString());
     }
   }
+  Future<void> clearChatInOneToOne({required String chatID}) async {
+    try {
+      final User? currentUser = firebaseAuth.currentUser;
+    final messageCollectionSnapshot = await firestore
+        .collection(usersCollection)
+        .doc(currentUser?.uid)
+        .collection(chatsCollection)
+        .doc(chatID)
+        .collection(messagesCollection)
+        .get();
+    final WriteBatch batch = firestore.batch();
+    for (final DocumentSnapshot messageDoc in messageCollectionSnapshot.docs) {
+      batch.delete(messageDoc.reference);
+    }
+
+    // Commit the batch
+    await batch.commit();
+    } on FirebaseException catch (e) {
+      log("From new group creation firebase: ${e.toString()}");
+    } catch (e) {
+      log("From new group creation catch: ${e.toString()}");
+    }
+  }
 }

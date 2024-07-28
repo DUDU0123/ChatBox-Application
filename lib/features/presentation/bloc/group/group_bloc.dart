@@ -19,6 +19,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     on<GetAllGroupsEvent>(getAllGroupsEvent);
     on<CreateGroupEvent>(createGroupEvent);
     on<UpdateGroupEvent>(updateGroupEvent);
+    on<ClearGroupChatEvent>(clearGroupChatEvent);
     on<DeleteGroupEvent>(deleteGroupEvent);
     on<GroupImagePickEvent>(groupImagePickEvent);
     // on<ResetPickedFileEvent>(resetPickedFileEvent);
@@ -108,8 +109,8 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
       }
       emit(
-      state.copyWith(memberPermissions: updatedPermissions),
-    );
+        state.copyWith(memberPermissions: updatedPermissions),
+      );
     }
     emit(
       state.copyWith(memberPermissions: updatedPermissions),
@@ -185,6 +186,16 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         memberPermissions: {},
         adminPermissions: {},
       ));
+    }
+  }
+
+  Future<FutureOr<void>> clearGroupChatEvent(
+      ClearGroupChatEvent event, Emitter<GroupState> emit) async {
+    try {
+      await groupRepository.groupClearChatMethod(groupID: event.groupID);
+    } catch (e) {
+      log(" group clear chat error: ${e.toString()}");
+      emit(GroupErrorState(message: e.toString()));
     }
   }
 }

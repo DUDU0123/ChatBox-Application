@@ -56,7 +56,7 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
   final pages = [
     const ChatHomePage(),
     const GroupHomePage(),
-    const StatusHomePage(),
+     StatusHomePage(),
     const CallHomePage(),
   ];
 

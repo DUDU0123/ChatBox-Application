@@ -3,8 +3,15 @@ import 'package:chatbox/features/presentation/widgets/settings/image_selection_m
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-Future<dynamic> profileImageSelectorBottomSheet(
-    {required BuildContext context}) {
+Future<dynamic> assetSelectorBottomSheet({
+  required BuildContext context,
+  required String firstButtonName,
+  required String secondButtonName,
+  required IconData firstButtonIcon,
+  required IconData secondButtonIcon,
+  required void Function()? firstButtonAction,
+  required void Function()? secondButtonAction,
+}) {
   return showModalBottomSheet(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
@@ -27,16 +34,18 @@ Future<dynamic> profileImageSelectorBottomSheet(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            imageSelectionMediaWidgetCommon(
+            mediaSelectionWidgetCommon(
+              onPressed: firstButtonAction,
               context: context,
-              mediaName: "Gallery",
-              icon: Icons.photo,
+              mediaName: firstButtonName,
+              icon: firstButtonIcon,
             ),
             kWidth15,
-            imageSelectionMediaWidgetCommon(
+            mediaSelectionWidgetCommon(
+              onPressed: secondButtonAction,
               context: context,
-              mediaName: "Camera",
-              icon: Icons.camera_alt_outlined,
+              mediaName: secondButtonName,
+              icon: secondButtonIcon,
             ),
           ],
         ),

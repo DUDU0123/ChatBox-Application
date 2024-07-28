@@ -6,7 +6,6 @@ import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 // method for remove or exit a group member
 void removeOrExitFromGroupMethod({
   required BuildContext context,
@@ -26,10 +25,14 @@ void removeOrExitFromGroupMethod({
           Set<String>.from(groupData.groupMembers ?? []);
       final Set<String> updatedGroupAdmins =
           Set<String>.from(groupData.groupAdmins ?? []);
+          log("Current group members: ${groupData.groupMembers}");
+      log("Current group admins: ${groupData.groupAdmins}");
+      log("Current user ID: ${groupMemberSnapshot.data?.id}");
       if (groupData.groupAdmins!.contains(groupMemberSnapshot.data?.id)) {
         log("Indide it admin");
         updatedGroupAdmins.remove(groupMemberSnapshot.data?.id);
       }
+      log("Also outside");
       updatedGroupMembers.remove(groupMemberSnapshot.data?.id);
       final updatedGroupData = groupData.copyWith(
         groupMembers: updatedGroupMembers.toList(),
@@ -40,6 +43,8 @@ void removeOrExitFromGroupMethod({
               updatedGroupData: updatedGroupData,
             ),
           );
+           log("Updated group members: ${updatedGroupData.groupMembers}");
+      log("Updated group admins: ${updatedGroupData.groupAdmins}");
       Navigator.pop(context);
     },
     actionButtonName: actionButtonName,

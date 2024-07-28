@@ -1,16 +1,15 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
-import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 
-Widget imageSelectionMediaWidgetCommon({
+
+Widget mediaSelectionWidgetCommon({
   required BuildContext context,
   required String mediaName,
   required IconData icon,
+  required void Function()? onPressed,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -24,16 +23,7 @@ Widget imageSelectionMediaWidgetCommon({
         ),
         child: Center(
           child: IconButton(
-            onPressed: () {
-              context.read<UserBloc>().add(
-                    PickProfileImageFromDevice(
-                      imageSource: mediaName == "Camera"
-                          ? ImageSource.camera
-                          : ImageSource.gallery,
-                    ),
-                  );
-              Navigator.pop(context);
-            },
+            onPressed: onPressed,
             icon: Icon(
               icon,
               size: 40.sp,

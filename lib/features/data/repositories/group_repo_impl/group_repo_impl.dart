@@ -34,4 +34,9 @@ class GroupRepoImpl extends GroupRepository {
       {required String groupID}) async {
     return await groupData.deleteAgroupFromGroupsCurrentUser(groupID: groupID);
   }
+  
+  @override
+  Future<void> groupClearChatMethod({required String groupID}) async{
+    await groupData.clearGroupChat(groupID: groupID);
+  }
 }

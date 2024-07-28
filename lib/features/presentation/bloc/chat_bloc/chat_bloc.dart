@@ -16,6 +16,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<CreateANewChatEvent>(createANewChatEvent);
     on<GetAllChatsEvent>(getAllChatsEvent);
     on<DeletAChatEvent>(deleteAChatEvent);
+    on<ClearChatEvent>(clearChatEvent);
   }
 
   FutureOr<void> createANewChatEvent(
@@ -49,12 +50,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       DeletAChatEvent event, Emitter<ChatState> emit) async {
     emit(ChatLoadingState());
     try {
-      chatRepo.deleteAChat(
-        chatModel: event.chatModel,
-      );
+      event.chatModel != null
+          ? chatRepo.deleteAChat(
+              chatModel: event.chatModel!,
+            )
+          : null;
       add(GetAllChatsEvent());
     } catch (e) {
       log("Delete chat: e ${e.toString()}");
+      emit(ChatErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> clearChatEvent(ClearChatEvent event, Emitter<ChatState> emit) async{
+    try {
+      await chatRepo.clearChatMethodInOneToOne(chatID: event.chatId);
+    } catch (e) {
+      log("Clear chat: e ${e.toString()}");
       emit(ChatErrorState(message: e.toString()));
     }
   }

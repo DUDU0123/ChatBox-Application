@@ -1,102 +1,89 @@
-import 'package:chatbox/core/constants/colors.dart';
+import 'dart:developer';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/status/status_pages/status_show_page.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/core/utils/snackbar.dart';
+import 'package:chatbox/features/data/models/status_model/status_model.dart';
+import 'package:chatbox/features/presentation/bloc/status/status_bloc.dart';
+import 'package:chatbox/features/presentation/widgets/status/status_tile_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-class StatusHomePage extends StatelessWidget {
+class StatusHomePage extends StatefulWidget {
   const StatusHomePage({super.key});
 
   @override
+  State<StatusHomePage> createState() => _StatusHomePageState();
+}
+
+class _StatusHomePageState extends State<StatusHomePage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          statusTileWidget(
-            userName: "No name",
-            isCurrentUser: true,
-            context: context,
-          ),
-          kHeight15,
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: smallGreyMediumBoldTextWidget(text: "Recent updates"),
-          ),
-          kHeight15,
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: smallGreyMediumBoldTextWidget(text: "Viewed updates"),
-          ),
-          Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) {
-                return statusTileWidget(
-                  userName: "Index $index",
-                  context: context,
-                );
-              },
-              separatorBuilder: (context, index) => kHeight15,
-              itemCount: 100,
-            ),
-          )
-        ],
+      body: BlocConsumer<StatusBloc, StatusState>(
+        listener: (context, state) {
+          if (state is StatusErrorState) {
+            commonSnackBarWidget(
+              context: context,
+              contentText: state.message,
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is StatusLoadingState) {
+            return commonAnimationWidget(context: context, isTextNeeded: false);
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              statusTileWidget(
+                statusModel: null,
+                context: context,
+              ),
+              kHeight15,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: smallGreyMediumBoldTextWidget(text: "Recent updates"),
+              ),
+              kHeight15,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: smallGreyMediumBoldTextWidget(text: "Viewed updates"),
+              ),
+              Expanded(
+                child: StreamBuilder<List<StatusModel>?>(
+                    stream: state.statusList,
+                    builder: (context, snapshot) {
+                      log(snapshot.data.toString());
+                      if (snapshot.data == null || snapshot.hasError) {
+                        return commonErrorWidget(
+                            message:
+                                "No data ${snapshot.error} ${snapshot.stackTrace}");
+                      }
+                      if (snapshot.data!.isEmpty) {
+                        return emptyShowWidget(
+                            context: context, text: "No status");
+                      }
+                      return ListView.separated(
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 20),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          final status = snapshot.data![index];
+                          return statusTileWidget(
+                            context: context,
+                            statusModel: status,
+                          );
+                        },
+                      );
+                    }),
+              )
+            ],
+          );
+        },
       ),
     );
   }
 }
-
-Widget statusTileWidget({
-  required String userName,
-  bool? isCurrentUser = false,
-  required BuildContext context,
-}) {
-  return ListTile(
-    onTap: () {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => StatusShowPage(),
-          ));
-    },
-    leading: Container(
-      alignment: Alignment.bottomRight,
-      height: 70.h,
-      width: 70.w,
-      decoration: BoxDecoration(
-        image: const DecorationImage(
-            image: AssetImage(appLogo), fit: BoxFit.cover),
-        shape: BoxShape.circle,
-        color: darkGreyColor,
-      ),
-      child: isCurrentUser!
-          ? Container(
-              height: 25.h,
-              width: 25.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: darkSwitchColor,
-              ),
-              child: Icon(
-                Icons.add,
-                size: 20.sp,
-              ),
-            )
-          : zeroMeasureWidget,
-    ),
-    title: TextWidgetCommon(
-      text: isCurrentUser ? "My status" : userName,
-      fontSize: 16.sp,
-    ),
-    trailing: TextWidgetCommon(
-      text: !isCurrentUser ? "6 minutes ago" : "",
-      textColor: iconGreyColor,
-      fontWeight: FontWeight.normal,
-      fontSize: 10.sp,
-    ),
-  );
-}
-
-

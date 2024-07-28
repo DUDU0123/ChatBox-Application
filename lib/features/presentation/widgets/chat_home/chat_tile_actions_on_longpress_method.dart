@@ -1,6 +1,10 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,36 +12,66 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<dynamic> chatTileActionsOnLongPressMethod({
   required BuildContext context,
-  required ChatModel chatModel,
+  required ChatModel? chatModel,
+  required bool isGroup,
+  required GroupModel? groupModel,
 }) {
   return showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
         title: TextWidgetCommon(
-          text: "Do Some Actions",
+          text: "Actions",
           fontSize: 18.sp,
         ),
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            chatTileActionButtonWidget(
-              buttonName: "Delete Chat",
-              buttonIcon: Icons.delete,
-              context: context,
-              chatModel: chatModel,
-            ),
-            chatTileActionButtonWidget(
-              context: context,
-              chatModel: chatModel,
-              buttonName: "Clear Chat",
-              buttonIcon: Icons.remove_circle,
-            ),
-          ],
-        ),
         actions: [
-          cancelCenteredTextButton(
+          if (isGroup)
+            groupModel != null
+                ? !groupModel.groupMembers!
+                        .contains(firebaseAuth.currentUser?.uid)
+                    ? deleteChatMethodCommon(
+                        context: context,
+                        isGroup: isGroup,
+                        chatModel: chatModel,
+                        groupModel: groupModel,
+                      )
+                    : zeroMeasureWidget
+                : zeroMeasureWidget,
+          if (!isGroup)
+            deleteChatMethodCommon(
+              context: context,
+              isGroup: isGroup,
+              chatModel: chatModel,
+              groupModel: groupModel,
+            ),
+          commonTextButton(
             context: context,
+            onPressed: () {
+              // clear chat method
+              if (isGroup) {
+                if (groupModel != null) {
+                  context
+                      .read<GroupBloc>()
+                      .add(ClearGroupChatEvent(groupID: groupModel.groupID!));
+                  Navigator.pop(context);
+                }
+              } else {
+                if (chatModel != null) {
+                  context
+                      .read<ChatBloc>()
+                      .add(ClearChatEvent(chatId: chatModel.chatID!));
+                  Navigator.pop(context);
+                }
+              }
+            },
+            buttonName: "Clear chat",
+          ),
+          commonTextButton(
+            context: context,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            buttonName: "Cancel",
           ),
         ],
       );
@@ -45,62 +79,47 @@ Future<dynamic> chatTileActionsOnLongPressMethod({
   );
 }
 
-Widget cancelCenteredTextButton({
+Widget deleteChatMethodCommon({
   required BuildContext context,
+  required bool isGroup,
+  required ChatModel? chatModel,
+  required GroupModel? groupModel,
 }) {
-  return Center(
-    child: TextButton(
-      onPressed: () {
+  return commonTextButton(
+    context: context,
+    onPressed: () {
+      if (!isGroup) {
+        context.read<ChatBloc>().add(
+              DeletAChatEvent(chatModel: chatModel),
+            );
         Navigator.pop(context);
-      },
-      child: TextWidgetCommon(
-        text: "Cancel",
-        textColor: buttonSmallTextColor,
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w500,
-      ),
-    ),
+      } else {
+        groupModel != null
+            ? groupModel.groupID != null
+                ? context
+                    .read<GroupBloc>()
+                    .add(DeleteGroupEvent(groupID: groupModel.groupID!))
+                : null
+            : null;
+        Navigator.pop(context);
+      }
+    },
+    buttonName: "Delete chat",
   );
 }
 
-Widget chatTileActionButtonWidget({
+Widget commonTextButton({
   required BuildContext context,
-  required ChatModel chatModel,
+  required void Function()? onPressed,
   required String buttonName,
-  required IconData buttonIcon,
 }) {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 10.w),
-    decoration: BoxDecoration(
-        color: iconGreyColor, borderRadius: BorderRadius.circular(20.sp)),
-    height: 80.h,
-    child: Column(
-      children: [
-        IconButton(
-          onPressed: () {
-            switch (buttonName) {
-              case "Delete Chat":
-                context.read<ChatBloc>().add(
-                      DeletAChatEvent(chatModel: chatModel),
-                    );
-                break;
-              case "Clear Chat":
-                // clear chat function
-                break;
-              default:
-            }
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            buttonIcon,size: 30.sp,
-            color: kWhite,
-          ),
-        ),
-        TextWidgetCommon(
-          text: buttonName,
-          textColor: Theme.of(context).colorScheme.onPrimary,
-        )
-      ],
+  return TextButton(
+    onPressed: onPressed,
+    child: TextWidgetCommon(
+      text: buttonName,
+      textColor: buttonSmallTextColor,
+      fontSize: 16.sp,
+      fontWeight: FontWeight.w500,
     ),
   );
 }

@@ -18,6 +18,7 @@ const usersCollection = 'users';
 const chatsCollection = 'chats';
 const groupsCollection = 'groups';
 const messagesCollection = 'messages';
+const statusCollection = 'statuses';
 const attachmentsCollection = 'attachments';
 const starredMessagesCollection = 'starred_collection';
 
@@ -76,6 +77,20 @@ const dbGroupNotificationCount = 'group_notification_count';
 const dbGroupIsIncomingMessage = 'is_incoming_group_message';
 const dbIsGroupOpen = 'is_group_open';
 const dbGroupCreatedBy = 'group_created_by';
+
+
+// status db field name
+const dbStatusId = 'status_id';
+const dbStatusUploaderName = 'status_uploader_name';
+const dbStatusUploaderId = 'status_uploader_id';
+const dbStatusContentList = 'status_content_list';
+const dbStatusType = 'statusType';
+const dbStatusCaption = 'statusCaption';
+const dbStatusContent = 'status_content';
+const dbStatusUploadedTime = 'status_uploaded_time';
+const dbStatusDuration = 'status_duration';
+const dbisStatusViewed= 'is_viewed';
+const dbTextStatusBgColor = 'text_status_bg_color';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

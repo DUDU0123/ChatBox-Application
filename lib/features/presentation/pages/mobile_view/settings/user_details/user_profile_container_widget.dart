@@ -8,6 +8,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
+
+Future<dynamic> userProfilePhotoPickBottomSheetWidget(
+    {required BuildContext context}) {
+  return assetSelectorBottomSheet(
+    firstButtonIcon: Icons.photo,
+    secondButtonIcon: Icons.camera_alt_outlined,
+    context: context,
+    firstButtonName: "Gallery",
+    secondButtonName: "Camera",
+    firstButtonAction: () {
+      context.read<UserBloc>().add(
+            const PickProfileImageFromDevice(
+              imageSource: ImageSource.gallery,
+            ),
+          );
+      Navigator.pop(context);
+    },
+    secondButtonAction: () {
+      context.read<UserBloc>().add(
+            const PickProfileImageFromDevice(
+              imageSource: ImageSource.camera,
+            ),
+          );
+      Navigator.pop(context);
+    },
+  );
+}
 
 Widget userProfileImageContainerWidget(
     {required BuildContext context, required double containerRadius}) {
@@ -35,9 +63,13 @@ Widget userProfileImageContainerWidget(
                 child: containerRadius >= 160
                     ? Align(
                         alignment: Alignment.bottomRight,
-                        child: CameraIconButton(onPressed: () {
-                          profileImageSelectorBottomSheet(context: context);
-                        },),
+                        child: CameraIconButton(
+                          onPressed: () {
+                            userProfilePhotoPickBottomSheetWidget(
+                              context: context,
+                            );
+                          },
+                        ),
                       )
                     : zeroMeasureWidget,
               )
@@ -76,7 +108,9 @@ Widget nullImageReplaceWidget(
                     alignment: Alignment.bottomRight,
                     child: CameraIconButton(
                       onPressed: () {
-                        profileImageSelectorBottomSheet(context: context);
+                        userProfilePhotoPickBottomSheetWidget(
+                          context: context,
+                        );
                       },
                     ),
                   )

@@ -6,6 +6,7 @@ sealed class GroupEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
 class LoadGroupPermissionsEvent extends GroupEvent {
   final GroupModel groupModel;
   final PageTypeEnum pageTypeEnum;
@@ -28,10 +29,8 @@ class CreateGroupEvent extends GroupEvent {
     this.groupProfileImage,
   });
   @override
-  List<Object> get props => [
-    context,
-        newGroupData,groupProfileImage??File('')
-      ];
+  List<Object> get props =>
+      [context, newGroupData, groupProfileImage ?? File('')];
 }
 
 class GetAllGroupsEvent extends GroupEvent {
@@ -48,7 +47,19 @@ class UpdateGroupEvent extends GroupEvent {
   });
   @override
   List<Object> get props => [
-        updatedGroupData,groupProfileImage??File(''),
+        updatedGroupData,
+        groupProfileImage ?? File(''),
+      ];
+}
+
+class ClearGroupChatEvent extends GroupEvent {
+  final String groupID;
+  const ClearGroupChatEvent({
+    required this.groupID,
+  });
+  @override
+  List<Object> get props => [
+        groupID,
       ];
 }
 
@@ -60,13 +71,14 @@ class DeleteGroupEvent extends GroupEvent {
   @override
   List<Object> get props => [groupID];
 }
+
 class GroupImagePickEvent extends GroupEvent {
   final File? pickedFile;
   const GroupImagePickEvent({
     this.pickedFile,
   });
   @override
-  List<Object> get props => [pickedFile??''];
+  List<Object> get props => [pickedFile ?? ''];
 }
 // class ResetPickedFileEvent extends GroupEvent{}
 
@@ -84,7 +96,12 @@ class UpdateMemberPermissionEvent extends GroupEvent {
   });
 
   @override
-  List<Object> get props => [permission, isEnabled, pageTypeEnum,groupModel??const GroupModel(),];
+  List<Object> get props => [
+        permission,
+        isEnabled,
+        pageTypeEnum,
+        groupModel ?? const GroupModel(),
+      ];
 }
 
 class UpdateAdminPermissionEvent extends GroupEvent {
@@ -101,5 +118,10 @@ class UpdateAdminPermissionEvent extends GroupEvent {
   });
 
   @override
-  List<Object> get props => [permission, isEnabled, pageTypeEnum,groupModel??const GroupModel(),];
+  List<Object> get props => [
+        permission,
+        isEnabled,
+        pageTypeEnum,
+        groupModel ?? const GroupModel(),
+      ];
 }

@@ -80,12 +80,14 @@ class ChatListTileWidget extends StatelessWidget {
             ));
       },
       onLongPress: () {
-        if (chatModel != null) {
+          
           chatTileActionsOnLongPressMethod(
+            isGroup: isGroup,
+            groupModel: groupModel,
             context: context,
-            chatModel: chatModel!,
+            chatModel: chatModel,
           );
-        }
+        
       },
       child: ListTile(
         contentPadding: contentPadding,

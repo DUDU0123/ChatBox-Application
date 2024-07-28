@@ -76,3 +76,8 @@ enum AdminsGroupPermission {
   sendMessages,
   addMembers,
 }
+enum StatusType {
+  video,
+  image,
+  text,
+}

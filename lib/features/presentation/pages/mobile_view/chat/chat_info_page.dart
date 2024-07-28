@@ -12,7 +12,6 @@ import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/inf
 import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/info_page_user_details_part_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
 class ChatInfoPage extends StatelessWidget {
   const ChatInfoPage({
@@ -28,6 +27,8 @@ class ChatInfoPage extends StatelessWidget {
   final bool isGroup;
   @override
   Widget build(BuildContext context) {
+    print(groupData?.groupAdmins);
+      print(groupData?.groupMembers);
     TextEditingController groupNameEditController = TextEditingController();
     List<String>? groupAdmins = groupData?.groupAdmins;
     bool isAdmin =
@@ -98,9 +99,29 @@ class ChatInfoPage extends StatelessWidget {
                 groupData: groupData,
               ),
               kHeight20,
-              isGroup && groupAdmins != null
-                  ? groupAdmins.contains(firebaseAuth.currentUser?.uid)
-                      ? commonListTile(
+              // isGroup && groupAdmins != null
+              //     ? groupAdmins.contains(firebaseAuth.currentUser?.uid)
+              //         ? commonListTile(
+              //             leading: Icon(
+              //               Icons.delete_outline,
+              //               color: kRed,
+              //               size: 28.sp,
+              //             ),
+              //             color: kRed,
+              //             onTap: () {},
+              //             title: "Delete Group",
+              //             isSmallTitle: false,
+              //             context: context,
+              //           )
+              //         : zeroMeasureWidget
+              //     : zeroMeasureWidget,
+           groupData!.groupMembers!.contains(firebaseAuth.currentUser?.uid)?   infoPageListTileWidget(
+                groupData: groupData,
+                context: context,
+                isGroup: isGroup,
+                receiverData: receiverData,
+                isFirstTile: true,
+              ): commonListTile(
                           leading: Icon(
                             Icons.delete_outline,
                             color: kRed,
@@ -111,16 +132,7 @@ class ChatInfoPage extends StatelessWidget {
                           title: "Delete Group",
                           isSmallTitle: false,
                           context: context,
-                        )
-                      : zeroMeasureWidget
-                  : zeroMeasureWidget,
-              infoPageListTileWidget(
-                groupData: groupData,
-                context: context,
-                isGroup: isGroup,
-                receiverData: receiverData,
-                isFirstTile: true,
-              ),
+                        ),
               infoPageListTileWidget(
                 groupData: groupData,
                 context: context,

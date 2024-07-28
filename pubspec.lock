@@ -1181,6 +1181,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  status_view:
+    dependency: "direct main"
+    description:
+      name: status_view
+      sha256: aff3397295cf23d51c2206e56da320e8095ea0340f31ea2395c8807186dac1ba
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
+  story_view:
+    dependency: "direct main"
+    description:
+      name: story_view
+      sha256: ab64063569178e405b643ab11bdc28d6e85333191e3c8b5556e864fe6c5b2a5a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.5"
   stream_channel:
     dependency: transitive
     description:

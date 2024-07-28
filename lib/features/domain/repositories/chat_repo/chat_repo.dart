@@ -12,6 +12,7 @@ abstract class ChatRepo {
   void deleteAChat({
     required ChatModel chatModel
   });
+  Future<void> clearChatMethodInOneToOne({required String chatID});
   // Stream<List<MessageModel>> getAllMessages({
   //   required String chatId,
   // });
