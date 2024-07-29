@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
@@ -18,7 +18,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
-
 class FileShowPage extends StatefulWidget {
   const FileShowPage(
       {super.key,
@@ -186,49 +185,22 @@ class _FileShowPageState extends State<FileShowPage> {
                     IconButton(
                       onPressed: () async {
                         if (widget.fileToShow != null) {
-                          // final statusContentUrl = await CommonDBFunctions
-                          //     .saveUserFileToDataBaseStorage(
-                          //         ref:
-                          //             "users_statuses/${firebaseAuth.currentUser?.uid}",
-                          //         file: widget.fileToShow!);
-                          // UploadedStatusModel uploadedStatusModel =
-                          //     UploadedStatusModel(
-                          //   statusCaption: fileCaptionController.text,
-                          //   statusUploadedTime: DateTime.now().toString(),
-                          //   isViewedStatus: false,
-                          //   statusDuration: videoPlayerController != null
-                          //       ? videoPlayerController!.value.duration
-                          //           .toString()
-                          //       : "10",
-                          //   statusType: widget.fileType == FileType.video
-                          //       ? StatusType.video
-                          //       : StatusType.image,
-                          //   statusContent: statusContentUrl,
-                          // );
-                          // List<UploadedStatusModel>? uploadedStatusList =
-                          //     widget.statusModel?.statusList;
-                          // uploadedStatusList?.add(uploadedStatusModel);
-                          // StatusModel statusModel = StatusModel(
-                          //     statusUploaderId: firebaseAuth.currentUser?.uid,
-                          //     statusList: uploadedStatusList);
-                          // context.read<StatusBloc>().add(StatusUploadEvent(
-                          //       statusModel: statusModel,
-                          //     ));
-                          newStatusUploadMethod(
+                          StatusModel statusModel = await newStatusUploadMethod(
                             fileToShow: widget.fileToShow!,
+                            currentStatusModel: widget.statusModel,
                             fileCaption: fileCaptionController.text,
-                            videoDuration: videoPlayerController != null
+                            statusDuration: videoPlayerController != null
                                 ? videoPlayerController!.value.duration
                                     .toString()
                                 : "10",
-                            context: context,
                             statusType: widget.fileType == FileType.video
                                 ? StatusType.video
                                 : StatusType.image,
-                            currentStatusList: widget.statusModel?.statusList,
                           );
+                          context.read<StatusBloc>().add(StatusUploadEvent(
+                                statusModel: statusModel,
+                              ));
                         }
-
                         Navigator.pop(context);
                         context.read<StatusBloc>().add(const FileResetEvent());
                       },
@@ -252,33 +224,45 @@ class _FileShowPageState extends State<FileShowPage> {
     );
   }
 }
-
-newStatusUploadMethod({
+Future<StatusModel> newStatusUploadMethod({
   required File? fileToShow,
   required String fileCaption,
-  required String videoDuration,
-  required BuildContext context,
+  required String statusDuration,
   required StatusType statusType,
+  StatusModel? currentStatusModel,
   final List<UploadedStatusModel>? currentStatusList,
 }) async {
   final statusContentUrl =
       await CommonDBFunctions.saveUserFileToDataBaseStorage(
-          ref: "users_statuses/${firebaseAuth.currentUser?.uid}",
-          file: fileToShow!);
+    ref: "users_statuses/${firebaseAuth.currentUser?.uid}",
+    file: fileToShow!,
+  );
+
   UploadedStatusModel uploadedStatusModel = UploadedStatusModel(
+    uploadedStatusId: DateTime.now().millisecondsSinceEpoch.toString(),
     statusCaption: fileCaption,
     statusUploadedTime: DateTime.now().toString(),
     isViewedStatus: false,
-    statusDuration: videoDuration,
+    statusDuration: statusDuration,
     statusType: statusType,
     statusContent: statusContentUrl,
   );
-  List<UploadedStatusModel>? uploadedStatusList = currentStatusList;
-  uploadedStatusList?.add(uploadedStatusModel);
+
+  List<UploadedStatusModel> uploadedStatusList =
+      currentStatusModel?.statusList ?? [];
+  uploadedStatusList.add(uploadedStatusModel);
+
+  // Create or update StatusModel
   StatusModel statusModel = StatusModel(
-      statusUploaderId: firebaseAuth.currentUser?.uid,
-      statusList: uploadedStatusList);
-  context.read<StatusBloc>().add(StatusUploadEvent(
-        statusModel: statusModel,
-      ));
+    statusUploaderId: firebaseAuth.currentUser?.uid ?? '',
+    statusList: uploadedStatusList,
+  );
+
+  // If currentStatusModel is not null, copy its other fields (if any)
+  if (currentStatusModel != null) {
+    statusModel = currentStatusModel.copyWith(
+      statusList: uploadedStatusList,
+    );
+  }
+  return statusModel;
 }

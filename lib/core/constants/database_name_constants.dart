@@ -82,6 +82,7 @@ const dbGroupCreatedBy = 'group_created_by';
 
 // status db field name
 const dbStatusId = 'status_id';
+const dbUploadedStatusId = 'uploaded_status_id';
 const dbStatusUploaderName = 'status_uploader_name';
 const dbStatusUploaderId = 'status_uploader_id';
 const dbStatusContentList = 'status_content_list';
@@ -91,6 +92,7 @@ const dbStatusContent = 'status_content';
 const dbStatusUploadedTime = 'status_uploaded_time';
 const dbStatusDuration = 'status_duration';
 const dbisStatusViewed= 'is_viewed';
+const dbStatusModelTimeStamp = 'timestamp';
 const dbTextStatusBgColor = 'text_status_bg_color';
 
 // database storage folder name or file name

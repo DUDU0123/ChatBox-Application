@@ -7,6 +7,7 @@ abstract class StatusRepository{
   Stream<List<StatusModel>>? getAllStatusFromDB();
   // method to delete a status
   Future<bool> deleteStatusFromDB({
-    required String statusId,
+    required String statusModelId,
+    required String uploadedStatusId
   });
 }

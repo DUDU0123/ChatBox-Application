@@ -1,6 +1,7 @@
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:chatbox/features/domain/entities/status_entity/status_entity.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StatusModel extends StatusEntity {
   const StatusModel({
@@ -8,6 +9,7 @@ class StatusModel extends StatusEntity {
     super.statusUploaderName,
     super.statusList,
     super.statusUploaderId,
+    super.timeStamp,
   });
 
   factory StatusModel.fromJson({required Map<String, dynamic> map}) {
@@ -19,6 +21,10 @@ class StatusModel extends StatusEntity {
           ?.map((item) =>
               UploadedStatusModel.fromJson(item as Map<String, dynamic>))
           .toList(),
+          // timeStamp: map[dbStatusModelTimeStamp]
+          timeStamp: map[dbStatusModelTimeStamp] is Timestamp
+          ? (map[dbStatusModelTimeStamp] as Timestamp).toDate()
+          : null,
     );
   }
 
@@ -30,6 +36,7 @@ class StatusModel extends StatusEntity {
       dbStatusContentList: statusList
           ?.map((uploadedStatusModel) => uploadedStatusModel.toJson())
           .toList(),
+      dbStatusModelTimeStamp: timeStamp,
     };
   }
 
@@ -38,12 +45,14 @@ class StatusModel extends StatusEntity {
     String? statusUploaderName,
     String? statusUploaderId,
     List<UploadedStatusModel>? statusList,
+    dynamic timeStamp,
   }) {
     return StatusModel(
       statusId: statusId ?? this.statusId,
       statusUploaderName: statusUploaderName ?? this.statusUploaderName,
       statusUploaderId: statusUploaderId ?? this.statusUploaderId,
       statusList: statusList ?? this.statusList,
+      timeStamp: timeStamp ?? this.timeStamp,
     );
   }
 }

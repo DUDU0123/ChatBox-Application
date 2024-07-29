@@ -1,4 +1,5 @@
 import 'package:chatbox/core/service/locator.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/firebase_options.dart';
 import 'package:chatbox/features/presentation/root_widget_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  CommonDBFunctions.startCleanupTimer();
   initializeServiceLocator();
   if (kIsWeb) {
     await Firebase.initializeApp(

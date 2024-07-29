@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -11,6 +12,7 @@ import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 
 class CommonDBFunctions {
   static Future<String> saveUserFileToDataBaseStorage({
@@ -261,8 +263,7 @@ class CommonDBFunctions {
     }
   }
 
-    // method to get/read all status
-
+  // method to get/read all status
   static Stream<StatusModel?>? getCurrentUserStatus() {
   final currentUser = firebaseAuth.currentUser?.uid;
   try {
@@ -274,23 +275,58 @@ class CommonDBFunctions {
         .collection(usersCollection)
         .doc(currentUser)
         .collection(statusCollection)
-        .orderBy('timestamp', descending: true)  // Assuming there's a timestamp field
+        .orderBy('timestamp', descending: true)  // Ensure you have a 'timestamp' field in each status document
         .limit(1)
         .snapshots()
         .map((snapshot) {
       if (snapshot.docs.isNotEmpty) {
+        log("Fetched status data: ${snapshot.docs.first.data()}");
         return StatusModel.fromJson(map: snapshot.docs.first.data());
       }
       return null;
     });
-  }on FirebaseException catch (e) {
-      log("Firebase Auth exception on upload status: ${e.message}");
-      return null;
-    } catch (e, stackTrace) {
-      log("Error while uploading status: $e", stackTrace: stackTrace);
-      return null;
-    }
+  } on FirebaseException catch (e) {
+    log("Firebase Auth exception on upload status: ${e.message}");
+    return null;
+  } catch (e, stackTrace) {
+    log("Error while uploading status: $e", stackTrace: stackTrace);
+    return null;
+  }
 }
+
+
+static void startCleanupTimer() {
+  Timer.periodic(const Duration(hours: 1), (timer) async {
+    await deleteOldStatuses();
+  });
+}
+
+static Future<void> deleteOldStatuses() async {
+  final now = DateTime.now();
+  final cutoffTime = now.subtract(const Duration(hours: 24));
+
+  final currentUser = firebaseAuth.currentUser?.uid;
+  if (currentUser == null) {
+    debugPrint("No current user found.");
+    return;
+  }
+
+  final statusCol = fireStore
+      .collection(usersCollection)
+      .doc(currentUser)
+      .collection(statusCollection);
+
+  final oldStatusesQuery = statusCol
+      .where('timestamp', isLessThan: cutoffTime)
+      .get();
+
+  final oldStatuses = await oldStatusesQuery;
+
+  for (final doc in oldStatuses.docs) {
+    await doc.reference.delete();
+  }
+}
+
 }
 
 List<T> filterPermissions<T>(Map<T, bool> permissions) {

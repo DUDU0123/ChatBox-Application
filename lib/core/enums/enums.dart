@@ -23,6 +23,7 @@ enum PageTypeEnum {
   broadCastMessageInsidePage,
   groupDetailsAddPage,
   groupInfoPage,
+  fromStatusPage,
   none,
 }
 

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
@@ -10,6 +11,7 @@ import 'package:chatbox/features/presentation/widgets/status/status_tile_widget.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class StatusHomePage extends StatefulWidget {
   const StatusHomePage({super.key});
 
@@ -39,15 +41,16 @@ class _StatusHomePageState extends State<StatusHomePage> {
             children: [
               const SizedBox(height: 20),
               StreamBuilder<StatusModel?>(
-                stream: CommonDBFunctions.getCurrentUserStatus(),
-                builder: (context, snapshot) {
-                  return statusTileWidget(
-                    isCurrentUser: true,
-                    statusModel: snapshot.data,
-                    context: context,
-                  );
-                }
-              ),
+                  stream: CommonDBFunctions.getCurrentUserStatus(),
+                  builder: (context, snapshot) {
+                    log("Error fetching current status: ${snapshot.error}");
+                    log("Current status of current user: ${snapshot.data}");
+                    return statusTileWidget(
+                      isCurrentUser: true,
+                      statusModel: snapshot.data,
+                      context: context,
+                    );
+                  }),
               kHeight15,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -72,14 +75,24 @@ class _StatusHomePageState extends State<StatusHomePage> {
                         return emptyShowWidget(
                             context: context, text: "No status");
                       }
+                      final otherUsersStatuses = snapshot.data!
+                          .where((status) =>
+                              status.statusUploaderId !=
+                              firebaseAuth.currentUser?.uid)
+                          .toList();
+
+                      if (otherUsersStatuses.isEmpty) {
+                        return emptyShowWidget(
+                            context: context, text: "No status");
+                      }
                       return ListView.separated(
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 20),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 20),
-                        itemCount: snapshot.data!.length,
+                        itemCount: otherUsersStatuses.length,
                         itemBuilder: (context, index) {
-                          final status = snapshot.data![index];
+                          final status = otherUsersStatuses[index];
                           return statusTileWidget(
                             isCurrentUser: false,
                             context: context,

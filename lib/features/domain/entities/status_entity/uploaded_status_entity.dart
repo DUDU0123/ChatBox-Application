@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class UploadedStatusEntity extends Equatable {
+  final String? uploadedStatusId;
   final StatusType? statusType;
   final String? statusCaption;
   final String? statusContent;
@@ -11,6 +12,7 @@ class UploadedStatusEntity extends Equatable {
   final bool? isViewedStatus;
   final Color? textStatusBgColor;
   const UploadedStatusEntity({
+    this.uploadedStatusId,
     this.statusType,
     this.statusCaption,
     this.statusContent,
@@ -22,6 +24,7 @@ class UploadedStatusEntity extends Equatable {
 
   @override
   List<Object?> get props => [
+        uploadedStatusId,
         statusType,
         statusCaption,
         statusContent,
@@ -31,4 +34,3 @@ class UploadedStatusEntity extends Equatable {
         textStatusBgColor,
       ];
 }
-

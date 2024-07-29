@@ -18,7 +18,7 @@ List<StoryItem?> buildStatusItems({
   required StatusModel statusModel,
   required BuildContext context,
 }) {
-  return statusModel.statusList!
+  return statusModel.statusList!=null? statusModel.statusList!
       .map((status) {
         switch (status.statusType) {
           case StatusType.video:
@@ -26,20 +26,13 @@ List<StoryItem?> buildStatusItems({
               status.statusContent ?? "",
               controller: controller,
               caption:
-                  //  TextWidgetCommon(
-                  //   text: status.statusCaption ?? '',
-                  //   textAlign: TextAlign.center,
-                  //   textColor: kWhite,
-                  //   fontWeight: FontWeight.w400,
-                  //   fontSize: 18.sp,
-                  // ),
-                  statusCaptionWidget(
-                context: context,
-                commonProvider:
-                    Provider.of<CommonProvider>(context, listen: true),
-                textToShow: status.statusCaption ?? '',
-                noOfLinesToShowDefault: 2,
-              ),
+                   TextWidgetCommon(
+                    text: status.statusCaption ?? '',
+                    textAlign: TextAlign.center,
+                    textColor: kWhite,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 18.sp,
+                  ),
             );
           case StatusType.image:
             return StoryItem.pageImage(
@@ -66,7 +59,7 @@ List<StoryItem?> buildStatusItems({
         }
       })
       .where((item) => item != null)
-      .toList();
+      .toList():[];
 }
 
 Widget statusCaptionWidget({

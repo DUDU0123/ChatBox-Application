@@ -16,8 +16,13 @@ class StatusRepositoryImpl extends StatusRepository {
   Future<bool> uploadStatusToDB({required StatusModel statusModel}) {
     return statusData.uploadStatus(statusModel: statusModel);
   }
+
   @override
-  Future<bool> deleteStatusFromDB({required String statusId}) {
-    return statusData.deleteStatus(statusId: statusId);
+  Future<bool> deleteStatusFromDB(
+      {required String statusModelId, required String uploadedStatusId}) {
+    return statusData.deleteStatus(
+      statusModelId: statusModelId,
+      uploadedStatusId: uploadedStatusId,
+    );
   }
 }

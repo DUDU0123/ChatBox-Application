@@ -23,13 +23,16 @@ class StatusUploadEvent extends StatusEvent {
 class StatusShareEvent extends StatusEvent {}
 
 class StatusDeleteEvent extends StatusEvent {
-  final String statusId;
+  final String statusModelId;
+  final String uploadedStatusId;
   const StatusDeleteEvent({
-    required this.statusId,
+    required this.statusModelId,
+    required this.uploadedStatusId,
   });
   @override
   List<Object> get props => [
-        statusId,
+        statusModelId,
+        uploadedStatusId,
       ];
 }
 

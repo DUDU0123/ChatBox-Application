@@ -12,9 +12,11 @@ class UploadedStatusModel extends UploadedStatusEntity {
     super.isViewedStatus,
     super.textStatusBgColor,
     super.statusDuration,
+    super.uploadedStatusId,
   });
   factory UploadedStatusModel.fromJson(Map<String, dynamic> map) {
     return UploadedStatusModel(
+      uploadedStatusId: map[dbUploadedStatusId],
       statusType: map[dbStatusType]!=null?StatusType.values.byName(map[dbStatusType]):null,
       statusCaption: map[dbStatusCaption],
       statusContent: map[dbStatusContent],
@@ -28,6 +30,7 @@ class UploadedStatusModel extends UploadedStatusEntity {
   }
   Map<String, dynamic> toJson() {
     return {
+      dbUploadedStatusId: uploadedStatusId,
       dbStatusType: statusType?.name,
       dbStatusCaption: statusCaption,
       dbStatusContent: statusContent,
@@ -45,7 +48,8 @@ class UploadedStatusModel extends UploadedStatusEntity {
     String? statusUploadedTime,
     String? statusDuration,
     bool? isViewedStatus,
-    Color? textStatusBgColor
+    Color? textStatusBgColor,
+    String? uploadedStatusId,
   }) {
     return UploadedStatusModel(
       statusType: statusType ?? this.statusType,
@@ -55,6 +59,7 @@ class UploadedStatusModel extends UploadedStatusEntity {
       statusDuration: statusDuration ?? this.statusDuration,
       isViewedStatus: isViewedStatus ?? this.isViewedStatus,
       textStatusBgColor: textStatusBgColor ?? this.textStatusBgColor,
+      uploadedStatusId: uploadedStatusId ?? this.uploadedStatusId,
     );
   }
 }

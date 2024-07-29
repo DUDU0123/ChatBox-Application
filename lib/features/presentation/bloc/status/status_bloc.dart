@@ -50,6 +50,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
 
   FutureOr<void> statusUploadEvent(
       StatusUploadEvent event, Emitter<StatusState> emit) async {
+    emit(StatusLoadingState());
     try {
       final bool isUploaded = await statusRepository.uploadStatusToDB(
           statusModel: event.statusModel);
@@ -74,8 +75,10 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
   FutureOr<void> statusDeleteEvent(
       StatusDeleteEvent event, Emitter<StatusState> emit) async {
     try {
-      final bool isDeleted =
-          await statusRepository.deleteStatusFromDB(statusId: event.statusId);
+      final bool isDeleted = await statusRepository.deleteStatusFromDB(
+        statusModelId: event.statusModelId,
+        uploadedStatusId: event.uploadedStatusId,
+      );
       emit(StatusState(
         statusList: state.statusList,
         message: isDeleted ? "Status sent" : "Unable to sent",

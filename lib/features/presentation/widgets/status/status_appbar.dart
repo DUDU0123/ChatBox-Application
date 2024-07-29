@@ -1,6 +1,7 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 Widget statusAppBar(
     {required String userName,
     required String howHours,
+    required String? statusUploaderImage,
+    required BuildContext context,
     void Function()? shareMethod,
     void Function()? deleteMethod}) {
   return Padding(
@@ -26,9 +29,10 @@ Widget statusAppBar(
         children: [
           Row(
             children: [
-              CircleAvatar(
+             statusUploaderImage!=null? CircleAvatar(
                 radius: 24.sp,
-              ),
+                backgroundImage: NetworkImage(statusUploaderImage),
+              ):nullImageReplaceWidget(containerRadius: 30, context: context),
               kWidth10,
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -50,6 +54,7 @@ Widget statusAppBar(
             ],
           ),
           PopupMenuButton(
+            iconColor: iconGreyColor,
             itemBuilder: (context) => [
               commonPopUpMenuItem(
                 context: context,

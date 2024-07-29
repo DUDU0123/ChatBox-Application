@@ -40,29 +40,33 @@ class StatusData {
   // method to upload a status
   Future<bool> uploadStatus({required StatusModel statusModel}) async {
     try {
+      final currentUser = firebaseAuth.currentUser?.uid;
       if (currentUser == null) {
         log("No current user found.");
         return false;
       }
-      final statusDocumentReference = await firebaseFireStore
-          .collection(usersCollection)
-          .doc(currentUser)
-          .collection(statusCollection)
-          .add(
-            statusModel.toJson(),
-          );
-      final statusDocId = statusDocumentReference.id;
-      final updatedStatusModel = statusModel.copyWith(
-        statusId: statusDocId,
-      );
-      await FirebaseFirestore.instance
-          .collection(usersCollection)
-          .doc(currentUser)
-          .collection(statusCollection)
-          .doc(statusDocId)
-          .update(
-            updatedStatusModel.toJson(),
-          );
+
+      // Save the status model to Firestore
+      if (statusModel.statusId == null) {
+        final statusDocumentReference = await fireStore
+            .collection(usersCollection)
+            .doc(firebaseAuth.currentUser?.uid)
+            .collection(statusCollection)
+            .add(statusModel.toJson()
+              ..[dbStatusModelTimeStamp] = FieldValue.serverTimestamp());
+        statusModel = statusModel.copyWith(
+          statusId: statusDocumentReference.id,
+        );
+        await statusDocumentReference.update(statusModel.toJson());
+      } else {
+        await fireStore
+            .collection(usersCollection)
+            .doc(firebaseAuth.currentUser?.uid)
+            .collection(statusCollection)
+            .doc(statusModel.statusId)
+            .update(statusModel.toJson());
+      }
+
       return true;
     } on FirebaseException catch (e) {
       log("Firebase Auth exception on upload status: ${e.message}");
@@ -73,35 +77,7 @@ class StatusData {
     }
   }
 
-  // method to get/read all status
-  // Stream<List<StatusModel>>? getAllStatus() {
-  //   try {
-  //     if (currentUser == null) {
-  //       log("No current user found.");
-  //     }
-  //     return firebaseFireStore
-  //         .collection(usersCollection)
-  //         .doc(currentUser)
-  //         .collection(statusCollection)
-  //         .snapshots()
-  //         .map((statusSnapShot) {
-  //       return statusSnapShot.docs
-  //           .map(
-  //             (statusDoc) => StatusModel.fromJson(
-  //               map: statusDoc.data(),
-  //             ),
-  //           )
-  //           .toList();
-  //     });
-  //   } on FirebaseException catch (e) {
-  //     log("Firebase Auth exception on upload status: ${e.message}");
-  //     return null;
-  //   } catch (e, stackTrace) {
-  //     log("Error while uploading status: $e", stackTrace: stackTrace);
-  //     return null;
-  //   }
-  // }
-Stream<List<StatusModel>>? getAllStatus() {
+  Stream<List<StatusModel>>? getAllStatus() {
     final currentUser = firebaseAuth.currentUser?.uid;
     if (currentUser == null) {
       log("No current user found.");
@@ -115,57 +91,100 @@ Stream<List<StatusModel>>? getAllStatus() {
         .collection(contactsCollection)
         .snapshots()
         .map((contactsSnapshot) {
-          // Get the list of contact IDs
-          return contactsSnapshot.docs.map((doc) => doc.id).toList();
-        });
+      // Get the list of contact IDs
+      return contactsSnapshot.docs.map((doc) => doc.id).toList();
+    });
 
     // Combine the contacts stream with status streams
-    return contactsStream
-        .switchMap((contactIds) {
-          // Create a stream for each contact's status
-          final statusStreams = contactIds.map((contactId) {
-            return firebaseFireStore
-                .collection(usersCollection)
-                .doc(contactId)
-                .collection(statusCollection)
-                .snapshots()
-                .map((statusSnapShot) {
-              return statusSnapShot.docs
-                  .map(
-                    (statusDoc) => StatusModel.fromJson(
-                      map: statusDoc.data(),
-                    ),
-                  )
-                  .toList();
-            });
-          }).toList();
-
-          // Combine the streams into one
-          return CombineLatestStream.list(statusStreams).map((statusLists) {
-            // Flatten the list of lists into a single list
-            return statusLists.expand((statusList) => statusList).toList();
-          });
+    return contactsStream.switchMap((contactIds) {
+      // Create a stream for each contact's status
+      final statusStreams = contactIds.map((contactId) {
+        return firebaseFireStore
+            .collection(usersCollection)
+            .doc(contactId)
+            .collection(statusCollection)
+            .snapshots()
+            .map((statusSnapShot) {
+          return statusSnapShot.docs
+              .map(
+                (statusDoc) => StatusModel.fromJson(
+                  map: statusDoc.data(),
+                ),
+              )
+              .toList();
         });
+      }).toList();
+
+      // Combine the streams into one
+      return CombineLatestStream.list(statusStreams).map((statusLists) {
+        // Flatten the list of lists into a single list
+        return statusLists.expand((statusList) => statusList).toList();
+      });
+    });
   }
 
-
   // method to share a status
-  shareStatus() {}
-  // method to delete a status
-  Future<bool> deleteStatus({
-    required String statusId,
-  }) async {
+  shareStatus(
+      {required String statusModelId, required String uploadedStatusId}) async {
     try {
       if (currentUser == null) {
         log("No current user found.");
         return false;
       }
-      await FirebaseFirestore.instance
+      final statusDocRef = FirebaseFirestore.instance
           .collection(usersCollection)
           .doc(currentUser)
           .collection(statusCollection)
-          .doc(statusId)
-          .delete();
+          .doc(statusModelId);
+      final docSnapshot = await statusDocRef.get();
+      if (!docSnapshot.exists) {
+        log("StatusModel document not found.");
+        return false;
+      }
+      
+      return true;
+    } on FirebaseException catch (e) {
+      log("Firebase Auth exception on deleting status: ${e.message}");
+      return false;
+    } catch (e, stackTrace) {
+      log("Error while deleting status: $e", stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  // method to delete a status
+  Future<bool> deleteStatus(
+      {required String statusModelId, required String uploadedStatusId}) async {
+    try {
+      if (currentUser == null) {
+        log("No current user found.");
+        return false;
+      }
+      final statusDocRef = FirebaseFirestore.instance
+          .collection(usersCollection)
+          .doc(currentUser)
+          .collection(statusCollection)
+          .doc(statusModelId);
+      final docSnapshot = await statusDocRef.get();
+      if (!docSnapshot.exists) {
+        log("StatusModel document not found.");
+        return false;
+      }
+      final statusModel =
+          StatusModel.fromJson(map: docSnapshot.data() as Map<String, dynamic>);
+      final updatedStatusList = statusModel.statusList
+          ?.where((status) => status.uploadedStatusId != uploadedStatusId)
+          .toList();
+      if (updatedStatusList == null) {
+        log("No statuses found in statusList.");
+        return false;
+      }
+      // Update the StatusModel with the new statusList
+      final updatedStatusModel = statusModel.copyWith(
+        statusList: updatedStatusList,
+      );
+
+      await statusDocRef.update(updatedStatusModel.toJson());
       return true;
     } on FirebaseException catch (e) {
       log("Firebase Auth exception on deleting status: ${e.message}");

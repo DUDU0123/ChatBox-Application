@@ -1,20 +1,16 @@
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
-import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/status/status_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/status/status_pages/status_show_page.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/file_show_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/settings/profile_image_selector_bottom_sheet.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path/path.dart';
 import 'package:status_view/status_view.dart';
 
 Widget statusTileWidget({
@@ -36,14 +32,19 @@ Widget statusTileWidget({
     leading: Stack(
       children: [
         StreamBuilder<UserModel?>(
-            stream: statusModel != null
-                ? statusModel.statusUploaderId != null
-                    ? CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
-                        userId: statusModel.statusUploaderId!)
-                    : null
-                : null,
+            stream:
+                CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
+                    userId: isCurrentUser != null
+                        ? isCurrentUser
+                            ? firebaseAuth.currentUser!.uid
+                            : statusModel != null
+                                ? statusModel.statusId ?? ''
+                                : firebaseAuth.currentUser!.uid
+                        : ''),
+
             builder: (context, snapshot) {
               return StatusView(
+                padding: 0,
                 indexOfSeenStatus: 2,
                 numberOfStatus: statusModel != null
                     ? statusModel.statusList != null
@@ -52,13 +53,17 @@ Widget statusTileWidget({
                     : 0,
                 radius: 30,
                 strokeWidth: 2,
-                seenColor: Colors.black,
-                unSeenColor: buttonSmallTextColor,
+                seenColor: !isCurrentUser!
+                    ? iconGreyColor
+                    : darkLinearGradientColorOne,
+                unSeenColor: !isCurrentUser
+                    ? lightLinearGradientColorOne
+                    : darkLinearGradientColorOne,
                 centerImageUrl: snapshot.data?.userProfileImage ??
                     "https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg",
               );
             }),
-        if (statusModel == null && isCurrentUser!)
+        if (isCurrentUser!)
           Positioned(
             bottom: 0,
             right: 0,
@@ -76,6 +81,7 @@ Widget statusTileWidget({
                             statusType: StatusType.image,
                           ),
                         );
+                    Navigator.pop(context);
                   },
                   firstButtonIcon: Icons.photo,
                   secondButtonIcon: Icons.video_library_outlined,
@@ -86,6 +92,7 @@ Widget statusTileWidget({
                               context: context,
                               statusModel: statusModel),
                         );
+                    Navigator.pop(context);
                   },
                 );
               },
@@ -122,7 +129,7 @@ Widget statusTileWidget({
             : null,
         builder: (context, snapshot) {
           return TextWidgetCommon(
-            text: isCurrentUser!
+            text: isCurrentUser
                 ? "My status"
                 : snapshot.data?.contactName ??
                     snapshot.data?.userName ??
@@ -131,7 +138,7 @@ Widget statusTileWidget({
           );
         }),
     trailing: TextWidgetCommon(
-      text: !isCurrentUser!
+      text: !isCurrentUser
           ? statusModel?.statusList?.last.statusUploadedTime ?? ''
           : "",
       textColor: iconGreyColor,
