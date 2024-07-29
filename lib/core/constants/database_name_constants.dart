@@ -15,6 +15,7 @@ const userDbContactName = 'user_db_contact_name';
 
 // collections names
 const usersCollection = 'users';
+const contactsCollection = 'chat_box_contact';
 const chatsCollection = 'chats';
 const groupsCollection = 'groups';
 const messagesCollection = 'messages';

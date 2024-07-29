@@ -61,6 +61,24 @@ class ContactRepoImpl extends ContactRepository {
           });
         }
         contactsModelList.add(contactModel);
+        // Save each contact to the contacts collection for the current user if it doesn't already exist
+       if (firebaseAuth.currentUser?.uid != null && contactModel.chatBoxUserId != null) {
+            var currentUserDoc = firebaseFirestore
+                .collection(usersCollection)
+                .doc(firebaseAuth.currentUser?.uid);
+
+            var contactDoc = await currentUserDoc
+                .collection(contactsCollection)
+                .doc(contactModel.chatBoxUserId)
+                .get();
+
+            if (!contactDoc.exists) {
+              await currentUserDoc
+                  .collection(contactsCollection)
+                  .doc(contactModel.chatBoxUserId)
+                  .set(contactModel.toJson());
+            }
+          }
       }
 
       return contactsModelList;

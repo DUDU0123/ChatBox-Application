@@ -30,8 +30,10 @@ Future<File?> pickAsset({
 }) async {
   switch (assetSelected) {
     case StatusType.image:
+    log("Image selecting");
       return pickImage(imageSource: ImageSource.gallery);
     case StatusType.video:
+     log("Video selecting");
       return takeVideoAsset(imageSource: ImageSource.gallery);
     default:
       return null;

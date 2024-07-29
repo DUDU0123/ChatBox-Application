@@ -6,6 +6,7 @@ import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -259,6 +260,37 @@ class CommonDBFunctions {
       throw Exception("Error while deleteAllMessagesInDB: $e");
     }
   }
+
+    // method to get/read all status
+
+  static Stream<StatusModel?>? getCurrentUserStatus() {
+  final currentUser = firebaseAuth.currentUser?.uid;
+  try {
+    if (currentUser == null) {
+      log("No current user found.");
+      return Stream.value(null);
+    }
+    return fireStore
+        .collection(usersCollection)
+        .doc(currentUser)
+        .collection(statusCollection)
+        .orderBy('timestamp', descending: true)  // Assuming there's a timestamp field
+        .limit(1)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        return StatusModel.fromJson(map: snapshot.docs.first.data());
+      }
+      return null;
+    });
+  }on FirebaseException catch (e) {
+      log("Firebase Auth exception on upload status: ${e.message}");
+      return null;
+    } catch (e, stackTrace) {
+      log("Error while uploading status: $e", stackTrace: stackTrace);
+      return null;
+    }
+}
 }
 
 List<T> filterPermissions<T>(Map<T, bool> permissions) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -9,7 +10,12 @@ import 'package:equatable/equatable.dart';
 
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/domain/repositories/status_repo/status_repository.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../widgets/common_widgets/file_show_page.dart';
 
 part 'status_event.dart';
 part 'status_state.dart';
@@ -24,6 +30,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
     on<StatusShareEvent>(statusShareEvent);
     on<StatusDeleteEvent>(statusDeleteEvent);
     on<PickStatusEvent>(pickStatusEvent);
+    on<FileResetEvent>(fileResetEvent);
   }
 
   FutureOr<void> statusLoadEvent(
@@ -80,12 +87,42 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
   }
 
   FutureOr<void> pickStatusEvent(
-      PickStatusEvent event, Emitter<StatusState> emit) {
+      PickStatusEvent event, Emitter<StatusState> emit) async {
     try {
-      final file = pickAsset(assetSelected: event.statusType);
+      final file = await pickAsset(assetSelected: event.statusType);
+      log("File $file");
+      if (event.statusType == StatusType.image) {
+        Navigator.push(
+          event.context,
+          MaterialPageRoute(
+            builder: (context) => FileShowPage(
+              statusModel: event.statusModel,
+              fileType: FileType.image,
+              fileToShow: file,
+            ),
+          ),
+        );
+      } else {
+        Navigator.push(
+          event.context,
+          MaterialPageRoute(
+            builder: (context) => FileShowPage(
+              statusModel: event.statusModel,
+              fileType: FileType.video,
+              fileToShow: context.watch<StatusBloc>().state.pickedStatus,
+            ),
+          ),
+        );
+      }
+      emit(state.copyWith(pickedStatus: file));
     } catch (e) {
       log("Error on pick status bloc: ${e.toString()}");
       emit(StatusErrorState(message: e.toString()));
     }
+  }
+
+  FutureOr<void> fileResetEvent(
+      FileResetEvent event, Emitter<StatusState> emit) {
+    emit(state.copyWith(pickedStatus: null));
   }
 }

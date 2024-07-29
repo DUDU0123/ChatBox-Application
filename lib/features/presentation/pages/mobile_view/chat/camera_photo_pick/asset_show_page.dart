@@ -155,7 +155,6 @@ class _AssetShowPageState extends State<AssetShowPage> {
                   fit: BoxFit.contain,
                 )),
               )
-        //Container(color: Colors.amber,),
         );
   }
 }

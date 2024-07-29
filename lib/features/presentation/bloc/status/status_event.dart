@@ -6,33 +6,52 @@ sealed class StatusEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
-class StatusLoadEvent extends StatusEvent{
 
-}
+class StatusLoadEvent extends StatusEvent {}
+
 class StatusUploadEvent extends StatusEvent {
   final StatusModel statusModel;
-  final StatusType statusType;
   const StatusUploadEvent({
     required this.statusModel,
-    required this.statusType,
   });
   @override
-  List<Object> get props => [statusModel,statusType,];
+  List<Object> get props => [
+        statusModel,
+      ];
 }
-class StatusShareEvent extends StatusEvent{}
+
+class StatusShareEvent extends StatusEvent {}
+
 class StatusDeleteEvent extends StatusEvent {
   final String statusId;
   const StatusDeleteEvent({
     required this.statusId,
   });
   @override
-  List<Object> get props => [statusId,];
+  List<Object> get props => [
+        statusId,
+      ];
 }
+
 class PickStatusEvent extends StatusEvent {
   final StatusType statusType;
+  final StatusModel? statusModel;
+  final BuildContext context;
   const PickStatusEvent({
     required this.statusType,
+    required this.statusModel,
+    required this.context,
   });
   @override
-  List<Object> get props => [statusType,];
+  List<Object> get props => [
+        statusType,
+        context,
+        statusModel ?? const StatusModel(),
+      ];
+}
+
+class FileResetEvent extends StatusEvent {
+  const FileResetEvent();
+  @override
+  List<Object> get props => [];
 }

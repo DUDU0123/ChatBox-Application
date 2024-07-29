@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
@@ -36,9 +38,15 @@ class _StatusHomePageState extends State<StatusHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              statusTileWidget(
-                statusModel: null,
-                context: context,
+              StreamBuilder<StatusModel?>(
+                stream: CommonDBFunctions.getCurrentUserStatus(),
+                builder: (context, snapshot) {
+                  return statusTileWidget(
+                    isCurrentUser: true,
+                    statusModel: snapshot.data,
+                    context: context,
+                  );
+                }
               ),
               kHeight15,
               Padding(
@@ -73,6 +81,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
                         itemBuilder: (context, index) {
                           final status = snapshot.data![index];
                           return statusTileWidget(
+                            isCurrentUser: false,
                             context: context,
                             statusModel: status,
                           );

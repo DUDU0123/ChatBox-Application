@@ -18,4 +18,22 @@ class ContactModel extends ContactEntity {
       isChatBoxUser: false,
     );
   }
+
+  
+  Map<String, dynamic> toJson() {
+    return {
+      dbChatBoxUserId: chatBoxUserId,
+      dbUserContactName: userContactName,
+      dbUserAbout: userAbout,
+      dbUserProfilePhotoOnChatBox: userProfilePhotoOnChatBox,
+      dbUserContactNumber: userContactNumber,
+      dbIsChatBoxUser: isChatBoxUser,
+    };
+  }
 }
+const dbChatBoxUserId = 'chatBoxUserId';
+const dbUserContactName = 'userContactName';
+const dbUserAbout = 'userAbout';
+const dbUserProfilePhotoOnChatBox = 'userProfilePhotoOnChatBox';
+const dbUserContactNumber = 'userContactNumber';
+const dbIsChatBoxUser = 'isChatBoxUser';

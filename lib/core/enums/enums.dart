@@ -79,5 +79,5 @@ enum AdminsGroupPermission {
 enum StatusType {
   video,
   image,
-  text,
+  text,none
 }
