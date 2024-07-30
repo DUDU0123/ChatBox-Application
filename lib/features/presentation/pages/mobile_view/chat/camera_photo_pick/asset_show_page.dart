@@ -69,16 +69,6 @@ class _AssetShowPageState extends State<AssetShowPage> {
           leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
-
-           firebaseAuth.currentUser?.uid!=null?   context.read<MessageBloc>().add(
-                    GetAllMessageEvent(
-                      isGroup: widget.isGroup,
-                      groupModel: widget.groupModel,
-                      receiverId: widget.receiverID,
-                      currentUserId: firebaseAuth.currentUser?.uid??'',
-                      chatId: widget.chatID,
-                    ),
-                  ):null;
             },
             icon: Icon(
               Icons.arrow_back,

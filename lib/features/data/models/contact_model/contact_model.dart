@@ -1,3 +1,4 @@
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/features/domain/entities/contact_entity/contact_entity.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -19,6 +20,17 @@ class ContactModel extends ContactEntity {
     );
   }
 
+  factory ContactModel.fromjson(Map<String, dynamic> json) {
+    return ContactModel(
+      chatBoxUserId: json[dbChatBoxUserId] as String?,
+      userContactName: json[dbUserContactName] as String?,
+      userAbout: json[dbUserAbout] as String?,
+      userProfilePhotoOnChatBox: json[dbUserProfilePhotoOnChatBox] as String?,
+      userContactNumber: json[dbUserContactNumber] as String?,
+      isChatBoxUser: json[dbIsChatBoxUser] as bool?,
+    );
+  }
+
   
   Map<String, dynamic> toJson() {
     return {
@@ -31,9 +43,3 @@ class ContactModel extends ContactEntity {
     };
   }
 }
-const dbChatBoxUserId = 'chatBoxUserId';
-const dbUserContactName = 'userContactName';
-const dbUserAbout = 'userAbout';
-const dbUserProfilePhotoOnChatBox = 'userProfilePhotoOnChatBox';
-const dbUserContactNumber = 'userContactNumber';
-const dbIsChatBoxUser = 'isChatBoxUser';

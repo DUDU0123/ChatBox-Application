@@ -180,8 +180,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   replacement: zeroMeasureWidget,
                   child: AttachmentListContainerVertical(
                     isGroup: widget.isGroup,
+                    rootContext: context,
                     groupModel: widget.groupModel,
-                    receverContactName: widget.userName,
+                    receiverContactName: widget.userName,
                     chatModel: widget.chatModel,
                   ),
                 );

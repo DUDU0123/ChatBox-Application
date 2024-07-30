@@ -29,15 +29,7 @@ Widget iconContainerWidgetGradientColor({
                 ],
               ),
             ),
-            child: TextButton(
-              style:TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14.sp)
-                ),
-              ),
-              onPressed: () {
-              
-            },
+            child: GestureDetector(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

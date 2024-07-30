@@ -24,6 +24,7 @@ enum PageTypeEnum {
   groupDetailsAddPage,
   groupInfoPage,
   fromStatusPage,
+  toSendPage,
   none,
 }
 

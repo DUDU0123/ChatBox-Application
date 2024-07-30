@@ -95,6 +95,15 @@ const dbisStatusViewed= 'is_viewed';
 const dbStatusModelTimeStamp = 'timestamp';
 const dbTextStatusBgColor = 'text_status_bg_color';
 
+
+// contacts db field name
+const dbChatBoxUserId = 'chatBoxUserId';
+const dbUserContactName = 'userContactName';
+const dbUserAbout = 'userAbout';
+const dbUserProfilePhotoOnChatBox = 'userProfilePhotoOnChatBox';
+const dbUserContactNumber = 'userContactNumber';
+const dbIsChatBoxUser = 'isChatBoxUser';
+
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
 const chatAssetFolder = "chatsAsset/";

@@ -2,12 +2,15 @@ import 'dart:developer';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/selected_contacts_show_widget.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/contact_single_widget.dart';
 import 'package:chatbox/features/presentation/widgets/select_user_widgets.dart/floating_done_navigation_button.dart';
@@ -23,11 +26,13 @@ class SelectContactPage extends StatefulWidget {
     required this.pageType,
     this.groupModel,
     required this.isGroup,
+    this.uploadedStatusModel,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
   final PageTypeEnum pageType;
   final GroupModel? groupModel;
+  final UploadedStatusModel? uploadedStatusModel;
   final bool isGroup;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
@@ -71,7 +76,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                         ? "New Group"
                         : widget.pageType == PageTypeEnum.groupInfoPage
                             ? "Add members"
-                            : "New Broadcast"),
+                            : widget.pageType == PageTypeEnum.toSendPage
+                                ? "Select contact to send"
+                                : "New Broadcast"),
             widget.pageType == PageTypeEnum.sendContactSelectPage
                 ? BlocBuilder<ContactBloc, ContactState>(
                     builder: (context, state) {
@@ -131,6 +138,32 @@ class _SelectContactPageState extends State<SelectContactPage> {
                 chatBoxUsersList.removeWhere((chatBoxUser) =>
                     chatBoxUser.chatBoxUserId == firebaseAuth.currentUser?.uid);
                 if (widget.pageType != PageTypeEnum.sendContactSelectPage) {
+                  if (widget.pageType == PageTypeEnum.toSendPage) {
+                    return StreamBuilder<List<ContactModel>?>(
+                        stream: CommonDBFunctions.getContactsCollection(),
+                        builder: (context, snapshot) {
+                          if (snapshot.data == null) {
+                            return commonErrorWidget(
+                                message: "Something went wrong");
+                          }
+                          final contactList = snapshot.data;
+                          return ListView.separated(
+                            itemCount: snapshot.data!.length,
+                            separatorBuilder: (context, index) => kHeight10,
+                            itemBuilder: (context, index) {
+                              final contact = contactList![index];
+                              return ContactSingleWidget(
+                                contactNameorNumber: contact.userContactName??contact.userContactNumber??'',
+                                contactModel: contact,
+                                isSelected: state.selectedContactList != null
+                                    ? state.selectedContactList!
+                                        .contains(contact)
+                                    : false,
+                              );
+                            },
+                          );
+                        });
+                  }
                   return ListView.separated(
                     padding: EdgeInsets.symmetric(vertical: 10.h),
                     itemCount: chatBoxUsersList.length,
@@ -153,8 +186,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                                   '',
                             );
                           }
+                          return zeroMeasureWidget;
                         } else {
-                          return Container();
+                          return zeroMeasureWidget;
                         }
                       } else {
                         return ContactSingleWidget(
@@ -172,26 +206,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                     separatorBuilder: (context, index) => kHeight2,
                   );
                 }
-                return ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  itemCount: state.contactList!.length,
-                  itemBuilder: (context, index) {
-                    final contact = state.contactList![index];
-                    if (widget.pageType == PageTypeEnum.groupInfoPage) {
-                      return zeroMeasureWidget;
-                    }
-                    return ContactSingleWidget(
-                      key: ValueKey(contact.userContactNumber),
-                      isSelected: state.selectedContactList != null
-                          ? state.selectedContactList!.contains(contact)
-                          : false,
-                      contactModel: contact,
-                      contactNameorNumber: contact.userContactName ??
-                          contact.userContactNumber ??
-                          '',
-                    );
-                  },
-                  separatorBuilder: (context, index) => kHeight2,
+                return allContactsListShowWidget(
+                  pageType: widget.pageType,
+                  state: state,
                 );
               },
             ),
@@ -201,9 +218,12 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
+            uploadedStatusModel: widget.uploadedStatusModel,
             icon: widget.pageType == PageTypeEnum.groupInfoPage
                 ? Icons.done
-                : null,
+                : widget.pageType == PageTypeEnum.toSendPage
+                    ? Icons.send_rounded
+                    : null,
             groupModel: widget.groupModel,
             isGroup: widget.isGroup,
             pageType: widget.pageType,
@@ -215,4 +235,30 @@ class _SelectContactPageState extends State<SelectContactPage> {
       ),
     );
   }
+}
+
+Widget allContactsListShowWidget({
+  required ContactState state,
+  required PageTypeEnum pageType,
+}) {
+  return ListView.separated(
+    padding: EdgeInsets.symmetric(vertical: 10.h),
+    itemCount: state.contactList!.length,
+    itemBuilder: (context, index) {
+      final contact = state.contactList![index];
+      if (pageType == PageTypeEnum.groupInfoPage) {
+        return zeroMeasureWidget;
+      }
+      return ContactSingleWidget(
+        key: ValueKey(contact.userContactNumber),
+        isSelected: state.selectedContactList != null
+            ? state.selectedContactList!.contains(contact)
+            : false,
+        contactModel: contact,
+        contactNameorNumber:
+            contact.userContactName ?? contact.userContactNumber ?? '',
+      );
+    },
+    separatorBuilder: (context, index) => kHeight2,
+  );
 }

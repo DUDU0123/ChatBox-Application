@@ -45,7 +45,7 @@ class StatusData {
         log("No current user found.");
         return false;
       }
-
+      log("Uploading status !!!!!!!!!!!!*(IIIOUIUO)");
       // Save the status model to Firestore
       if (statusModel.statusId == null) {
         final statusDocumentReference = await fireStore
@@ -66,7 +66,7 @@ class StatusData {
             .doc(statusModel.statusId)
             .update(statusModel.toJson());
       }
-
+       log("Uploaded status !!!!!!!!!!!!*(IIIOUIUO)");
       return true;
     } on FirebaseException catch (e) {
       log("Firebase Auth exception on upload status: ${e.message}");

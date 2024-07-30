@@ -7,6 +7,7 @@ import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/presentation/bloc/status/status_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/status/status_pages/text_status_setup_page.dart';
 import 'package:chatbox/features/presentation/widgets/status/status_tile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
           if (state is StatusErrorState) {
             commonSnackBarWidget(
               context: context,
-              contentText: state.message,
+              contentText: state.errorMessage,
             );
           }
         },
@@ -43,8 +44,8 @@ class _StatusHomePageState extends State<StatusHomePage> {
               StreamBuilder<StatusModel?>(
                   stream: CommonDBFunctions.getCurrentUserStatus(),
                   builder: (context, snapshot) {
-                    log("Error fetching current status: ${snapshot.error}");
-                    log("Current status of current user: ${snapshot.data}");
+                    // log("Error fetching current status: ${snapshot.error}");
+                    // log("Current status of current user: ${snapshot.data}");
                     return statusTileWidget(
                       isCurrentUser: true,
                       statusModel: snapshot.data,
@@ -106,6 +107,26 @@ class _StatusHomePageState extends State<StatusHomePage> {
           );
         },
       ),
+      floatingActionButton: StreamBuilder<StatusModel?>(
+          stream: CommonDBFunctions.getCurrentUserStatus(),
+          builder: (context, snapshot) {
+            return FloatingActionButton(
+              backgroundColor: darkLinearGradientColorTwo,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TextStatusSetupPage(
+                        currentStatusModel: snapshot.data,
+                      ),
+                    ));
+              },
+              child: Icon(
+                Icons.edit,
+                color: kWhite,
+              ),
+            );
+          }),
     );
   }
 }

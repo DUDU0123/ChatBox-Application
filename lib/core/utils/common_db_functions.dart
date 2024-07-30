@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
@@ -265,68 +266,106 @@ class CommonDBFunctions {
 
   // method to get/read all status
   static Stream<StatusModel?>? getCurrentUserStatus() {
-  final currentUser = firebaseAuth.currentUser?.uid;
-  try {
-    if (currentUser == null) {
-      log("No current user found.");
-      return Stream.value(null);
+    final currentUser = firebaseAuth.currentUser?.uid;
+    try {
+      if (currentUser == null) {
+        log("No current user found.");
+        return Stream.value(null);
+      }
+      return fireStore
+          .collection(usersCollection)
+          .doc(currentUser)
+          .collection(statusCollection)
+          .orderBy('timestamp',
+              descending:
+                  true) // Ensure you have a 'timestamp' field in each status document
+          .limit(1)
+          .snapshots()
+          .map((snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          // log("Fetched status data: ${snapshot.docs.first.data()}");
+          return StatusModel.fromJson(map: snapshot.docs.first.data());
+        }
+        return null;
+      });
+    } on FirebaseException catch (e) {
+      log("Firebase Auth exception on upload status: ${e.message}");
+      return null;
+    } catch (e, stackTrace) {
+      log("Error while uploading status: $e", stackTrace: stackTrace);
+      return null;
     }
-    return fireStore
+  }
+
+  static void startCleanupTimer() {
+    Timer.periodic(const Duration(hours: 1), (timer) async {
+      await deleteOldStatuses();
+    });
+  }
+
+  static Future<void> deleteOldStatuses() async {
+    final now = DateTime.now();
+    final cutoffTime = now.subtract(const Duration(hours: 24));
+
+    final currentUser = firebaseAuth.currentUser?.uid;
+    if (currentUser == null) {
+      debugPrint("No current user found.");
+      return;
+    }
+
+    final statusCol = fireStore
         .collection(usersCollection)
         .doc(currentUser)
-        .collection(statusCollection)
-        .orderBy('timestamp', descending: true)  // Ensure you have a 'timestamp' field in each status document
-        .limit(1)
+        .collection(statusCollection);
+
+    final oldStatusesQuery =
+        statusCol.where('timestamp', isLessThan: cutoffTime).get();
+
+    final oldStatuses = await oldStatusesQuery;
+
+    for (final doc in oldStatuses.docs) {
+      await doc.reference.delete();
+    }
+  }
+
+// contacts collection fetch
+  static Stream<List<ContactModel>>? getContactsCollection() {
+    return fireStore
+        .collection(usersCollection)
+        .doc(firebaseAuth.currentUser?.uid)
+        .collection(contactsCollection)
         .snapshots()
-        .map((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        log("Fetched status data: ${snapshot.docs.first.data()}");
-        return StatusModel.fromJson(map: snapshot.docs.first.data());
-      }
-      return null;
-    });
-  } on FirebaseException catch (e) {
-    log("Firebase Auth exception on upload status: ${e.message}");
-    return null;
-  } catch (e, stackTrace) {
-    log("Error while uploading status: $e", stackTrace: stackTrace);
-    return null;
-  }
-}
-
-
-static void startCleanupTimer() {
-  Timer.periodic(const Duration(hours: 1), (timer) async {
-    await deleteOldStatuses();
-  });
-}
-
-static Future<void> deleteOldStatuses() async {
-  final now = DateTime.now();
-  final cutoffTime = now.subtract(const Duration(hours: 24));
-
-  final currentUser = firebaseAuth.currentUser?.uid;
-  if (currentUser == null) {
-    debugPrint("No current user found.");
-    return;
+        .map(
+      (contactsSnapshot) {
+        return contactsSnapshot.docs
+            .map((contactMap) => ContactModel.fromjson(contactMap.data()))
+            .toList();
+      },
+    );
   }
 
-  final statusCol = fireStore
+  static Future<ChatModel?> getChatModel({required String receiverID}) async {
+  final chatInSenderAppWithReceiver = await fireStore
       .collection(usersCollection)
-      .doc(currentUser)
-      .collection(statusCollection);
-
-  final oldStatusesQuery = statusCol
-      .where('timestamp', isLessThan: cutoffTime)
+      .doc(firebaseAuth.currentUser?.uid)
+      .collection(chatsCollection)
+      .where(receiverId, isEqualTo: receiverID)
+      .get();
+  final chatInReceiverAppWithSender = await fireStore
+      .collection(usersCollection)
+      .doc(receiverID)
+      .collection(chatsCollection)
+      .where(senderId, isEqualTo: firebaseAuth.currentUser?.uid)
       .get();
 
-  final oldStatuses = await oldStatusesQuery;
-
-  for (final doc in oldStatuses.docs) {
-    await doc.reference.delete();
-  }
+      if (chatInSenderAppWithReceiver.docs.isNotEmpty) {
+      return ChatModel.fromJson(chatInSenderAppWithReceiver.docs.first.data());
+    } else if (chatInReceiverAppWithSender.docs.isNotEmpty) {
+      return ChatModel.fromJson(chatInReceiverAppWithSender.docs.first.data());
+    } else {
+      return null;
+    }
 }
-
 }
 
 List<T> filterPermissions<T>(Map<T, bool> permissions) {

@@ -1,32 +1,43 @@
-import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
-import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/core/utils/status_methods.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
-import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/status/status_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
+import 'package:chatbox/features/presentation/widgets/status/status_appbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
+
 class FileShowPage extends StatefulWidget {
   const FileShowPage(
       {super.key,
       this.fileToShow,
       required this.fileType,
-      required this.statusModel});
+      this.statusModel,
+      required this.pageType,
+      this.chatModel,
+      this.groupModel,
+      this.receiverContactName,
+      this.isGroup});
   final File? fileToShow;
   final FileType fileType;
   final StatusModel? statusModel;
+  final PageTypeEnum? pageType;
+  final ChatModel? chatModel;
+  final GroupModel? groupModel;
+  final String? receiverContactName;
+  final bool? isGroup;
 
   @override
   State<FileShowPage> createState() => _FileShowPageState();
@@ -184,9 +195,10 @@ class _FileShowPageState extends State<FileShowPage> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        if (widget.fileToShow != null) {
-                          StatusModel statusModel = await newStatusUploadMethod(
-                            fileToShow: widget.fileToShow!,
+                        if (widget.pageType == PageTypeEnum.chatStatus) {
+                          StatusModel statusModel =
+                              await StatusMethods.newStatusUploadMethod(
+                            fileToShow: widget.fileToShow,
                             currentStatusModel: widget.statusModel,
                             fileCaption: fileCaptionController.text,
                             statusDuration: videoPlayerController != null
@@ -197,22 +209,55 @@ class _FileShowPageState extends State<FileShowPage> {
                                 ? StatusType.video
                                 : StatusType.image,
                           );
-                          context.read<StatusBloc>().add(StatusUploadEvent(
-                                statusModel: statusModel,
-                              ));
+                          if (mounted) {
+                            context.read<StatusBloc>().add(StatusUploadEvent(
+                                  statusModel: statusModel,
+                                ));
+                          }
+                        } else if (widget.pageType ==
+                            PageTypeEnum.messagingPage) {
+                          if (widget.fileType == FileType.video &&
+                              widget.isGroup != null) {
+                            context.read<MessageBloc>().add(
+                                  VideoMessageSendEvent(
+                                    
+                                    messageCaption: fileCaptionController.text,
+                                    videoFile: widget.fileToShow,
+                                    isGroup: widget.isGroup!,
+                                    receiverContactName:
+                                        widget.receiverContactName ?? "",
+                                    receiverID:
+                                        widget.chatModel?.receiverID ?? "",
+                                    imageSource: ImageSource.camera,
+                                    chatModel: widget.chatModel,
+                                    groupModel: widget.groupModel,
+                                  ),
+                                );
+                          } else {
+                            context.read<MessageBloc>().add(
+                                  PhotoMessageSendEvent(
+                                    messageCaption: fileCaptionController.text,
+                                    imageFile: widget.fileToShow,
+                                    isGroup: widget.isGroup!,
+                                    receiverContactName:
+                                        widget.receiverContactName ?? "",
+                                    receiverID:
+                                        widget.chatModel?.receiverID ?? "",
+                                    imageSource: ImageSource.camera,
+                                    chatModel: widget.chatModel,
+                                    groupModel: widget.groupModel,
+                                  ),
+                                );
+                          }
                         }
-                        Navigator.pop(context);
-                        context.read<StatusBloc>().add(const FileResetEvent());
+                        if (mounted) {
+                          Navigator.pop(context);
+                          context
+                              .read<StatusBloc>()
+                              .add(const FileResetEvent());
+                        }
                       },
-                      icon: SvgPicture.asset(
-                        sendIcon,
-                        width: 30.w,
-                        height: 30.h,
-                        colorFilter: ColorFilter.mode(
-                          buttonSmallTextColor,
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                      icon: sendIconWidget(),
                     )
                   ],
                 ),
@@ -223,46 +268,4 @@ class _FileShowPageState extends State<FileShowPage> {
       ),
     );
   }
-}
-Future<StatusModel> newStatusUploadMethod({
-  required File? fileToShow,
-  required String fileCaption,
-  required String statusDuration,
-  required StatusType statusType,
-  StatusModel? currentStatusModel,
-  final List<UploadedStatusModel>? currentStatusList,
-}) async {
-  final statusContentUrl =
-      await CommonDBFunctions.saveUserFileToDataBaseStorage(
-    ref: "users_statuses/${firebaseAuth.currentUser?.uid}",
-    file: fileToShow!,
-  );
-
-  UploadedStatusModel uploadedStatusModel = UploadedStatusModel(
-    uploadedStatusId: DateTime.now().millisecondsSinceEpoch.toString(),
-    statusCaption: fileCaption,
-    statusUploadedTime: DateTime.now().toString(),
-    isViewedStatus: false,
-    statusDuration: statusDuration,
-    statusType: statusType,
-    statusContent: statusContentUrl,
-  );
-
-  List<UploadedStatusModel> uploadedStatusList =
-      currentStatusModel?.statusList ?? [];
-  uploadedStatusList.add(uploadedStatusModel);
-
-  // Create or update StatusModel
-  StatusModel statusModel = StatusModel(
-    statusUploaderId: firebaseAuth.currentUser?.uid ?? '',
-    statusList: uploadedStatusList,
-  );
-
-  // If currentStatusModel is not null, copy its other fields (if any)
-  if (currentStatusModel != null) {
-    statusModel = currentStatusModel.copyWith(
-      statusList: uploadedStatusList,
-    );
-  }
-  return statusModel;
 }

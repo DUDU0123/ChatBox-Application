@@ -2,13 +2,18 @@ import 'dart:io';
 
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
+import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
+import 'package:chatbox/core/utils/status_methods.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
+import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_details_add_page.dart';
@@ -28,6 +33,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
     this.pickedGroupImageFile,
     this.groupModel,
     required this.isGroup,
+    this.uploadedStatusModel,
   });
 
   final ChatModel? chatModel;
@@ -39,6 +45,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
   final File? pickedGroupImageFile;
   final GroupModel? groupModel;
   final bool isGroup;
+  final UploadedStatusModel? uploadedStatusModel;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +107,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
                           ),
                         )
                     : null;
-                    Navigator.pop(context);
+                Navigator.pop(context);
               } else {
                 commonSnackBarWidget(
                   contentText: "Select atleast 1 members",
@@ -113,6 +120,15 @@ class FloatingDoneNavigateButton extends StatelessWidget {
                 context: context,
               );
             }
+            break;
+
+          case PageTypeEnum.toSendPage:
+            StatusMethods.shareStatusToAnyChat(
+              selectedContactList: selectedContactList,
+              uploadedStatusModel: uploadedStatusModel,
+              context: context,
+            );
+            Navigator.pop(context);
             break;
           case PageTypeEnum.broadcastMembersSelectPage:
             break;

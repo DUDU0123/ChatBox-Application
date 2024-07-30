@@ -1,5 +1,6 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -13,12 +14,12 @@ class ContactSingleWidget extends StatelessWidget {
     super.key,
     required this.contactNameorNumber,
     required this.contactModel,
-    required this.isSelected,
+    required this.isSelected, this.pageType,
   });
   final String contactNameorNumber;
   final ContactModel contactModel;
   final bool isSelected;
-
+  final PageTypeEnum? pageType;
   @override
   Widget build(BuildContext context) {
     return ListTile(

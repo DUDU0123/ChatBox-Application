@@ -40,8 +40,8 @@ class ChatHomePage extends StatelessWidget {
                         child: TextWidgetCommon(text: state.message),
                       ));
                     }
-                    if (state is ChatSuccessState) {
-                      log("Length: ${state.chatList.length}");
+                    
+                      log("Length: ${state.chatList?.length}");
                       return StreamBuilder<List<ChatModel>>(
                         stream: state.chatList,
                         builder: (context, snapshot) {
@@ -94,8 +94,6 @@ class ChatHomePage extends StatelessWidget {
                           );
                         },
                       );
-                    }
-                    return SliverToBoxAdapter(child: zeroMeasureWidget);
                   },
                 ),
               ],

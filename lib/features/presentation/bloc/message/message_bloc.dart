@@ -6,6 +6,7 @@ import 'package:bloc/bloc.dart';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/chat_asset_send_methods.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/features/data/data_sources/message_data/message_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
@@ -101,10 +102,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> getAllMessageEvent(
       GetAllMessageEvent event, Emitter<MessageState> emit) async {
     try {
-      if (event.isGroup == null && event.groupModel==null) {
+      if (event.isGroup == null && event.groupModel == null) {
         return;
       }
-      if (!event.isGroup! && event.chatId==null) {
+      if (!event.isGroup! && event.chatId == null) {
         return;
       }
       if (event.isGroup!) {
@@ -122,12 +123,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         }
       } else {
         // if (event.chatId != null && !event.isGroup!) {
-          final messages = messageRepository.getAllMessages(
-            isGroup: event.isGroup ?? false,
-            chatId: event.chatId!,
-          );
-          emit(MessageState(messages: messages));
-      // }
+        final messages = messageRepository.getAllMessages(
+          isGroup: event.isGroup ?? false,
+          chatId: event.chatId!,
+        );
+        emit(MessageState(messages: messages));
+        // }
       }
     } catch (e) {
       log("Get message error: ${e.toString()}");
@@ -204,12 +205,33 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         );
         log("Group message: $value");
       } else {
-        await messageRepository.sendMessage(
-          chatId: event.chatModel!.chatID,
-          message: event.message,
-          receiverContactName: event.receiverContactName,
-          receiverId: event.receiverContactName,
-        );
+        if (event.message.senderID != null &&
+            event.message.receiverID != null &&
+            event.chatModel?.chatID == null) {
+          final chatId = CommonDBFunctions.generateChatId(
+              currentUserId: event.message.senderID!,
+              receiverId: event.message.receiverID!);
+          await messageRepository.sendMessage(
+            chatId: chatId,
+            message: event.message,
+            receiverContactName: event.receiverContactName,
+            receiverId: event.receiverContactName,
+          );
+        } else {
+          await messageRepository.sendMessage(
+            chatId: event.chatModel!.chatID,
+            message: event.message,
+            receiverContactName: event.receiverContactName,
+            receiverId: event.receiverContactName,
+          );
+        }
+
+        // await messageRepository.sendMessage(
+        //   chatId: event.chatModel!.chatID,
+        //   message: event.message,
+        //   receiverContactName: event.receiverContactName,
+        //   receiverId: event.receiverContactName,
+        // );
         log('Sended one to one message');
       }
 
@@ -236,7 +258,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       PhotoMessageSendEvent event, Emitter<MessageState> emit) async {
     // emit(MessageLoadingState());
     try {
-      final File? imageFile = await pickImage(imageSource: event.imageSource);
+      // final File? imageFile = await pickImage(imageSource: event.imageSource);
+      final File? imageFile = event.imageFile;
       final String? chatID = event.chatModel?.chatID;
       if (chatID == null && !event.isGroup) {
         return null;
@@ -253,6 +276,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         MessageModel photoMessage;
         if (event.isGroup) {
           photoMessage = MessageModel(
+            name: event.messageCaption,
             message: imageUrl,
             messageType: MessageType.photo,
             messageTime: DateTime.now().toString(),
@@ -270,6 +294,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           log("Group message: $value");
         } else {
           photoMessage = MessageModel(
+            name: event.messageCaption,
             messageId: DateTime.now().millisecondsSinceEpoch.toString(),
             message: imageUrl,
             messageType: MessageType.photo,
@@ -313,8 +338,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       VideoMessageSendEvent event, Emitter<MessageState> emit) async {
     // emit(MessageLoadingState());
     try {
-      final File? videoFile =
-          await takeVideoAsset(imageSource: event.imageSource);
+      // final File? videoFile =
+      //     await takeVideoAsset(imageSource: event.imageSource);
+      final File? videoFile = event.videoFile;
       final String? chatID = event.chatModel?.chatID;
       if (chatID == null && !event.isGroup) {
         return null;
@@ -331,6 +357,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         MessageModel videoMessage;
         if (event.isGroup) {
           videoMessage = MessageModel(
+            name: event.messageCaption,
             message: videoUrl,
             messageType: MessageType.video,
             messageTime: DateTime.now().toString(),
@@ -348,6 +375,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           log("Group message: $value");
         } else {
           videoMessage = MessageModel(
+            name: event.messageCaption,
             messageId: DateTime.now().millisecondsSinceEpoch.toString(),
             message: videoUrl,
             messageType: MessageType.video,
@@ -846,14 +874,17 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     try {
       final updatedSelectedIds =
           Set<String>.from(state.selectedMessageIds as Iterable);
-      if (updatedSelectedIds.contains(event.messageModel?.messageId ?? event.messageId)) {
+      if (updatedSelectedIds
+          .contains(event.messageModel?.messageId ?? event.messageId)) {
         updatedSelectedIds
             .remove(event.messageModel?.messageId ?? event.messageId);
       } else {
         updatedSelectedIds
             .add(event.messageModel?.messageId ?? event.messageId ?? '');
       }
-      emit(state.copyWith(selectedMessageIds: updatedSelectedIds, messagemodel: event.messageModel));
+      emit(state.copyWith(
+          selectedMessageIds: updatedSelectedIds,
+          messagemodel: event.messageModel));
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));
     }

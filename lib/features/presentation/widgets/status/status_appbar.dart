@@ -5,6 +5,7 @@ import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_de
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 Widget statusAppBar(
     {required String userName,
@@ -73,3 +74,14 @@ Widget statusAppBar(
     ),
   );
 }
+SvgPicture sendIconWidget() {
+    return SvgPicture.asset(
+      sendIcon,
+      width: 30.w,
+      height: 30.h,
+      colorFilter: ColorFilter.mode(
+        buttonSmallTextColor,
+        BlendMode.srcIn,
+      ),
+    );
+  }

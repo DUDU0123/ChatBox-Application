@@ -1,20 +1,21 @@
 part of 'chat_bloc.dart';
 
 class ChatState extends Equatable {
-  const ChatState();
+  final Stream<List<ChatModel>>? chatList;
+  const ChatState({this.chatList});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [chatList??[]];
 }
 
 class ChatInitial extends ChatState {}
 class ChatLoadingState extends ChatState{}
 class ChatSuccessState extends ChatState {
-  final Stream<List<ChatModel>> chatList;
-  const ChatSuccessState({
-    required this.chatList,
-  });
+  // final Stream<List<ChatModel>> chatList;
+  // const ChatSuccessState({
+  //   required this.chatList,
+  // });
   @override
-  List<Object> get props => [chatList];
+  List<Object> get props => [];
 }
 class ChatErrorState extends ChatState {
   final String message;

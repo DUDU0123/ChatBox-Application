@@ -39,7 +39,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       log("Get all chats event called");
       Stream<List<ChatModel>> chatList = chatRepo.getAllChats();
-      emit(ChatSuccessState(chatList: chatList));
+      // emit(ChatSuccessState(chatList: chatList));
+      emit(ChatState(chatList: chatList));
     } catch (e) {
       log("Create chat: e ${e.toString()}");
       emit(ChatErrorState(message: e.toString()));

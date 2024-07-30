@@ -31,6 +31,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
     on<StatusDeleteEvent>(statusDeleteEvent);
     on<PickStatusEvent>(pickStatusEvent);
     on<FileResetEvent>(fileResetEvent);
+    on<PickTextStatusBgColor>(pickTextStatusBgColor);
   }
 
   FutureOr<void> statusLoadEvent(
@@ -44,7 +45,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       ));
     } catch (e) {
       log("Error on get all status bloc: ${e.toString()}");
-      emit(StatusErrorState(message: e.toString()));
+      emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
 
@@ -58,9 +59,10 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
         statusList: state.statusList,
         message: isUploaded ? "Status sent" : "Unable to sent",
       ));
+      print(isUploaded.toString());
     } catch (e) {
       log("Error on upload status bloc: ${e.toString()}");
-      emit(StatusErrorState(message: e.toString()));
+      emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
 
@@ -68,7 +70,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       StatusShareEvent event, Emitter<StatusState> emit) {
     try {} catch (e) {
       log("Error on share status bloc: ${e.toString()}");
-      emit(StatusErrorState(message: e.toString()));
+      emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
 
@@ -85,7 +87,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       ));
     } catch (e) {
       log("Error on delete status bloc: ${e.toString()}");
-      emit(StatusErrorState(message: e.toString()));
+      emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
 
@@ -99,6 +101,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
           event.context,
           MaterialPageRoute(
             builder: (context) => FileShowPage(
+              pageType: PageTypeEnum.chatStatus,
               statusModel: event.statusModel,
               fileType: FileType.image,
               fileToShow: file,
@@ -110,6 +113,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
           event.context,
           MaterialPageRoute(
             builder: (context) => FileShowPage(
+              pageType: PageTypeEnum.chatStatus,
               statusModel: event.statusModel,
               fileType: FileType.video,
               fileToShow: context.watch<StatusBloc>().state.pickedStatus,
@@ -120,12 +124,40 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       emit(state.copyWith(pickedStatus: file));
     } catch (e) {
       log("Error on pick status bloc: ${e.toString()}");
-      emit(StatusErrorState(message: e.toString()));
+      emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
 
   FutureOr<void> fileResetEvent(
       FileResetEvent event, Emitter<StatusState> emit) {
     emit(state.copyWith(pickedStatus: null));
+  }
+
+  FutureOr<void> pickTextStatusBgColor(
+      PickTextStatusBgColor event, Emitter<StatusState> emit) {
+    try {
+      // Use the currentIndex from the state
+      final currentIndex = state.currentIndex;
+      if (currentIndex != null) {
+        // Get the list of available colors
+        final availableColors = event.availableColors;
+
+        // Calculate the new index
+        final newIndex = (currentIndex + 1) % availableColors.length;
+
+        // Get the new color
+        final newColor = availableColors[newIndex];
+
+        // Emit the new state with updated color and index
+        emit(state.copyWith(
+          pickedColorOfStatus: newColor,
+          currentIndex: newIndex,
+        ));
+      } else {
+        emit(StatusErrorState(errorMessage: "Current index null"));
+      }
+    } catch (e) {
+      emit(StatusErrorState(errorMessage: e.toString()));
+    }
   }
 }

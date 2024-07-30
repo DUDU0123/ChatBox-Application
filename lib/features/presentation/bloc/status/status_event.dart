@@ -58,3 +58,10 @@ class FileResetEvent extends StatusEvent {
   @override
   List<Object> get props => [];
 }
+
+class PickTextStatusBgColor extends StatusEvent {
+  final List<Color> availableColors;
+  const PickTextStatusBgColor({
+    required this.availableColors,
+  });
+}

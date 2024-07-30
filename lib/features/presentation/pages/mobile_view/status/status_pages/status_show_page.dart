@@ -1,18 +1,26 @@
 import 'dart:developer';
 
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
+import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/status/status_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/status/build_status_item_widget.dart';
 import 'package:chatbox/features/presentation/widgets/status/status_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/widgets/story_view.dart';
 
@@ -88,11 +96,22 @@ class StatusShowPage extends StatelessWidget {
                                       ))
                                   : null
                               : null;
-                              // Remove the deleted status from the list
-                            statusModel.statusList!.removeAt(currentIndex);
+                          // Remove the deleted status from the list
+                          statusModel.statusList!.removeAt(currentIndex);
                         },
                         shareMethod: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => SelectContactPage(pageType: PageTypeEnum.fromStatusPage, isGroup: false,),));
+                          statusModel.statusList != null
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SelectContactPage(
+                                      isGroup: false,
+                                      pageType: PageTypeEnum.toSendPage,
+                                      uploadedStatusModel:
+                                          statusModel.statusList![currentIndex],
+                                    ),
+                                  ))
+                              : null;
                         },
                       );
                     });
@@ -101,6 +120,61 @@ class StatusShowPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ListAllChatMembersPage extends StatelessWidget {
+  const ListAllChatMembersPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: TextWidgetCommon(text: "Select Contact to Send"),
+      ),
+      body: StreamBuilder<List<ContactModel>?>(
+          stream: CommonDBFunctions.getContactsCollection(),
+          builder: (context, snapshot) {
+            if (snapshot.data == null) {
+              return commonErrorWidget(message: "Something went wrong");
+            }
+            final contactList = snapshot.data;
+            return ListView.separated(
+              itemCount: snapshot.data!.length,
+              separatorBuilder: (context, index) => kHeight10,
+              itemBuilder: (context, index) {
+                final contact = contactList![index];
+                return ListTile(
+                  leading: contact.userProfilePhotoOnChatBox != null
+                      ? Container(
+                          width: 50,
+                          height: 50,
+                          decoration:
+                              const BoxDecoration(shape: BoxShape.circle),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50.sp),
+                            child: Image.network(
+                              fit: BoxFit.cover,
+                              contact.userProfilePhotoOnChatBox!,
+                              errorBuilder: (context, error, stackTrace) {
+                                return nullImageReplaceWidget(
+                                  containerRadius: 50,
+                                  context: context,
+                                );
+                              },
+                            ),
+                          ),
+                        )
+                      : nullImageReplaceWidget(
+                          containerRadius: 40, context: context),
+                  title: TextWidgetCommon(
+                    text: contact.userContactName ?? '',
+                  ),
+                );
+              },
+            );
+          }),
     );
   }
 }

@@ -55,13 +55,13 @@ Widget textMessageWidget({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.end,
     children: [
-      TextWidgetCommon(
-        fontSize: 16.sp,
-        maxLines: !commonProvider.isExpandedMessage(message.messageId!) ? 30 : null,
-        text: message.message ?? '',
-        textColor: kWhite,
-      ),
-     message.message!=null && message.message!.length > 1000
+      message.message != null
+          ? readMoreTextWidget(
+              commonProvider: commonProvider,
+              message: message.message!,
+              messageModel: message)
+          : zeroMeasureWidget,
+      message.message != null && message.message!.length > 1000
           ? readMoreButton(
               context: context,
               commonProvider: commonProvider,
@@ -112,32 +112,50 @@ Widget photoMessageShowWidget({
   required bool isGroup,
   GroupModel? groupModel,
 }) {
+  final commonProvider = Provider.of<CommonProvider>(context, listen: true);
   return ClipRRect(
     borderRadius: BorderRadius.circular(10.sp),
-    child: GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AssetShowPage(
-              isGroup: isGroup,
-              groupModel: groupModel,
-              receiverID: receiverID,
-              messageType: MessageType.photo,
-              chatID: chatModel?.chatID ?? '',
-              message: message,
+    child: Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AssetShowPage(
+                  isGroup: isGroup,
+                  groupModel: groupModel,
+                  receiverID: receiverID,
+                  messageType: MessageType.photo,
+                  chatID: chatModel?.chatID ?? '',
+                  message: message,
+                ),
+              ),
+            );
+          },
+          child: Container(
+            // height: 300.h,
+            child: Center(
+              child: CachedNetworkImage(
+                fit: BoxFit.cover,
+                placeholder: (context, url) => commonAnimationWidget(
+                  context: context,
+                  isTextNeeded: false,
+                ),
+                imageUrl: message.message ?? '',
+              ),
             ),
           ),
-        );
-      },
-      child: CachedNetworkImage(
-        fit: BoxFit.cover,
-        placeholder: (context, url) => commonAnimationWidget(
-          context: context,
-          isTextNeeded: false,
         ),
-        imageUrl: message.message ?? '',
-      ),
+        message.name != null
+            ? captionWidget(
+                message: message.name!,
+                commonProvider: commonProvider,
+                context: context,
+                messageModel: message,
+              )
+            : zeroMeasureWidget
+      ],
     ),
   );
 }
@@ -151,58 +169,125 @@ Widget videoMessageShowWidget({
   required bool isGroup,
   GroupModel? groupModel,
 }) {
-  return GestureDetector(
-    onTap: () {
-      log(
-        videoControllers[message.message!]!.value.duration.toString(),
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AssetShowPage(
-            isGroup: isGroup,
-            groupModel: groupModel,
-            receiverID: receiverID,
-            messageType: MessageType.video,
-            chatID: chatModel?.chatID ?? '',
-            controllers: videoControllers,
-            message: message,
-          ),
-        ),
-      );
-    },
-    child: Stack(
+  final commonProvider = Provider.of<CommonProvider>(context, listen: true);
+  return Container(
+    height: 300.h, // Set a fixed height for the video container
+    child: Column(
       children: [
-        VideoPlayer(
-          videoControllers[message.message!]!,
-        ),
-        Positioned(
-          bottom: 3,
-          left: 5,
-          child: TextWidgetCommon(
-            text: DateProvider.parseDuration(
+        GestureDetector(
+          onTap: () {
+            log(
               videoControllers[message.message!]!.value.duration.toString(),
-            ),
-            textColor: kWhite,
-            fontSize: 10.sp,
-            fontWeight: FontWeight.bold,
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AssetShowPage(
+                  isGroup: isGroup,
+                  groupModel: groupModel,
+                  receiverID: receiverID,
+                  messageType: MessageType.video,
+                  chatID: chatModel?.chatID ?? '',
+                  controllers: videoControllers,
+                  message: message,
+                ),
+              ),
+            );
+          },
+          child: Stack(
+            children: [
+              SizedBox(
+                height: 260.h, // Set a fixed height for the video player
+                child: VideoPlayer(
+                  videoControllers[message.message!]!,
+                ),
+              ),
+              Positioned(
+                bottom: 3,
+                left: 5,
+                child: TextWidgetCommon(
+                  text: DateProvider.parseDuration(
+                    videoControllers[message.message!]!
+                        .value
+                        .duration
+                        .toString(),
+                  ),
+                  textColor: kWhite,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Positioned(
+                top: (260.h / 2) - (60.sp / 2),
+                left: (MediaQuery.of(context).size.width / 2) - (160.sp / 2),
+                child: CircleAvatar(
+                  radius: 30.sp,
+                  backgroundColor: iconGreyColor.withOpacity(0.5),
+                  child: Icon(
+                    !videoControllers[message.message!]!.value.isPlaying
+                        ? Icons.play_arrow_rounded
+                        : Icons.pause,
+                    size: 30.sp,
+                    color: kBlack,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        Align(
-          alignment: Alignment.center,
-          child: CircleAvatar(
-            radius: 30.sp,
-            backgroundColor: iconGreyColor.withOpacity(0.5),
-            child: Icon(
-              !videoControllers[message.message!]!.value.isPlaying
-                  ? Icons.play_arrow
-                  : Icons.pause,
-              size: 30.sp,
-              color: kBlack,
-            ),
-          ),
-        ),
+        message.name != null
+            ? Expanded(
+                child: captionWidget(
+                  message: message.name!,
+                  commonProvider: commonProvider,
+                  context: context,
+                  messageModel: message,
+                ),
+              )
+            : zeroMeasureWidget
       ],
     ),
   );
+}
+
+Widget readMoreTextWidget({
+  required CommonProvider commonProvider,
+  required String message,
+  required MessageModel messageModel,
+}) {
+  return TextWidgetCommon(
+    fontSize: 16.sp,
+    maxLines:
+        !commonProvider.isExpandedMessage(messageModel.messageId!) ? 30 : null,
+    text: message ?? '',
+    textColor: kWhite,
+  );
+}
+
+Widget captionWidget({
+  required String message,
+  required CommonProvider commonProvider,
+  required BuildContext context,
+  required MessageModel messageModel,
+}) {
+  return message.isNotEmpty? Padding(
+    padding:  EdgeInsets.symmetric(vertical:message.isEmpty?0: 10, horizontal: 0),
+    child: Column(
+      children: [
+        readMoreTextWidget(
+          commonProvider: commonProvider,
+          message: message,
+          messageModel: messageModel,
+        ),
+        messageModel.name != null && messageModel.name!.length > 1000
+            ? readMoreButton(
+                context: context,
+                commonProvider: commonProvider,
+                fontSize: 16,
+                isInMessageList: true,
+                messageID: messageModel.messageId)
+            : zeroMeasureWidget,
+      ],
+    ),
+  ):zeroMeasureWidget;
 }

@@ -150,4 +150,16 @@ class TimeProvider {
   }
 }
 
+  static Duration parseDuration(String duration) {
+  final parts = duration.split(':');
+  if (parts.length == 3) {
+    final hours = int.tryParse(parts[0]) ?? 0;
+    final minutes = int.tryParse(parts[1]) ?? 0;
+    final secondsParts = parts[2].split('.');
+    final seconds = int.tryParse(secondsParts[0]) ?? 0;
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  }
+  return Duration.zero;
+}
+
 }

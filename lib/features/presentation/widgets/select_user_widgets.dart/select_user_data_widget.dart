@@ -3,6 +3,8 @@ import 'package:chatbox/features/data/data_sources/user_data/user_data.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/user_bloc/user_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
+import 'package:chatbox/features/presentation/widgets/common_widgets/circle_image_show_prevent_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,18 +28,7 @@ BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
             );
           }
           return snapshot.data?.userProfileImage != null
-              ? Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).popupMenuTheme.color,
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(
-                            snapshot.data!.userProfileImage!,
-                          ))),
-                  width: 50.w,
-                  height: 50.h,
-                )
+              ? circleImageShowPreventErrorWidget(containerSize: 50, image: snapshot.data!.userProfileImage!,)
               : commonProfileDefaultIconCircularCotainer(
                   context: context,
                 );
@@ -46,3 +37,5 @@ BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
     },
   );
 }
+
+

@@ -68,21 +68,24 @@ class MessageContainerWidget extends StatelessWidget {
                   isGroup: isGroup,
                 )
               : Container(
-                  height: message.messageType == MessageType.photo ||
-                          message.messageType == MessageType.video
-                      ? 250.h
-                      : null,
-                  // width: message.message!.length > 20 ||
+                  // height: getMessageContainerHeight(message),
+                  width: getMessageContainerWidth(context, message, isGroup),
+                  // message.message!.length > 20 ||
                   //         message.messageType == MessageType.contact
                   //     ? screenWidth(context: context) / 1.6
                   //     : screenWidth(context: context) / 2.6,
-                  width: isGroup
-                      ? screenWidth(context: context) / 1.4
-                      : message.message!.length > 20
-                          ? screenWidth(context: context) / 1.3
-                          : message.message!.length < 10
-                              ? 90.w
-                              : null,
+                  // width: isGroup
+                  //     ? screenWidth(context: context) / 1.4
+                  //     : message.message!.length > 20
+                  //         ? screenWidth(context: context) / 1.3
+                  //         : message.message!.length < 10
+                  //             ? 90.w
+                  //             : message.messageType == MessageType.text &&
+                  //                     message.message!.length < 28
+                  //                 ? message.messageType == MessageType.video
+                  //                     ? screenWidth(context: context) / 2
+                  //                     : null
+                  //                 : screenWidth(context: context) / 1.4,
                   margin: EdgeInsets.symmetric(vertical: 4.h),
                   padding: message.messageType == MessageType.photo ||
                           message.messageType == MessageType.video
@@ -102,8 +105,6 @@ class MessageContainerWidget extends StatelessWidget {
                     )
                         ? LinearGradient(
                             colors: [
-                              // lightLinearGradientColorOne,
-                              // lightLinearGradientColorTwo,
                               darkSwitchColor, lightLinearGradientColorTwo,
                             ],
                           )
@@ -119,11 +120,14 @@ class MessageContainerWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       isGroup
-                          ? messageContainerUserDetails(message: message,)
+                          ? messageContainerUserDetails(
+                              message: message,
+                            )
                           : zeroMeasureWidget,
                       isGroup ? kHeight5 : zeroMeasureWidget,
                       message.messageType == MessageType.text
-                          ? textMessageWidget(message: message, context: context)
+                          ? textMessageWidget(
+                              message: message, context: context)
                           : message.messageType == MessageType.photo
                               ? photoMessageShowWidget(
                                   isGroup: isGroup,
@@ -134,7 +138,9 @@ class MessageContainerWidget extends StatelessWidget {
                                   context: context,
                                 )
                               : videoControllers[message.message!] != null
-                                  ? videoMessageShowWidget(
+                                  ?
+                                  //  zeroMeasureWidget
+                                  videoMessageShowWidget(
                                       isGroup: isGroup,
                                       groupModel: groupModel,
                                       receiverID: receiverID,
@@ -178,5 +184,39 @@ class MessageContainerWidget extends StatelessWidget {
     );
   }
 }
+double? getMessageContainerWidth(BuildContext context, MessageModel message, bool isGroup) {
+    if (isGroup) {
+      return screenWidth(context: context) / 1.4;
+    }
+    if (message.messageType == MessageType.text && message.message!.length < 28) {
+      return message.messageType == MessageType.video ? screenWidth(context: context) / 2 : null;
+    }
+    return message.message!.length > 20
+        ? screenWidth(context: context) / 1.3
+        : message.message!.length < 10
+            ? 90.w
+            : screenWidth(context: context) / 1.4;
+  }
 
+  EdgeInsets getMessageContainerPadding(BuildContext context, MessageModel message, bool isGroup) {
+    if (message.messageType == MessageType.photo || message.messageType == MessageType.video) {
+      return EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h);
+    }
+    return EdgeInsets.only(
+      left: 10.w,
+      right: 10.w,
+      top: isGroup ? 5.h : 10.h,
+      bottom: 15.h,
+    );
+  }
 
+  double? getMessageContainerHeight(MessageModel message) {
+    switch (message.messageType) {
+      case MessageType.audio:
+        return 60.h; // Adjust height as needed
+      case MessageType.video:
+        return 200.h; // Adjust height as needed
+      default:
+        return null;
+    }
+  }
