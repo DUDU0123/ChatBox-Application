@@ -81,9 +81,6 @@ Widget infoPageCommonGroupList({
                   message:
                       "Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
             }
-            if (snapshot.data == null || !snapshot.hasData) {
-              return commonErrorWidget(message: "No group Data Available");
-            }
             return commonGroupDataShowWidgetInChatInfo(
               context: context,
               groupData: snapshot.data,
@@ -107,7 +104,7 @@ Widget commonGroupDataShowWidgetInChatInfo({
         MaterialPageRoute(
           builder: (context) => ChatRoomPage(
             groupModel: groupData,
-            userName: groupData.groupName ?? '',
+            userName: groupData?.groupName ?? '',
             isGroup: true,
           ),
         ),
@@ -119,6 +116,6 @@ Widget commonGroupDataShowWidgetInChatInfo({
         context: context,
       ),
     ),
-    title: buildUserName(userName: groupData!.groupName ?? ''),
+    title: buildUserName(userName: groupData?.groupName ?? ''),
   );
 }

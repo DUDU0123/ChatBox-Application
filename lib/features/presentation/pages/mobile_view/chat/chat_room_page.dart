@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/config/common_provider/common_provider.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -16,11 +17,13 @@ import 'package:chatbox/features/presentation/widgets/chat/chat_room_bg_image_wi
 import 'package:chatbox/features/presentation/widgets/chat/chatbar_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class ChatRoomPage extends StatefulWidget {
@@ -50,6 +53,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   final recorder = FlutterSoundRecorder();
   StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration?>? _positionSubscription;
+  final FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
@@ -64,6 +68,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   @override
   void dispose() {
+    focusNode.dispose();
     videoControllers.forEach((key, controller) => controller.dispose());
     audioPlayers.forEach((key, controller) => controller.dispose());
     messageController.dispose();
@@ -128,6 +133,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       return commonErrorWidget(message: state.message);
                     }
                     return messageListingWidget(
+                      focusNode: focusNode,
                       rootContext: context,
                       isGroup: widget.isGroup,
                       receiverID: widget.receiverID,
@@ -159,15 +165,20 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       ),
                     )
                   : ChatBarWidget(
-                      isGroup: widget.isGroup,
-                      groupModel: widget.groupModel,
-                      receiverContactName: widget.userName,
-                      recorder: recorder,
-                      scrollController: scrollController,
-                      chatModel: widget.chatModel,
-                      isImojiButtonClicked: false,
-                      messageController: messageController,
-                    ),
+                          replyMessage: Provider.of<CommonProvider>(context).replyMessage,
+                          onCancelReply: () {
+                            cancelReply(context: context);
+                          },
+                          focusNode: focusNode,
+                          isGroup: widget.isGroup,
+                          groupModel: widget.groupModel,
+                          receiverContactName: widget.userName,
+                          recorder: recorder,
+                          scrollController: scrollController,
+                          chatModel: widget.chatModel,
+                          isImojiButtonClicked: false,
+                          messageController: messageController,
+                        )
             ],
           ),
           Positioned(

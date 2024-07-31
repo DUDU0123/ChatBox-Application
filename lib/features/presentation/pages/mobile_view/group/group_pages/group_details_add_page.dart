@@ -56,8 +56,10 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
                     onTap: () async {
                      File? pickedImageFile =
                           await pickImage(imageSource: ImageSource.gallery);
-                      context.read<GroupBloc>().add(
+                      if (mounted) {
+                        context.read<GroupBloc>().add(
                           GroupImagePickEvent(pickedFile: pickedImageFile));
+                      }
                     },
                     child: BlocBuilder<GroupBloc, GroupState>(
                       builder: (context, state) {

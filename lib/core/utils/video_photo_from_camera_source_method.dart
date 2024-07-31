@@ -24,7 +24,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
   return showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: TextWidgetCommon(
+      title: const TextWidgetCommon(
         text: "Take",
         textAlign: TextAlign.center,
       ),
@@ -36,64 +36,43 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
             subtitle: "Video",
             icon: Icons.video_call,
             onTap: () async {
-              // context.read<MessageBloc>().add(
-              //       VideoMessageSendEvent(
-              //         isGroup: isGroup,
-              //         receiverContactName: receiverContactName??"",
-              //         receiverID: chatModel?.receiverID??"",
-              //         imageSource: ImageSource.camera,
-              //         chatModel: chatModel,
-              //         groupModel: groupModel
-              //       ),
-              //     );
               final file =
                   await takeVideoAsset(imageSource: ImageSource.camera);
-              // Navigator.pop(context);
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FileShowPage(
-                      fileType: FileType.video,
-                      fileToShow: file,
-                      pageType: PageTypeEnum.messagingPage,
-                      chatModel: chatModel,
-                      groupModel: groupModel,
-                      isGroup: isGroup,
-                      receiverContactName: receiverContactName,
-                    ),
-                  ));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FileShowPage(
+                    fileType: FileType.video,
+                    fileToShow: file,
+                    pageType: PageTypeEnum.messagingPage,
+                    chatModel: chatModel,
+                    groupModel: groupModel,
+                    isGroup: isGroup,
+                    receiverContactName: receiverContactName,
+                  ),
+                ),
+              );
             },
           ),
           iconContainerWidgetGradientColor(
             subtitle: "Photo",
             icon: Icons.camera,
             onTap: () async {
-              log("message");
-              // context.read<MessageBloc>().add(
-              //       PhotoMessageSendEvent(
-              //           isGroup: isGroup,
-              //           receiverContactName: receiverContactName ?? '',
-              //           receiverID: chatModel?.receiverID ?? '',
-              //           imageSource: ImageSource.camera,
-              //           chatModel: chatModel,
-              //           groupModel: groupModel),
-              //     );
-
               final file = await pickImage(imageSource: ImageSource.camera);
-              // Navigator.pop(context);
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FileShowPage(
-                      fileType: FileType.image,
-                      fileToShow: file,
-                      pageType: PageTypeEnum.messagingPage,
-                      chatModel: chatModel,
-                      groupModel: groupModel,
-                      isGroup: isGroup,
-                      receiverContactName: receiverContactName,
-                    ),
-                  ));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FileShowPage(
+                    fileType: FileType.image,
+                    fileToShow: file,
+                    pageType: PageTypeEnum.messagingPage,
+                    chatModel: chatModel,
+                    groupModel: groupModel,
+                    isGroup: isGroup,
+                    receiverContactName: receiverContactName,
+                  ),
+                ),
+              );
             },
           ),
         ],

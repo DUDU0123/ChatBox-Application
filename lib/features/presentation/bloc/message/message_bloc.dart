@@ -57,6 +57,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<LocationMessageSendEvent>(locationMessageSendEvent);
     on<MessageSelectedEvent>(messageSelectedEvent);
     on<GetMessageDateEvent>(getMessageDateEvent);
+    on<GetReplyMessageEvent>(getReplyMessageEvent);
   }
 
   FutureOr<void> getMessageDateEvent(
@@ -889,4 +890,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       emit(MessageErrorState(message: e.toString()));
     }
   }
+
+  FutureOr<void> getReplyMessageEvent(
+      GetReplyMessageEvent event, Emitter<MessageState> emit) {
+        try {
+          emit(state.copyWith(replyMessagemodel: event.repliedToMessage));
+        } catch (e) {
+          emit(MessageErrorState(message: e.toString()));
+        }
+      }
 }

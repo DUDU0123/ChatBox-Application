@@ -45,7 +45,7 @@ class CommonDBFunctions {
       final messageMapDoc = !isGroup
           ? await fireStore
               .collection(usersCollection)
-              .doc()
+              .doc(firebaseAuth.currentUser?.uid)
               .collection(chatsCollection)
               .doc(chatModel?.chatID)
               .collection(messagesCollection)
@@ -53,7 +53,7 @@ class CommonDBFunctions {
               .get()
           : await fireStore
               .collection(usersCollection)
-              .doc()
+              .doc(firebaseAuth.currentUser?.uid)
               .collection(groupsCollection)
               .doc(groupModel?.groupID)
               .collection(messagesCollection)
@@ -319,7 +319,7 @@ class CommonDBFunctions {
         .collection(statusCollection);
 
     final oldStatusesQuery =
-        statusCol.where('timestamp', isLessThan: cutoffTime).get();
+        statusCol.where(dbStatusModelTimeStamp, isLessThan: cutoffTime).get();
 
     final oldStatuses = await oldStatusesQuery;
 

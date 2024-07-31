@@ -83,7 +83,7 @@ class PhotoMessageSendEvent extends MessageEvent {
 }
 
 class VideoMessageSendEvent extends MessageEvent {
-  final ImageSource imageSource;
+  final ImageSource? imageSource;
   final ChatModel? chatModel;
   final String receiverID;
   final String receiverContactName;
@@ -91,22 +91,24 @@ class VideoMessageSendEvent extends MessageEvent {
   final String? messageCaption;
   final File? videoFile;
   final GroupModel? groupModel;
+  final String? videoMessageUrl;
   const VideoMessageSendEvent({
-    this.videoFile,
-    required this.imageSource,
-    this.messageCaption,
+    this.imageSource,
     this.chatModel,
     required this.receiverID,
     required this.receiverContactName,
     required this.isGroup,
+    this.messageCaption,
+    this.videoFile,
     this.groupModel,
+    this.videoMessageUrl,
   });
   @override
   List<Object> get props => [
-        imageSource,
+        imageSource??ImageSource.gallery,
         chatModel ?? const ChatModel(),
         isGroup,
-        groupModel ?? const GroupModel(),videoFile??File('')
+        groupModel ?? const GroupModel(),videoFile??File(''), videoMessageUrl??''
       ];
 }
 
@@ -429,5 +431,16 @@ class GetMessageDateEvent extends MessageEvent {
   @override
   List<Object> get props => [
         currentMessageDate,
+      ];
+}
+
+class GetReplyMessageEvent extends MessageEvent {
+  final MessageModel? repliedToMessage;
+  const GetReplyMessageEvent({
+    this.repliedToMessage,
+  });
+  @override
+  List<Object> get props => [
+        repliedToMessage??const MessageModel(),
       ];
 }

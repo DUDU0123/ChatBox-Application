@@ -39,6 +39,7 @@ const dbIsMessageDeleted = 'deleted_message';
 const dbIsMessagePinned = 'pinned_message';
 const dbIsMessageStarred = 'starred_message';
 const nameOfMessage = 'message_name';
+const dbReplyToMessage = 'reply_to_message';
 
 // chat db fields name
 const chatId = 'chat_id';

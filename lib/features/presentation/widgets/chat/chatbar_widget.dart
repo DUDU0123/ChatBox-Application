@@ -4,19 +4,22 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/emoji_select.dart';
-import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_field_common.dart';
+import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+
+
 
 class ChatBarWidget extends StatefulWidget {
   ChatBarWidget({
@@ -29,6 +32,9 @@ class ChatBarWidget extends StatefulWidget {
     this.receiverContactName,
     this.groupModel,
     required this.isGroup,
+    required this.focusNode,
+    required this.replyMessage,
+    this.onCancelReply,
   });
   final TextEditingController messageController;
   bool isImojiButtonClicked;
@@ -38,6 +44,9 @@ class ChatBarWidget extends StatefulWidget {
   final GroupModel? groupModel;
   final String? receiverContactName;
   final bool isGroup;
+  final FocusNode focusNode;
+  final MessageModel? replyMessage;
+  final void Function()? onCancelReply;
 
   @override
   State<ChatBarWidget> createState() => _ChatBarWidgetState();
@@ -49,7 +58,6 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20.sp),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
         decoration: BoxDecoration(
           color: kTransparent,
           // image: DecorationImage(
@@ -63,7 +71,14 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
         width: screenWidth(context: context),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (widget.replyMessage != null)
+                buildReplyWidget(
+                  message: widget.replyMessage!,
+                  onCancelReply: widget.onCancelReply,
+                  context: context,
+                ),
               Padding(
                 padding: EdgeInsets.only(bottom: 10, left: 4.w),
                 child: Row(
@@ -73,7 +88,11 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                       padding: EdgeInsets.only(left: 5.w, right: 5.w),
                       width: screenWidth(context: context) / 1.2,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.sp),
+                        borderRadius: widget.replyMessage != null
+                            ? BorderRadius.only(
+                                bottomRight: Radius.circular(20.sp),
+                                bottomLeft: Radius.circular(20.sp))
+                            : BorderRadius.circular(20.sp),
                         color: const Color.fromARGB(255, 39, 52, 78),
                       ),
                       child: Row(
@@ -95,26 +114,32 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             ),
                           ),
                           Expanded(
-                            child: TextFieldCommon(
-                              style: fieldStyle(context: context).copyWith(
-                                fontWeight: FontWeight.w400,
-                                color: kWhite,
-                              ),
-                              onChanged: (value) {
-                                log(widget.messageController.text);
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextFieldCommon(
+                                  focusNode: widget.focusNode,
+                                  style: fieldStyle(context: context).copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: kWhite,
+                                  ),
+                                  onChanged: (value) {
+                                    log(widget.messageController.text);
 
-                                context.read<MessageBloc>().add(
-                                      MessageTypedEvent(
-                                        textLength: value.length,
-                                      ),
-                                    );
-                              },
-                              hintText: "Type message...",
-                              maxLines: 5,
-                              controller: widget.messageController,
-                              textAlign: TextAlign.start,
-                              border: InputBorder.none,
-                              cursorColor: buttonSmallTextColor,
+                                    context.read<MessageBloc>().add(
+                                          MessageTypedEvent(
+                                            textLength: value.length,
+                                          ),
+                                        );
+                                  },
+                                  hintText: "Type message...",
+                                  maxLines: 5,
+                                  controller: widget.messageController,
+                                  textAlign: TextAlign.start,
+                                  border: InputBorder.none,
+                                  cursorColor: buttonSmallTextColor,
+                                ),
+                              ],
                             ),
                           ),
                           Row(
@@ -169,7 +194,12 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                           child: IconButton(
                             onPressed: () async {
                               if (widget.messageController.text.isNotEmpty) {
+                                
+                                  cancelReply(context: context);
+                                
                                 sendMessage(
+                                  replyToMessage:
+                                      widget.replyMessage,
                                   isGroup: widget.isGroup,
                                   groupModel: widget.groupModel,
                                   receiverContactName:
@@ -179,6 +209,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                   messageController: widget.messageController,
                                   scrollController: widget.scrollController,
                                 );
+                                
                               } else {
                                 context.read<MessageBloc>().add(
                                       AudioRecordToggleEvent(
@@ -241,10 +272,12 @@ void sendMessage({
   required String? receiverContactName,
   required bool isGroup,
   GroupModel? groupModel,
+  MessageModel? replyToMessage,
 }) {
   MessageModel message;
   if (!isGroup) {
     message = MessageModel(
+      replyToMessage: replyToMessage,
       messageId: DateTime.now().millisecondsSinceEpoch.toString(),
       senderID: chatModel?.senderID,
       receiverID: chatModel?.receiverID,
@@ -259,6 +292,7 @@ void sendMessage({
     );
   } else {
     message = MessageModel(
+      replyToMessage: replyToMessage,
       senderID: firebaseAuth.currentUser?.uid,
       messageTime: DateTime.now().toString(),
       isPinnedMessage: false,

@@ -71,17 +71,22 @@ class StatusMethods {
     return statusModel;
   }
 
-  static void shareStatusToAnyChat(
-      {required List<ContactModel>? selectedContactList,
-      required UploadedStatusModel? uploadedStatusModel,
-      required BuildContext context}) async {
+  static void shareStatusToAnyChat({
+    required List<ContactModel>? selectedContactList,
+    required UploadedStatusModel? uploadedStatusModel,
+    required MessageBloc messageBloc,
+  }) async {
+    log("Status: $uploadedStatusModel");
+    log("vIDEO uRL: ${uploadedStatusModel?.statusContent}");
     for (var contact in selectedContactList!) {
       if (contact.chatBoxUserId != null && firebaseAuth.currentUser != null) {
-        final ChatModel? chatModel =
-            await CommonDBFunctions.getChatModel(receiverID: contact.chatBoxUserId!);
+        final ChatModel? chatModel = await CommonDBFunctions.getChatModel(
+            receiverID: contact.chatBoxUserId!);
         final UserModel? receiverModel =
             await CommonDBFunctions.getOneUserDataFromDBFuture(
                 userId: contact.chatBoxUserId);
+
+                
         final MessageModel message = MessageModel(
           messageId: DateTime.now().millisecondsSinceEpoch.toString(),
           message: uploadedStatusModel?.statusContent,
@@ -99,20 +104,18 @@ class StatusMethods {
           receiverID: contact.chatBoxUserId,
           senderID: firebaseAuth.currentUser?.uid,
         );
-        context.read<MessageBloc>().add(MessageSentEvent(
-              chatModel: chatModel,
-              receiverID: contact.chatBoxUserId!,
-              currentUserId: firebaseAuth.currentUser!.uid,
-              receiverContactName: receiverModel?.contactName ??
-                  receiverModel?.userName ??
-                  receiverModel?.phoneNumber ??
-                  '',
-              message: message,
-              isGroup: false,
-            ));
+        messageBloc.add(MessageSentEvent(
+          chatModel: chatModel,
+          receiverID: contact.chatBoxUserId!,
+          currentUserId: firebaseAuth.currentUser!.uid,
+          receiverContactName: receiverModel?.contactName ??
+              receiverModel?.userName ??
+              receiverModel?.phoneNumber ??
+              '',
+          message: message,
+          isGroup: false,
+        ));
       }
     }
   }
 }
-
-

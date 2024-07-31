@@ -170,9 +170,10 @@ Widget videoMessageShowWidget({
   GroupModel? groupModel,
 }) {
   final commonProvider = Provider.of<CommonProvider>(context, listen: true);
-  return Container(
-    height: 300.h, // Set a fixed height for the video container
+  return SizedBox(
+    height: null,
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
           onTap: () {
@@ -235,8 +236,8 @@ Widget videoMessageShowWidget({
             ],
           ),
         ),
-        message.name != null
-            ? Expanded(
+        message.name != null 
+            ? message.name!.isNotEmpty? Flexible(
                 child: captionWidget(
                   message: message.name!,
                   commonProvider: commonProvider,
@@ -244,7 +245,7 @@ Widget videoMessageShowWidget({
                   messageModel: message,
                 ),
               )
-            : zeroMeasureWidget
+            : zeroMeasureWidget:zeroMeasureWidget
       ],
     ),
   );

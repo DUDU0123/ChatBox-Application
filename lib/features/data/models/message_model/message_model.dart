@@ -16,6 +16,7 @@ class MessageModel extends MessageEntity {
     super.isStarredMessage,
     super.isPinnedMessage,
     super.name,
+    super.replyToMessage,
   });
 
   factory MessageModel.fromJson({
@@ -34,6 +35,9 @@ class MessageModel extends MessageEntity {
       isStarredMessage: map[dbIsMessageStarred],
       isPinnedMessage: map[dbIsMessagePinned],
       name: map[nameOfMessage],
+      replyToMessage: map[dbReplyToMessage] != null
+          ? MessageModel.fromJson(map: Map<String, dynamic>.from(map[dbReplyToMessage]))
+          : null,
     );
   }
 
@@ -51,6 +55,7 @@ class MessageModel extends MessageEntity {
       dbIsMessageStarred: isStarredMessage,
       dbIsMessagePinned: isPinnedMessage,
       nameOfMessage :name,
+      dbReplyToMessage: replyToMessage?.toJson(),
     };
   }
 
@@ -66,6 +71,7 @@ class MessageModel extends MessageEntity {
     bool? isDeletedMessage,
     bool? isStarredMessage,
     bool? isPinnedMessage,
+    MessageModel? replyToMessage,
     String? name,
   }) {
     return MessageModel(
@@ -81,6 +87,7 @@ class MessageModel extends MessageEntity {
       isStarredMessage: isStarredMessage ?? this.isStarredMessage,
       isPinnedMessage: isPinnedMessage ?? this.isPinnedMessage,
       name: name??this.name,
+      replyToMessage: replyToMessage ?? this.replyToMessage,
     );
   }
 }

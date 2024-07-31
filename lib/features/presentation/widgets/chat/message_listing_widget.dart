@@ -9,12 +9,15 @@ import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
+import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';
-
 Widget messageListingWidget({
   required MessageState state,
   required ScrollController scrollController,
@@ -25,6 +28,7 @@ Widget messageListingWidget({
   required BuildContext rootContext,
   required bool isGroup,
   GroupModel? groupModel,
+  required FocusNode focusNode,
 }) {
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
@@ -55,7 +59,7 @@ Widget messageListingWidget({
         }
 
         if (message.messageType == MessageType.video &&
-            !videoControllers.containsKey(message.message)) {
+            !videoControllers.containsKey(message.message) && message.message!=null) {
           videoControllers[message.message!] = VideoPlayerController.networkUrl(
             Uri.parse(message.message!),
           )..initialize().then((_) {});
@@ -106,6 +110,9 @@ Widget messageListingWidget({
                     ? buttonSmallTextColor.withOpacity(0.3)
                     : kTransparent,
                 child: MessageContainerWidget(
+                  onSwipeMethod: ({required message}) {
+                    replyToMessage(message: message, focusNode: focusNode,context: context);
+                  },
                   isGroup: isGroup,
                   rootContext: rootContext,
                   receiverID: receiverID ?? '',

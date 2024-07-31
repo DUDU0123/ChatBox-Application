@@ -24,19 +24,32 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/widgets/story_view.dart';
 
-class StatusShowPage extends StatelessWidget {
+class StatusShowPage extends StatefulWidget {
   StatusShowPage({super.key, required this.statusModel});
   final StatusModel statusModel;
+
+  @override
+  State<StatusShowPage> createState() => _StatusShowPageState();
+}
+
+class _StatusShowPageState extends State<StatusShowPage> {
   final StoryController controller = StoryController();
+
   final ValueNotifier<int> currentIndexNotifier = ValueNotifier<int>(0);
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          if (statusModel.statusList != null &&
-              statusModel.statusList!.isNotEmpty)
+          if (widget.statusModel.statusList != null &&
+              widget.statusModel.statusList!.isNotEmpty)
             StoryView(
               onComplete: () {
                 Navigator.pop(context);
@@ -49,7 +62,7 @@ class StatusShowPage extends StatelessWidget {
               },
               storyItems: buildStatusItems(
                 controller: controller,
-                statusModel: statusModel,
+                statusModel: widget.statusModel,
                 context: context,
               ),
               controller: controller,
@@ -61,46 +74,47 @@ class StatusShowPage extends StatelessWidget {
             child: ValueListenableBuilder<int>(
               valueListenable: currentIndexNotifier,
               builder: (context, currentIndex, _) {
-                log(statusModel.statusList![currentIndex].statusUploadedTime
+                log(widget.statusModel.statusList![currentIndex].statusUploadedTime
                     .toString());
                 return StreamBuilder<UserModel?>(
-                    stream: statusModel.statusUploaderId != null
+                    stream: widget.statusModel.statusUploaderId != null
                         ? CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
-                            userId: statusModel.statusUploaderId!)
+                            userId: widget.statusModel.statusUploaderId!)
                         : null,
                     builder: (context, snapshot) {
                       return statusAppBar(
                         context: context,
                         statusUploaderImage: snapshot.data?.userProfileImage,
-                        userName: statusModel.statusUploaderId ==
+                        userName: widget.statusModel.statusUploaderId ==
                                 firebaseAuth.currentUser?.uid
                             ? "My status"
                             : snapshot.data?.contactName ??
                                 snapshot.data?.userName ??
                                 '',
-                        howHours: statusModel.statusList != null
-                            ? TimeProvider.getRelativeTime(statusModel
+                        howHours: widget.statusModel.statusList != null
+                            ? TimeProvider.getRelativeTime(widget.statusModel
                                 .statusList![currentIndex].statusUploadedTime
                                 .toString())
                             : '',
                         deleteMethod: () {
-                          final uploadedStatusId = statusModel
+                          final uploadedStatusId = widget.statusModel
                               .statusList?[currentIndex].uploadedStatusId;
-                          statusModel.statusId != null
+                          widget.statusModel.statusId != null
                               ? uploadedStatusId != null
                                   ? context
                                       .read<StatusBloc>()
                                       .add(StatusDeleteEvent(
-                                        statusModelId: statusModel.statusId!,
+                                        statusModelId: widget.statusModel.statusId!,
                                         uploadedStatusId: uploadedStatusId,
                                       ))
                                   : null
                               : null;
                           // Remove the deleted status from the list
-                          statusModel.statusList!.removeAt(currentIndex);
+                          widget.statusModel.statusList!.removeAt(currentIndex);
                         },
                         shareMethod: () {
-                          statusModel.statusList != null
+                           Navigator.pop(context);
+                          widget.statusModel.statusList != null
                               ? Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -108,10 +122,13 @@ class StatusShowPage extends StatelessWidget {
                                       isGroup: false,
                                       pageType: PageTypeEnum.toSendPage,
                                       uploadedStatusModel:
-                                          statusModel.statusList![currentIndex],
+                                          widget.statusModel.statusList![currentIndex],
+                                          statusModel: widget.statusModel,
+                                          uploadedStatusModelID: widget.statusModel.statusList![currentIndex].uploadedStatusId,
                                     ),
                                   ))
                               : null;
+                             
                         },
                       );
                     });
@@ -120,61 +137,6 @@ class StatusShowPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class ListAllChatMembersPage extends StatelessWidget {
-  const ListAllChatMembersPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: TextWidgetCommon(text: "Select Contact to Send"),
-      ),
-      body: StreamBuilder<List<ContactModel>?>(
-          stream: CommonDBFunctions.getContactsCollection(),
-          builder: (context, snapshot) {
-            if (snapshot.data == null) {
-              return commonErrorWidget(message: "Something went wrong");
-            }
-            final contactList = snapshot.data;
-            return ListView.separated(
-              itemCount: snapshot.data!.length,
-              separatorBuilder: (context, index) => kHeight10,
-              itemBuilder: (context, index) {
-                final contact = contactList![index];
-                return ListTile(
-                  leading: contact.userProfilePhotoOnChatBox != null
-                      ? Container(
-                          width: 50,
-                          height: 50,
-                          decoration:
-                              const BoxDecoration(shape: BoxShape.circle),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50.sp),
-                            child: Image.network(
-                              fit: BoxFit.cover,
-                              contact.userProfilePhotoOnChatBox!,
-                              errorBuilder: (context, error, stackTrace) {
-                                return nullImageReplaceWidget(
-                                  containerRadius: 50,
-                                  context: context,
-                                );
-                              },
-                            ),
-                          ),
-                        )
-                      : nullImageReplaceWidget(
-                          containerRadius: 40, context: context),
-                  title: TextWidgetCommon(
-                    text: contact.userContactName ?? '',
-                  ),
-                );
-              },
-            );
-          }),
     );
   }
 }

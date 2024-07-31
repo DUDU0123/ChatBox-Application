@@ -7,6 +7,7 @@ import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:chatbox/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/select_contacts/selected_contacts_show_widget.dart';
@@ -26,13 +27,15 @@ class SelectContactPage extends StatefulWidget {
     required this.pageType,
     this.groupModel,
     required this.isGroup,
-    this.uploadedStatusModel,
+    this.uploadedStatusModel, this.statusModel, this.uploadedStatusModelID,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
   final PageTypeEnum pageType;
   final GroupModel? groupModel;
   final UploadedStatusModel? uploadedStatusModel;
+  final StatusModel? statusModel;
+   final String? uploadedStatusModelID;
   final bool isGroup;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
@@ -218,6 +221,8 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
+            uploadedStatusModelID: widget.uploadedStatusModelID,
+            statusModel: widget.statusModel,
             uploadedStatusModel: widget.uploadedStatusModel,
             icon: widget.pageType == PageTypeEnum.groupInfoPage
                 ? Icons.done

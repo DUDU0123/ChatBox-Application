@@ -5,6 +5,8 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
+import 'package:chatbox/core/utils/contact_methods.dart';
+import 'package:chatbox/core/utils/group_methods.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/core/utils/status_methods.dart';
@@ -12,16 +14,19 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
 import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_details_add_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class FloatingDoneNavigateButton extends StatelessWidget {
+class FloatingDoneNavigateButton extends StatefulWidget {
   const FloatingDoneNavigateButton({
     super.key,
     this.chatModel,
@@ -34,6 +39,8 @@ class FloatingDoneNavigateButton extends StatelessWidget {
     this.groupModel,
     required this.isGroup,
     this.uploadedStatusModel,
+    this.statusModel,
+    this.uploadedStatusModelID,
   });
 
   final ChatModel? chatModel;
@@ -46,135 +53,76 @@ class FloatingDoneNavigateButton extends StatelessWidget {
   final GroupModel? groupModel;
   final bool isGroup;
   final UploadedStatusModel? uploadedStatusModel;
+  final StatusModel? statusModel;
+  final String? uploadedStatusModelID;
 
+  @override
+  State<FloatingDoneNavigateButton> createState() => _FloatingDoneNavigateButtonState();
+}
+
+class _FloatingDoneNavigateButtonState extends State<FloatingDoneNavigateButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        switch (pageType) {
+        final messageBloc = context.read<MessageBloc>();
+        
+        switch (widget.pageType) {
           case PageTypeEnum.sendContactSelectPage:
-            selectedContactList != null
-                ? receiverContactName != null
-                    ? context.read<MessageBloc>().add(
-                          ContactMessageSendEvent(
-                            isGroup: isGroup,
-                            groupModel: groupModel,
-                            receiverID: chatModel?.receiverID,
-                            receiverContactName: receiverContactName!,
-                            contactListToSend: selectedContactList!,
-                            chatModel: chatModel,
-                          ),
-                        )
-                    : null
-                : null;
-            Navigator.pop(context);
+            ContactMethods.sendSelectedContactMessage(
+              selectedContactList: widget.selectedContactList,
+              receiverContactName: widget.receiverContactName,
+              context: context,
+              isGroup: widget.isGroup,
+              groupModel: widget.groupModel,
+              chatModel: widget.chatModel,
+            );
             break;
           case PageTypeEnum.groupMemberSelectPage:
-            selectedContactList != null
-                ? selectedContactList!.length >= 2
-                    ? Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => GroupDetailsAddPage(
-                            selectedGroupMembers: selectedContactList!,
-                          ),
-                        ),
-                      )
-                    : commonSnackBarWidget(
-                        contentText: "Select atleast 2 members",
-                        context: context,
-                      )
-                : commonSnackBarWidget(
-                    contentText: "Select atleast 2 members",
-                    context: context,
-                  );
+            GroupMethods
+                .selectGroupMembersOnCreationAndSendToDetailsAddPageMethod(
+              selectedContactList: widget.selectedContactList,
+              context: context,
+            );
             break;
 
           case PageTypeEnum.groupInfoPage:
-            if (selectedContactList != null) {
-              if (selectedContactList!.isNotEmpty) {
-                final Set<String> updatedGroupMembers =
-                    Set<String>.from(groupModel?.groupMembers ?? []);
-                for (var selectedContact in selectedContactList!) {
-                  updatedGroupMembers.add(selectedContact.chatBoxUserId!);
-                }
-                final updatedGroupData = groupModel?.copyWith(
-                    groupMembers: updatedGroupMembers.toList());
-                updatedGroupData != null
-                    ? context.read<GroupBloc>().add(
-                          UpdateGroupEvent(
-                            updatedGroupData: updatedGroupData,
-                          ),
-                        )
-                    : null;
-                Navigator.pop(context);
-              } else {
-                commonSnackBarWidget(
-                  contentText: "Select atleast 1 members",
-                  context: context,
-                );
-              }
-            } else {
-              commonSnackBarWidget(
-                contentText: "Select atleast 1 members",
-                context: context,
-              );
-            }
+            GroupMethods.updateGroupMembersAfterCreationMethod(
+              selectedContactList: widget.selectedContactList,
+              groupModel: widget.groupModel,
+              context: context,
+            );
             break;
 
           case PageTypeEnum.toSendPage:
+            final val = await fireStore
+                .collection(usersCollection)
+                .doc(firebaseAuth.currentUser?.uid)
+                .collection(statusCollection)
+                .doc(widget.statusModel?.statusId)
+                .get();
+            final statusMOdell = StatusModel.fromJson(map: val.data()!);
+            final sendingStatus = statusMOdell.statusList?.firstWhere(
+                (status) => status.uploadedStatusId == widget.uploadedStatusModelID);
+
             StatusMethods.shareStatusToAnyChat(
-              selectedContactList: selectedContactList,
-              uploadedStatusModel: uploadedStatusModel,
-              context: context,
+              selectedContactList: widget.selectedContactList,
+              uploadedStatusModel: sendingStatus,
+              messageBloc: messageBloc,
             );
-            Navigator.pop(context);
+            if(mounted){
+              Navigator.pop(context);
+            }
             break;
           case PageTypeEnum.broadcastMembersSelectPage:
             break;
           case PageTypeEnum.groupDetailsAddPage:
-            final String? currentUserId = firebaseAuth.currentUser?.uid;
-            if (currentUserId == null) {
-              return;
-            }
-            List<String> selectUsersID = [];
-            for (var user in selectedContactList!) {
-              if (user.chatBoxUserId != null) {
-                selectUsersID.add(user.chatBoxUserId!);
-              }
-            }
-            List<MembersGroupPermission> memberPermissions = filterPermissions(
-              context.read<GroupBloc>().state.memberPermissions,
+            GroupMethods.groupDetailsAddOnCreationMethod(
+              context: context,
+              selectedContactList: widget.selectedContactList,
+              groupName: widget.groupName,
+              pickedGroupImageFile: widget.pickedGroupImageFile,
             );
-            List<AdminsGroupPermission> adminPermissions = filterPermissions(
-              context.read<GroupBloc>().state.adminPermissions,
-            );
-            GroupModel newGroupData = GroupModel(
-              groupCreatedAt: DateTime.now().toString(),
-              groupName: groupName,
-              groupAdmins: [currentUserId],
-              createdBy: currentUserId,
-              groupMembers: [currentUserId, ...selectUsersID],
-              adminsPermissions: adminPermissions,
-              membersPermissions: memberPermissions,
-            );
-            groupName != null
-                ? groupName!.isNotEmpty
-                    ? context.read<GroupBloc>().add(
-                          CreateGroupEvent(
-                            context: context,
-                            newGroupData: newGroupData,
-                            groupProfileImage: pickedGroupImageFile,
-                          ),
-                        )
-                    : commonSnackBarWidget(
-                        contentText: "Enter group name",
-                        context: context,
-                      )
-                : commonSnackBarWidget(
-                    contentText: "Enter group name",
-                    context: context,
-                  );
             break;
           default:
         }
@@ -191,7 +139,7 @@ class FloatingDoneNavigateButton extends StatelessWidget {
         ),
         child: Center(
           child: Icon(
-            icon ?? Icons.arrow_forward_rounded,
+            widget.icon ?? Icons.arrow_forward_rounded,
             size: 30.sp,
             color: kWhite,
           ),

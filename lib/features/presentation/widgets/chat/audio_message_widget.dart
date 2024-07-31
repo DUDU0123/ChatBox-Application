@@ -21,6 +21,7 @@ Widget audioMessageWidget({
   required Map<String, AudioPlayer> audioPlayers,
   required GroupModel? groupModel,
   required bool isGroup,
+  required void Function({required MessageModel message}) onSwipeMethod,
 }) {
   audioPlayers[message.message]?.durationStream.listen((duration) {
     if (duration != null) {
@@ -41,137 +42,147 @@ Widget audioMessageWidget({
           .add(AudioPlayerCompletedEvent(message.message!));
     }
   });
-  return Container(
-    // height: !isGroup?
-    //  70.h
-    //  :null,
-    height: null,
-    width: screenWidth(context: context) / 1.26,
-    margin: EdgeInsets.symmetric(vertical: 3.h),
-    padding: EdgeInsets.all(6.w),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.sp),
-      gradient: checkIsIncomingMessage(
-        isGroup: isGroup,
-        message: message,
-        groupModel: groupModel,
-      )
-          ? LinearGradient(
-              colors: [
-                // lightLinearGradientColorOne,
-                // lightLinearGradientColorTwo,
-                darkSwitchColor, lightLinearGradientColorTwo,
-              ],
-            )
-          : LinearGradient(
-              colors: [
-                kBlack,
-                darkSwitchColor,
-              ],
-            ),
-    ),
-    child: Column(
-      children: [
-        isGroup
-            ? messageContainerUserDetails(message: message)
-            : zeroMeasureWidget,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            StreamBuilder<UserModel?>(
-                stream: message.senderID != null
-                    ? CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
-                        userId: message.senderID!)
-                    : null,
-                builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return nullImageReplaceWidget(
-                        containerRadius: 30, context: context);
-                  }
-                  return circleImageShowPreventErrorWidget(
-                    containerSize: 50,
-                    image: snapshot.data!.userProfileImage!,
-                  );
-                }),
-            SizedBox(width: 10.w),
-            GestureDetector(
-              onTap: () async {
-                await audioPlayers[message.message]
-                    ?.setUrl(message.message ?? '');
+  return Dismissible(
+    confirmDismiss: (direction) async {
+      await Future.delayed(const Duration(milliseconds: 2));
+      onSwipeMethod(message: message);
+      return false;
+    },
+    key: UniqueKey(),
+    child: Container(
+      // height: !isGroup?
+      //  70.h
+      //  :null,
+      height: null,
+      width: screenWidth(context: context) / 1.26,
+      margin: EdgeInsets.symmetric(vertical: 3.h),
+      padding: EdgeInsets.all(6.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.sp),
+        gradient: checkIsIncomingMessage(
+          isGroup: isGroup,
+          message: message,
+          groupModel: groupModel,
+        )
+            ? LinearGradient(
+                colors: [
+                  // lightLinearGradientColorOne,
+                  // lightLinearGradientColorTwo,
+                  darkSwitchColor, lightLinearGradientColorTwo,
+                ],
+              )
+            : LinearGradient(
+                colors: [
+                  kBlack,
+                  darkSwitchColor,
+                ],
+              ),
+      ),
+      child: Column(
+        children: [
+          isGroup
+              ? messageContainerUserDetails(message: message)
+              : zeroMeasureWidget,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              StreamBuilder<UserModel?>(
+                  stream: message.senderID != null
+                      ? CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
+                          userId: message.senderID!)
+                      : null,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return nullImageReplaceWidget(
+                          containerRadius: 30, context: context);
+                    }
+                    return circleImageShowPreventErrorWidget(
+                      containerSize: 50,
+                      image: snapshot.data!.userProfileImage!,
+                    );
+                  }),
+              SizedBox(width: 10.w),
+              GestureDetector(
+                onTap: () async {
+                  await audioPlayers[message.message]
+                      ?.setUrl(message.message ?? '');
 
-                final isPlaying =
-                    audioPlayers[message.message]?.playing ?? false;
-                if (isPlaying) {
-                  await audioPlayers[message.message]?.pause();
-                  context.read<MessageBloc>().add(
-                      AudioPlayerPlayStateChangedEvent(
-                          message.message!, false));
-                } else {
-                  await audioPlayers[message.message]!.play();
-                  context.read<MessageBloc>().add(
-                      AudioPlayerPlayStateChangedEvent(message.message!, true));
-                }
-              },
-              child: BlocBuilder<MessageBloc, MessageState>(
-                builder: (context, state) {
                   final isPlaying =
-                      state.audioPlayingStates[message.message] ?? false;
-                  return Icon(
-                    isPlaying ? Icons.pause : Icons.play_arrow,
-                    size: 40.sp,
-                    color: kWhite,
-                  );
+                      audioPlayers[message.message]?.playing ?? false;
+                  if (isPlaying) {
+                    await audioPlayers[message.message]?.pause();
+                    context.read<MessageBloc>().add(
+                        AudioPlayerPlayStateChangedEvent(
+                            message.message!, false));
+                  } else {
+                    await audioPlayers[message.message]!.play();
+                    context.read<MessageBloc>().add(
+                        AudioPlayerPlayStateChangedEvent(
+                            message.message!, true));
+                  }
                 },
+                child: BlocBuilder<MessageBloc, MessageState>(
+                  builder: (context, state) {
+                    final isPlaying =
+                        state.audioPlayingStates[message.message] ?? false;
+                    return Icon(
+                      isPlaying ? Icons.pause : Icons.play_arrow,
+                      size: 40.sp,
+                      color: kWhite,
+                    );
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: BlocBuilder<MessageBloc, MessageState>(
-                builder: (context, state) {
-                  final currentPosition =
-                      state.audioPositions[message.message] ?? Duration.zero;
-                  final duration =
-                      state.audioDurations[message.message] ?? Duration.zero;
+              Expanded(
+                child: BlocBuilder<MessageBloc, MessageState>(
+                  builder: (context, state) {
+                    final currentPosition =
+                        state.audioPositions[message.message] ?? Duration.zero;
+                    final duration =
+                        state.audioDurations[message.message] ?? Duration.zero;
 
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Slider(
-                        value: currentPosition.inSeconds.toDouble(),
-                        max: duration.inSeconds.toDouble(),
-                        onChanged: (value) {
-                          final newPosition = Duration(seconds: value.toInt());
-                          audioPlayers[message.message]?.seek(newPosition);
-                          context.read<MessageBloc>().add(
-                              AudioPlayerPositionChangedEvent(
-                                  message.message!, newPosition));
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w),
-                        child: TimeProvider.formatDuration(currentPosition) !=
-                                "00.00"
-                            ? TextWidgetCommon(
-                                text: TimeProvider.formatDuration(
-                                    currentPosition),
-                                textColor: kWhite,
-                                fontSize: 8.sp,
-                              )
-                            : TextWidgetCommon(
-                                text: TimeProvider.formatDuration(duration),
-                                textColor: kWhite,
-                                fontSize: 8.sp,
-                              ),
-                      ),
-                    ],
-                  );
-                },
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Slider(
+                          value: currentPosition.inSeconds.toDouble(),
+                          max: duration.inSeconds.toDouble(),
+                          onChanged: (value) {
+                            final newPosition =
+                                Duration(seconds: value.toInt());
+                            audioPlayers[message.message]?.seek(newPosition);
+                            context.read<MessageBloc>().add(
+                                AudioPlayerPositionChangedEvent(
+                                    message.message!, newPosition));
+                          },
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
+                          child: TimeProvider.formatDuration(currentPosition) !=
+                                  "00.00"
+                              ? TextWidgetCommon(
+                                  text: TimeProvider.formatDuration(
+                                      currentPosition),
+                                  textColor: kWhite,
+                                  fontSize: 8.sp,
+                                )
+                              : TextWidgetCommon(
+                                  text: TimeProvider.formatDuration(duration),
+                                  textColor: kWhite,
+                                  fontSize: 8.sp,
+                                ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     ),
   );
 }

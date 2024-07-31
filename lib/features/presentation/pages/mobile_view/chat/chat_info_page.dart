@@ -115,7 +115,7 @@ class ChatInfoPage extends StatelessWidget {
               //           )
               //         : zeroMeasureWidget
               //     : zeroMeasureWidget,
-           groupData!.groupMembers!.contains(firebaseAuth.currentUser?.uid)?   infoPageListTileWidget(
+          groupData!=null? groupData!.groupMembers!.contains(firebaseAuth.currentUser?.uid)?   infoPageListTileWidget(
                 groupData: groupData,
                 context: context,
                 isGroup: isGroup,
@@ -132,7 +132,7 @@ class ChatInfoPage extends StatelessWidget {
                           title: "Delete Group",
                           isSmallTitle: false,
                           context: context,
-                        ),
+                        ):zeroMeasureWidget,
               infoPageListTileWidget(
                 groupData: groupData,
                 context: context,

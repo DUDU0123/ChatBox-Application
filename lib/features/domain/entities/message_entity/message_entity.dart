@@ -1,3 +1,4 @@
+import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:chatbox/core/enums/enums.dart';
 
@@ -10,6 +11,7 @@ class MessageEntity extends Equatable {
   final MessageStatus? messageStatus;
   final MessageType? messageType;
   final bool? isEditedMessage;
+  final MessageModel? replyToMessage;
   final bool? isDeletedMessage;
   final bool? isStarredMessage;
   final bool? isPinnedMessage;
@@ -27,6 +29,7 @@ class MessageEntity extends Equatable {
     this.isDeletedMessage,
     this.isStarredMessage,
     this.isPinnedMessage,
+    this.replyToMessage,
   });
 
   @override
@@ -44,6 +47,7 @@ class MessageEntity extends Equatable {
       isDeletedMessage,
       isStarredMessage,
       isPinnedMessage,
+      replyToMessage,
     ];
   }
 }
