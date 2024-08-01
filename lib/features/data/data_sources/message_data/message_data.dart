@@ -465,11 +465,12 @@ class MessageData {
         return false;
       }
       if (!isGroup) {
+        log("Inside not is group");
         await firestore
             .collection(usersCollection)
             .doc(chatModel?.senderID)
             .collection(chatsCollection)
-            .doc(chatId)
+            .doc(chatModel?.chatID)
             .collection(messagesCollection)
             .doc(messageId)
             .update(updatedData.toJson());
@@ -477,7 +478,7 @@ class MessageData {
             .collection(usersCollection)
             .doc(chatModel?.receiverID)
             .collection(chatsCollection)
-            .doc(chatId)
+            .doc(chatModel?.chatID)
             .collection(messagesCollection)
             .doc(messageId)
             .update(updatedData.toJson());
@@ -572,7 +573,7 @@ class MessageData {
         isGroup
             ? await firestore
                 .collection(usersCollection)
-                .doc(userID)
+                .doc(currentUserId)
                 .collection(groupsCollection)
                 .doc(groupModel?.groupID)
                 .collection(messagesCollection)
@@ -580,7 +581,7 @@ class MessageData {
                 .delete()
             : await firestore
                 .collection(usersCollection)
-                .doc(chatModel?.senderID)
+                .doc(currentUserId)
                 .collection(chatsCollection)
                 .doc(chatModel?.chatID)
                 .collection(messagesCollection)

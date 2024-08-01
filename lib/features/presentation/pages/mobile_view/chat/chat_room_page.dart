@@ -6,6 +6,7 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -116,36 +117,47 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       ),
       body: Stack(
         children: [
-          chatRoomBackgroundImageWidget(context),
+          chatRoomBackgroundImageWidget(
+            context: context,
+            chatModel: widget.chatModel,
+            groupModel: widget.groupModel,
+          ),
           Column(
             children: [
               Expanded(
-                child: BlocBuilder<MessageBloc, MessageState>(
-                  builder: (context, state) {
-                    if (state is MessageLoadingState) {
-                      return commonAnimationWidget(
-                        context: context,
-                        isTextNeeded: false,
-                        lottie: settingsLottie,
-                      );
-                    }
-                    if (state is MessageErrorState) {
-                      return commonErrorWidget(message: state.message);
-                    }
-                    return messageListingWidget(
-                      focusNode: focusNode,
-                      rootContext: context,
-                      isGroup: widget.isGroup,
-                      receiverID: widget.receiverID,
-                      chatModel: widget.chatModel,
-                      audioPlayers: audioPlayers,
-                      scrollController: scrollController,
-                      videoControllers: videoControllers,
-                      state: state,
+                  child: BlocConsumer<MessageBloc, MessageState>(
+                listener: (context, state) {
+                  if (state is MessageErrorState) {
+                    commonSnackBarWidget(
+                        context: context, contentText: state.message);
+                  }
+                  if (state is MessageLoadingState) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return commonAnimationWidget(
+                          context: context,
+                          isTextNeeded: false,
+                          lottie: settingsLottie,
+                        );
+                      },
                     );
-                  },
-                ),
-              ),
+                  }
+                },
+                builder: (context, state) {
+                  return messageListingWidget(
+                    focusNode: focusNode,
+                    rootContext: context,
+                    isGroup: widget.isGroup,
+                    receiverID: widget.receiverID,
+                    chatModel: widget.chatModel,
+                    audioPlayers: audioPlayers,
+                    scrollController: scrollController,
+                    videoControllers: videoControllers,
+                    state: state,
+                  );
+                },
+              )),
               widget.isGroup &&
                       !widget.groupModel!.membersPermissions!
                           .contains(MembersGroupPermission.sendMessages) &&
@@ -165,20 +177,21 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       ),
                     )
                   : ChatBarWidget(
-                          replyMessage: Provider.of<CommonProvider>(context).replyMessage,
-                          onCancelReply: () {
-                            cancelReply(context: context);
-                          },
-                          focusNode: focusNode,
-                          isGroup: widget.isGroup,
-                          groupModel: widget.groupModel,
-                          receiverContactName: widget.userName,
-                          recorder: recorder,
-                          scrollController: scrollController,
-                          chatModel: widget.chatModel,
-                          isImojiButtonClicked: false,
-                          messageController: messageController,
-                        )
+                      replyMessage:
+                          Provider.of<CommonProvider>(context).replyMessage,
+                      onCancelReply: () {
+                        cancelReply(context: context);
+                      },
+                      focusNode: focusNode,
+                      isGroup: widget.isGroup,
+                      groupModel: widget.groupModel,
+                      receiverContactName: widget.userName,
+                      recorder: recorder,
+                      scrollController: scrollController,
+                      chatModel: widget.chatModel,
+                      isImojiButtonClicked: false,
+                      messageController: messageController,
+                    )
             ],
           ),
           Positioned(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
@@ -17,6 +18,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<GetAllChatsEvent>(getAllChatsEvent);
     on<DeletAChatEvent>(deleteAChatEvent);
     on<ClearChatEvent>(clearChatEvent);
+     on<PickImageEvent>(pickImageEvent);
   }
 
   FutureOr<void> createANewChatEvent(
@@ -68,6 +70,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await chatRepo.clearChatMethodInOneToOne(chatID: event.chatId);
     } catch (e) {
       log("Clear chat: e ${e.toString()}");
+      emit(ChatErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> pickImageEvent(PickImageEvent event, Emitter<ChatState> emit) {
+    try {
+      emit(state.copyWith(pickedFile: event.pickedFile, chatList: state.chatList));
+    } catch (e) {
       emit(ChatErrorState(message: e.toString()));
     }
   }

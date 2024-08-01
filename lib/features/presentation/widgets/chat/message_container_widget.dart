@@ -19,6 +19,7 @@ import 'package:chatbox/features/presentation/widgets/chat/message_status_show_w
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
@@ -54,7 +55,6 @@ class MessageContainerWidget extends StatefulWidget {
 class _MessageContainerWidgetState extends State<MessageContainerWidget> {
   @override
   Widget build(BuildContext context) {
-    log("THIS MESSGS RPLY: ID :${widget.message.replyToMessage} AND Message : ${widget.message.message} ");
     if (widget.message.message == null) {
       return zeroMeasureWidget;
     }
@@ -127,19 +127,22 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                           children: [
                             widget.message.replyToMessage != null
                                 ? GestureDetector(
-                                  onTap: () {
-                                    
-                                  },
-                                  child: Container(
-                                      width:widget.message.replyToMessage?.messageType==MessageType.text?null:screenWidth(context: context)/1.4,
+                                    onTap: () {
+                                     
+                                    },
+                                    child: Container(
+                                      width: widget.message.replyToMessage
+                                                  ?.messageType ==
+                                              MessageType.text
+                                          ? null
+                                          : screenWidth(context: context) / 1.4,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 10.w, vertical: 10.h),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5.sp),
+                                        borderRadius:
+                                            BorderRadius.circular(5.sp),
                                         border: Border(
                                           left: BorderSide(
-                                              color: iconGreyColor, width: 2),
-                                          right: BorderSide(
                                             color: iconGreyColor,
                                             width: 2,
                                           ),
@@ -149,7 +152,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                         message: widget.message.replyToMessage!,
                                       ),
                                     ),
-                                )
+                                  )
                                 : zeroMeasureWidget,
                             widget.isGroup
                                 ? messageContainerUserDetails(

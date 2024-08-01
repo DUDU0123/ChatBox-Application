@@ -3,21 +3,21 @@ import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
+import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
+import 'package:chatbox/features/presentation/widgets/message/message_methods.dart';
 import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:path/path.dart';
 import 'package:video_player/video_player.dart';
+
 Widget messageListingWidget({
   required MessageState state,
   required ScrollController scrollController,
@@ -59,7 +59,8 @@ Widget messageListingWidget({
         }
 
         if (message.messageType == MessageType.video &&
-            !videoControllers.containsKey(message.message) && message.message!=null) {
+            !videoControllers.containsKey(message.message) &&
+            message.message != null) {
           videoControllers[message.message!] = VideoPlayerController.networkUrl(
             Uri.parse(message.message!),
           )..initialize().then((_) {});
@@ -91,36 +92,46 @@ Widget messageListingWidget({
             onLongPress: () {
               context.read<MessageBloc>().add(
                     MessageSelectedEvent(
+                      isGroup: isGroup,
+                      context: context,
                       messageModel: message,
+                      chatModel: chatModel,
+                      groupModel: groupModel,
                     ),
                   );
             },
             onTap: () {
-              isSelected
-                  ? context.read<MessageBloc>().add(
-                        MessageSelectedEvent(
-                          messageModel: message,
-                        ),
-                      )
-                  : null;
+              if (isSelected) {
+                context.read<MessageBloc>().add(UnSelectEvent(messageId: message.messageId));
+              }
             },
-            child: Container(
-                width: screenWidth(context: context),
-                color: isSelected
-                    ? buttonSmallTextColor.withOpacity(0.3)
-                    : kTransparent,
-                child: MessageContainerWidget(
-                  onSwipeMethod: ({required message}) {
-                    replyToMessage(message: message, focusNode: focusNode,context: context);
-                  },
-                  isGroup: isGroup,
-                  rootContext: rootContext,
-                  receiverID: receiverID ?? '',
-                  groupModel: groupModel,
-                  message: message,
-                  audioPlayers: audioPlayers,
-                  videoControllers: videoControllers,
-                )),
+            child: BlocSelector<MessageBloc, MessageState, bool>(
+              selector: (state) {
+                return state.selectedMessageIds?.contains(message.messageId)??false;
+              },
+              builder: (context, state) {
+                return Container(
+                    width: screenWidth(context: context),
+                    color: state
+                        ? buttonSmallTextColor.withOpacity(0.3)
+                        : kTransparent,
+                    child: MessageContainerWidget(
+                      onSwipeMethod: ({required message}) {
+                        replyToMessage(
+                            message: message,
+                            focusNode: focusNode,
+                            context: context);
+                      },
+                      isGroup: isGroup,
+                      rootContext: rootContext,
+                      receiverID: receiverID ?? '',
+                      groupModel: groupModel,
+                      message: message,
+                      audioPlayers: audioPlayers,
+                      videoControllers: videoControllers,
+                    ));
+              },
+            ),
           ),
         );
       }

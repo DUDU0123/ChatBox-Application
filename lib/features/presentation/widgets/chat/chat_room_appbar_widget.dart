@@ -84,7 +84,7 @@ Widget groupChatAppBarWidget({
       builder: (context, snapshot) {
         return CommonAppBar(
           isGroup: true,
-          groupModel: groupModel,
+          groupModel: snapshot.data,
           onTap: () {
             Navigator.push(
               context,

@@ -1,11 +1,12 @@
+import 'package:equatable/equatable.dart';
+
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/domain/entities/message_entity/message_entity.dart';
-import 'package:equatable/equatable.dart';
 
 class ChatEntity extends Equatable {
   final String? chatID;
   final String? receiverID;
-  
+  final String? chatWallpaper;
   final String? receiverName;
   final String? receiverProfileImage;
   
@@ -21,21 +22,22 @@ class ChatEntity extends Equatable {
   final String? senderID;
   final bool? isGroup;
   const ChatEntity({
-    this.receiverName,
-    this.attachmentsWithMessage,
     this.chatID,
     this.receiverID,
+    this.chatWallpaper,
+    this.receiverName,
+    this.receiverProfileImage,
+    this.attachmentsWithMessage,
+    this.isMuted,
+    this.lastMessageStatus,
     this.lastMessage,
     this.lastMessageTime,
-    this.receiverProfileImage,
-    this.isMuted,
-    this.notificationCount,
-    this.senderID,
-    this.lastMessageStatus,
     this.lastMessageType,
+    this.notificationCount,
     this.isIncomingMessage,
-    this.isGroup,
     this.isChatOpen,
+    this.senderID,
+    this.isGroup,
   });
 
   @override
@@ -55,7 +57,7 @@ class ChatEntity extends Equatable {
       attachmentsWithMessage,
       isIncomingMessage,
       isChatOpen,
-      isGroup,
+      isGroup,chatWallpaper,
     ];
   }
 }

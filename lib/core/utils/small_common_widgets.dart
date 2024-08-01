@@ -237,8 +237,10 @@ listTileCommonWidget({
   Color? subTitleTextColor,
   String? subTitleTileText,
   Widget? subTitle,
+  void Function()? onTap
 }) {
   return ListTile(
+    onTap: onTap,
     leading: leading,
     title: TextWidgetCommon(
       textColor: textColor,

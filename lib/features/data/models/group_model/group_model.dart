@@ -23,6 +23,7 @@ class GroupModel extends GroupEntity {
     super.isIncomingMessage,
     super.isGroupOpen,
     super.createdBy,
+    super.groupWallpaper,
   });
 
   factory GroupModel.fromJson({required Map<String, dynamic> map}) {
@@ -55,6 +56,7 @@ class GroupModel extends GroupEntity {
       isIncomingMessage: map[dbGroupIsIncomingMessage]??false,
       isGroupOpen: map[dbIsGroupOpen]??false,
       createdBy: map[dbGroupCreatedBy]??'',
+      groupWallpaper: map[dbGroupWallpaper],
     );
   }
   Map<String, dynamic> toJson() {
@@ -77,6 +79,7 @@ class GroupModel extends GroupEntity {
       dbGroupLastMessageStatus: lastMessageStatus?.name,
       dbIsGroupMuted: isMuted,
       dbGroupCreatedBy: createdBy,
+      dbGroupWallpaper: groupWallpaper,
     };
   }
 
@@ -98,7 +101,8 @@ class GroupModel extends GroupEntity {
     int? notificationCount,
     bool? isIncomingMessage,
     bool? isGroupOpen,
-    String? createdBy
+    String? createdBy,
+    String? groupWallpaper,
   }) {
     return GroupModel(
       groupID: groupID ?? this.groupID,
@@ -119,6 +123,7 @@ class GroupModel extends GroupEntity {
       lastMessageType: lastMessageType ?? this.lastMessageType,
       notificationCount: notificationCount ?? this.notificationCount,
       createdBy: createdBy??this.createdBy,
+      groupWallpaper: groupWallpaper ?? this.groupWallpaper
     );
   }
 }

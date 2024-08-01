@@ -108,7 +108,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
                               : "Selected contacts"),
                 )
               : zeroMeasureWidget,
-          SelectedContactShowWidget(),
+          const SelectedContactShowWidget(),
           context.watch<ContactBloc>().state.contactList!.isNotEmpty
               ? Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w),

@@ -21,6 +21,7 @@ class ChatModel extends ChatEntity {
     super.isIncomingMessage,
     super.isChatOpen,
     super.isGroup,
+    super.chatWallpaper,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> map) {
@@ -47,6 +48,7 @@ class ChatModel extends ChatEntity {
       receiverName: map[receiverNameInChatList],
       isIncomingMessage: map[isIncoming],
       isChatOpen: map[isUserChatOpen] ?? false,
+      chatWallpaper: map[dbchatWallpaper],
     );
   }
   Map<String, dynamic> toJson() {
@@ -66,6 +68,7 @@ class ChatModel extends ChatEntity {
       'attachments': attachmentsWithMessage,
       isIncoming: isIncomingMessage,
       isUserChatOpen: isChatOpen,
+      dbchatWallpaper: chatWallpaper,
     };
   }
 
@@ -84,6 +87,7 @@ class ChatModel extends ChatEntity {
     bool? isMuted,
     bool? isIncomingMessage,
     bool? isChatOpen,
+    String? chatWallpaper,
   }) {
     return ChatModel(
       chatID: chatID ?? this.chatID,
@@ -100,6 +104,7 @@ class ChatModel extends ChatEntity {
       isIncomingMessage: isIncomingMessage ?? this.isIncomingMessage,
       isChatOpen: isChatOpen ?? this.isChatOpen,
       isGroup: isGroup??this.isGroup,
+      chatWallpaper: chatWallpaper ?? this.chatWallpaper,
     );
   }
 }

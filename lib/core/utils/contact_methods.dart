@@ -1,3 +1,4 @@
+import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -13,8 +14,8 @@ class ContactMethods {
       required bool isGroup,
       required GroupModel? groupModel,
       required ChatModel? chatModel}) {
-    selectedContactList != null
-        ? receiverContactName != null
+    if (selectedContactList!=null && selectedContactList.isNotEmpty) {
+      receiverContactName != null
             ? context.read<MessageBloc>().add(
                   ContactMessageSendEvent(
                     isGroup: isGroup,
@@ -25,8 +26,13 @@ class ContactMethods {
                     chatModel: chatModel,
                   ),
                 )
-            : null
-        : null;
-    Navigator.pop(context);
+            : null;
+      Navigator.pop(context);
+    }else{
+      commonSnackBarWidget(
+            contentText: "Select atleast one contact to send",
+            context: context,
+          );
+    }
   }
 }

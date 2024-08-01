@@ -1,13 +1,11 @@
-import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
-import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
-import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
-import 'package:chatbox/features/data/models/message_model/message_model.dart';
+import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/chat/chat_info_page.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/wallpaper/wallpaper_select_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,85 +22,18 @@ List<Widget> appBarIconListMessagingPage({
       context.watch<MessageBloc>().state.selectedMessageIds;
 
   return [
-    selectedMessagesId!.isEmpty
-        ? IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(
-              videoCall,
-              width: 30.w,
-              height: 30.h,
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onPrimary,
-                BlendMode.srcIn,
-              ),
-            ),
-          )
-        : IconButton(
-            onPressed: () async{
-             final MessageModel? message =  await CommonDBFunctions.getOneMessageByItsId(
-                messageID: selectedMessagesId.first,
-                isGroup: isGroup,
-                chatModel: chatModel,
-                groupModel: groupModel,
-              );
-              String? currentUserId = firebaseAuth.currentUser?.uid;
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const TextWidgetCommon(text: "Delete Message"),
-                    actions: [
-                      selectedMessagesId
-                                  .length <=
-                              1
-                          ? 
-                           commonTextButton(
-                              onPressed: () {
-                                Provider.of<MessageBloc>(context, listen: false)
-                                    .add(
-                                  MessageDeleteForEveryOneEvent(
-                                    isGroup: isGroup,
-                                    messageID: selectedMessagesId.first,
-                                    chatModel: chatModel,
-                                    groupModel: groupModel,
-                                  ),
-                                );
-                                Navigator.pop(context);
-                              },
-                              text: "Delete for Everyone",
-                            )
-                          : zeroMeasureWidget,
-                      commonTextButton(
-                        onPressed: () {
-                          Provider.of<MessageBloc>(context, listen: false).add(
-                            MessageDeleteForOne(
-                              userID: Provider.of<MessageBloc>(context, listen: false).state.messagemodel!.senderID!,
-                              isGroup: isGroup,
-                              messageIdList: selectedMessagesId.toList(),
-                              groupModel: groupModel,
-                              chatModel: chatModel,
-                            ),
-                          );
-                          Navigator.pop(context);
-                        },
-                        text: "Delete for me",
-                      ),
-                      commonTextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        text: "Cancel",
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: Icon(
-              Icons.delete,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
+    IconButton(
+      onPressed: () {},
+      icon: SvgPicture.asset(
+        videoCall,
+        width: 30.w,
+        height: 30.h,
+        colorFilter: ColorFilter.mode(
+          Theme.of(context).colorScheme.onPrimary,
+          BlendMode.srcIn,
+        ),
+      ),
+    ),
     IconButton(
       onPressed: () {},
       icon: SvgPicture.asset(
@@ -124,7 +55,17 @@ List<Widget> appBarIconListMessagingPage({
             const PopupMenuItem(child: Text("Media,links and docs")),
             const PopupMenuItem(child: Text("Search")),
             const PopupMenuItem(child: Text("Mute notifications")),
-            const PopupMenuItem(child: Text("Wallpaper")),
+            PopupMenuItem(child: const Text("Wallpaper"), onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WallpaperSelectPage(
+                      chatModel: chatModel,
+                      groupModel: groupModel,
+                    ),
+                  ),
+                );
+            },),
             const PopupMenuItem(child: Text("Clear chat")),
             const PopupMenuItem(child: Text("Report")),
             const PopupMenuItem(child: Text("Block")),
@@ -132,12 +73,49 @@ List<Widget> appBarIconListMessagingPage({
         }
         if (pageType == PageTypeEnum.groupMessageInsidePage) {
           return [
-            const PopupMenuItem(child: Text("Group info")),
+            PopupMenuItem(
+              child: const Text("Group info"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatInfoPage(
+                      groupData: groupModel,
+                      isGroup: isGroup,
+                    ),
+                  ),
+                );
+              },
+            ),
             const PopupMenuItem(child: Text("Group media")),
             const PopupMenuItem(child: Text("Search")),
             const PopupMenuItem(child: Text("Mute notifications")),
-            const PopupMenuItem(child: Text("Wallpaper")),
-            const PopupMenuItem(child: Text("Clear chat")),
+            PopupMenuItem(
+              child: const Text("Wallpaper"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WallpaperSelectPage(
+                      chatModel: chatModel,
+                      groupModel: groupModel,
+                    ),
+                  ),
+                );
+              },
+            ),
+            PopupMenuItem(
+              child: const Text("Clear chat"),
+              onTap: () {
+                if (groupModel != null) {
+                  if (groupModel.groupID != null) {
+                    context
+                        .read<GroupBloc>()
+                        .add(ClearGroupChatEvent(groupID: groupModel.groupID!));
+                  }
+                }
+              },
+            ),
           ];
         }
         // if (pageType == PageTypeEnum.broadCastMessageInsidePage)
@@ -151,17 +129,4 @@ List<Widget> appBarIconListMessagingPage({
       },
     )
   ];
-}
-
-Widget commonTextButton({
-  required String text,
-  required void Function()? onPressed,
-}) {
-  return TextButton(
-    onPressed: onPressed,
-    child: TextWidgetCommon(
-      text: text,
-      textColor: buttonSmallTextColor,
-    ),
-  );
 }

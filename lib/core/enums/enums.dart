@@ -27,7 +27,9 @@ enum PageTypeEnum {
   toSendPage,
   none,
 }
-
+enum For{
+  all,notAll,
+}
 enum FieldTypeSettings {
   name,
   about,

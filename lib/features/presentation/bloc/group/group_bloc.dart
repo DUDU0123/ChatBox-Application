@@ -150,16 +150,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     }
   }
 
-  // FutureOr<void> resetPickedFileEvent(
-  //     ResetPickedFileEvent event, Emitter<GroupState> emit) {
-  //   try {
-  //     emit(state.copyWith(
-  //         groupList: state.groupList, groupPickedImageFile: null));
-  //   } catch (e) {
-  //     emit(GroupErrorState(message: e.toString()));
-  //   }
-  // }
-
   FutureOr<void> loadGroupPermissionsEvent(
       LoadGroupPermissionsEvent event, Emitter<GroupState> emit) {
     if (event.pageTypeEnum == PageTypeEnum.groupInfoPage) {

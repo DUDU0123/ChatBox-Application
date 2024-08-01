@@ -53,5 +53,11 @@ class ClearChatEvent extends ChatEvent {
   @override
   List<Object> get props => [chatId];
 }
-class MessageDeleteEvent extends ChatEvent{}
-class MessageEditEvent extends ChatEvent{}
+class PickImageEvent extends ChatEvent {
+  final File? pickedFile;
+  const PickImageEvent({
+    this.pickedFile,
+  });
+  @override
+  List<Object> get props => [pickedFile??File('')];
+}

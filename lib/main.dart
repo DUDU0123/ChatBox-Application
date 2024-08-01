@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  CommonDBFunctions.startCleanupTimer();
   initializeServiceLocator();
   if (kIsWeb) {
     await Firebase.initializeApp(

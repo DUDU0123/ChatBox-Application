@@ -56,6 +56,7 @@ const isIncoming = 'is_incoming';
 const receiverNameInChatList = 'receiver_name';
 const isUserChatOpen = 'isChatOpen';
 const isGroupChat = 'is_group';
+const dbchatWallpaper = 'chat_wallpaper';
 
 
 // group db fields name
@@ -79,6 +80,7 @@ const dbGroupNotificationCount = 'group_notification_count';
 const dbGroupIsIncomingMessage = 'is_incoming_group_message';
 const dbIsGroupOpen = 'is_group_open';
 const dbGroupCreatedBy = 'group_created_by';
+const dbGroupWallpaper = 'group_wallpaper';
 
 
 // status db field name

@@ -78,7 +78,8 @@ class PhotoMessageSendEvent extends MessageEvent {
         imageSource,
         chatModel ?? const ChatModel(),
         isGroup,
-        groupModel ?? const GroupModel(),imageFile??File('')
+        groupModel ?? const GroupModel(),
+        imageFile ?? File('')
       ];
 }
 
@@ -105,10 +106,12 @@ class VideoMessageSendEvent extends MessageEvent {
   });
   @override
   List<Object> get props => [
-        imageSource??ImageSource.gallery,
+        imageSource ?? ImageSource.gallery,
         chatModel ?? const ChatModel(),
         isGroup,
-        groupModel ?? const GroupModel(),videoFile??File(''), videoMessageUrl??''
+        groupModel ?? const GroupModel(),
+        videoFile ?? File(''),
+        videoMessageUrl ?? ''
       ];
 }
 
@@ -144,12 +147,13 @@ class MessageDeleteForEveryOneEvent extends MessageEvent {
   final GroupModel? groupModel;
   final ChatModel? chatModel;
   final String messageID;
-  // final List<String> messageIdList;
+  final BuildContext context;
   const MessageDeleteForEveryOneEvent({
     required this.isGroup,
     this.groupModel,
     this.chatModel,
     required this.messageID,
+    required this.context,
   });
   @override
   List<Object> get props => [
@@ -157,20 +161,24 @@ class MessageDeleteForEveryOneEvent extends MessageEvent {
         groupModel ?? const GroupModel(),
         chatModel ?? const ChatModel(),
         messageID,
+        context,
       ];
 }
+
 class MessageDeleteForOne extends MessageEvent {
   final bool isGroup;
   final GroupModel? groupModel;
   final ChatModel? chatModel;
   final List<String> messageIdList;
   final String userID;
+  final BuildContext context;
   const MessageDeleteForOne({
     required this.isGroup,
     this.groupModel,
     this.chatModel,
     required this.messageIdList,
     required this.userID,
+    required this.context,
   });
   @override
   List<Object> get props => [
@@ -178,7 +186,8 @@ class MessageDeleteForOne extends MessageEvent {
         groupModel ?? const GroupModel(),
         chatModel ?? const ChatModel(),
         messageIdList,
-        userID
+        userID,
+        context,
       ];
 }
 
@@ -412,14 +421,27 @@ class AudioPlayerCompletedEvent extends MessageEvent {
 
 class MessageSelectedEvent extends MessageEvent {
   final MessageModel? messageModel;
+  final BuildContext context;
+  final bool isGroup;
   final String? messageId;
+  final GroupModel? groupModel;
+  final ChatModel? chatModel;
   const MessageSelectedEvent({
     this.messageModel,
+    required this.context,
+    required this.isGroup,
     this.messageId,
+    this.groupModel,
+    this.chatModel,
   });
   @override
   List<Object> get props => [
-        messageModel??const MessageModel(),messageId??''
+        messageModel ?? const MessageModel(),
+        messageId ?? '',
+        context,
+        isGroup,
+        groupModel ?? const GroupModel(),
+        chatModel ?? const ChatModel(),
       ];
 }
 
@@ -441,6 +463,15 @@ class GetReplyMessageEvent extends MessageEvent {
   });
   @override
   List<Object> get props => [
-        repliedToMessage??const MessageModel(),
+        repliedToMessage ?? const MessageModel(),
       ];
+}
+
+class UnSelectEvent extends MessageEvent {
+  final String? messageId;
+  const UnSelectEvent({
+    this.messageId,
+  });
+  @override
+  List<Object> get props => [messageId??''];
 }

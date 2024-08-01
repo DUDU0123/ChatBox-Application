@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
@@ -345,27 +346,88 @@ class CommonDBFunctions {
   }
 
   static Future<ChatModel?> getChatModel({required String receiverID}) async {
-  final chatInSenderAppWithReceiver = await fireStore
-      .collection(usersCollection)
-      .doc(firebaseAuth.currentUser?.uid)
-      .collection(chatsCollection)
-      .where(receiverId, isEqualTo: receiverID)
-      .get();
-  final chatInReceiverAppWithSender = await fireStore
-      .collection(usersCollection)
-      .doc(receiverID)
-      .collection(chatsCollection)
-      .where(senderId, isEqualTo: firebaseAuth.currentUser?.uid)
-      .get();
+    final chatInSenderAppWithReceiver = await fireStore
+        .collection(usersCollection)
+        .doc(firebaseAuth.currentUser?.uid)
+        .collection(chatsCollection)
+        .where(receiverId, isEqualTo: receiverID)
+        .get();
+    final chatInReceiverAppWithSender = await fireStore
+        .collection(usersCollection)
+        .doc(receiverID)
+        .collection(chatsCollection)
+        .where(senderId, isEqualTo: firebaseAuth.currentUser?.uid)
+        .get();
 
-      if (chatInSenderAppWithReceiver.docs.isNotEmpty) {
+    if (chatInSenderAppWithReceiver.docs.isNotEmpty) {
       return ChatModel.fromJson(chatInSenderAppWithReceiver.docs.first.data());
     } else if (chatInReceiverAppWithSender.docs.isNotEmpty) {
       return ChatModel.fromJson(chatInReceiverAppWithSender.docs.first.data());
     } else {
       return null;
     }
-}
+  }
+
+  static setWallpaper({
+    required ChatModel? chatModel,
+    required GroupModel? groupModel,
+    required File? wallpaperFile,
+    required For forWhich,
+  }) async {
+    log("Inside wallpaper function");
+    final currentUserId = firebaseAuth.currentUser?.uid;
+    log("Curent : $currentUserId");
+    if (currentUserId == null) return;
+    if (chatModel != null && forWhich==For.notAll) {
+      final wallpaperUrl = await saveUserFileToDataBaseStorage(
+          ref: "WallPaper/$currentUserId${chatModel.chatID}", file: wallpaperFile!);
+      final ChatModel updatedChatModel = chatModel.copyWith(
+        chatWallpaper: wallpaperUrl,
+      );
+      fireStore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(chatsCollection)
+          .doc(chatModel.chatID)
+          .update(updatedChatModel.toJson());
+          log("Inside wallpaper chatmodel");
+    } else if (groupModel != null&& forWhich==For.notAll) {
+      final wallpaperUrl = await saveUserFileToDataBaseStorage(
+          ref: "WallPaper/$currentUserId${groupModel.groupID}", file: wallpaperFile!);
+      final GroupModel updatedGroupModel = groupModel.copyWith(
+        groupWallpaper: wallpaperUrl,
+      );
+      fireStore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(groupsCollection)
+          .doc(groupModel.groupID)
+          .update(updatedGroupModel.toJson());
+          log("Inside wallpaper groupmodel");
+    } else {
+      // For all
+      final wallpaperUrl = await saveUserFileToDataBaseStorage(
+          ref: "WallPaper/$currentUserId", file: wallpaperFile!);
+      final chatDocs = await fireStore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(chatsCollection)
+          .get();
+      for (var doc in chatDocs.docs) {
+        await doc.reference.update({dbchatWallpaper: wallpaperUrl});
+      }
+
+      final groupDocs = await fireStore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(groupsCollection)
+          .get();
+      for (var doc in groupDocs.docs) {
+        await doc.reference.update({dbGroupWallpaper: wallpaperUrl});
+      }
+      log("Inside wallpaper all");
+    }
+  }
 }
 
 List<T> filterPermissions<T>(Map<T, bool> permissions) {

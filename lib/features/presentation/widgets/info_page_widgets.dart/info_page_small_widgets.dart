@@ -11,6 +11,7 @@ import 'package:chatbox/features/presentation/widgets/chat/icon_container_widget
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/group_description_add_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -126,7 +127,7 @@ Widget chatDescriptionOrAbout({
       });
 }
 
-Widget infoPageActionIconsBlueGradient({required bool isGroup}) {
+Widget infoPageActionIconsBlueGradient({required bool isGroup, required BuildContext context,}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -141,7 +142,11 @@ Widget infoPageActionIconsBlueGradient({required bool isGroup}) {
         size: 75.sp,
         subtitle: !isGroup ? "Video" : "Chat",
         icon: !isGroup ? Icons.videocam_outlined : Icons.chat_outlined,
-        onTap: () {},
+        onTap: () {
+          if (isGroup) {
+            Navigator.pop(context);
+          }
+        },
       ),
       kWidth10,
     ],

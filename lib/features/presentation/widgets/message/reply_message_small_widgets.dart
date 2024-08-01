@@ -118,7 +118,7 @@ Widget fileWidgetShow({required MessageModel message}) {
           text: message.name ??
               (message.messageType == MessageType.contact
                   ? message.message
-                  : null)!,
+                  : null)??"",
           fontSize: 15.sp,
           overflow: TextOverflow.ellipsis,
         ),

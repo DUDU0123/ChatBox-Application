@@ -13,9 +13,11 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/domain/repositories/message_repo/message_repo.dart';
+import 'package:chatbox/features/presentation/widgets/message/message_methods.dart';
 import 'package:equatable/equatable.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:geolocator/geolocator.dart';
@@ -58,7 +60,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<MessageSelectedEvent>(messageSelectedEvent);
     on<GetMessageDateEvent>(getMessageDateEvent);
     on<GetReplyMessageEvent>(getReplyMessageEvent);
+    on<UnSelectEvent>(unSelectEvent);
+   
   }
+
 
   FutureOr<void> getMessageDateEvent(
       GetMessageDateEvent event, Emitter<MessageState> emit) {
@@ -123,7 +128,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           return;
         }
       } else {
-        // if (event.chatId != null && !event.isGroup!) {
         final messages = messageRepository.getAllMessages(
           isGroup: event.isGroup ?? false,
           chatId: event.chatId!,
@@ -150,43 +154,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatModel: event.chatModel,
         groupModel: event.groupModel,
       );
-      log(value.toString());
-      emit(state.copyWith(messages: state.messages));
-    } catch (e) {
-      emit(MessageErrorState(message: e.toString()));
-    }
-  }
-
-  FutureOr<void> messageDeleteForEveryOneEvent(
-      MessageDeleteForEveryOneEvent event, Emitter<MessageState> emit) async {
-    try {
-      final value = await messageRepository.deleteForEveryOne(
-        messageID: event.messageID,
-        isGroup: event.isGroup,
-        chatModel: event.chatModel,
-        groupModel: event.groupModel,
-      );
-      add(MessageSelectedEvent(messageId: event.messageID));
-      log(value.toString());
-      emit(state.copyWith(messages: state.messages));
-    } catch (e) {
-      emit(MessageErrorState(message: e.toString()));
-    }
-  }
-
-  FutureOr<void> messageDeleteForOne(
-      MessageDeleteForOne event, Emitter<MessageState> emit) async {
-    try {
-      final value = await messageRepository.deleteMultipleMessageForOneUser(
-        messageIdList: event.messageIdList,
-        isGroup: event.isGroup,
-        userID: event.userID,
-        groupModel: event.groupModel,
-        chatModel: event.chatModel,
-      );
-      for (var messageId in event.messageIdList) {
-        add(MessageSelectedEvent(messageId: messageId));
-      }
       log(value.toString());
       emit(state.copyWith(messages: state.messages));
     } catch (e) {
@@ -226,13 +193,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             receiverId: event.receiverContactName,
           );
         }
-
-        // await messageRepository.sendMessage(
-        //   chatId: event.chatModel!.chatID,
-        //   message: event.message,
-        //   receiverContactName: event.receiverContactName,
-        //   receiverId: event.receiverContactName,
-        // );
         log('Sended one to one message');
       }
 
@@ -257,9 +217,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> photoMessageSendEvent(
       PhotoMessageSendEvent event, Emitter<MessageState> emit) async {
-    // emit(MessageLoadingState());
     try {
-      // final File? imageFile = await pickImage(imageSource: event.imageSource);
       final File? imageFile = event.imageFile;
       final String? chatID = event.chatModel?.chatID;
       if (chatID == null && !event.isGroup) {
@@ -870,6 +828,48 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
+  FutureOr<void> messageDeleteForEveryOneEvent(
+      MessageDeleteForEveryOneEvent event, Emitter<MessageState> emit) async {
+    try {
+      final value = await messageRepository.deleteForEveryOne(
+        messageID: event.messageID,
+        isGroup: event.isGroup,
+        chatModel: event.chatModel,
+        groupModel: event.groupModel,
+      );
+      log(value.toString());
+      emit(state.copyWith(messages: state.messages));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> messageDeleteForOne(
+      MessageDeleteForOne event, Emitter<MessageState> emit) async {
+    try {
+      final value = await messageRepository.deleteMultipleMessageForOneUser(
+        messageIdList: event.messageIdList,
+        isGroup: event.isGroup,
+        userID: event.userID,
+        groupModel: event.groupModel,
+        chatModel: event.chatModel,
+      );
+      for (var messageId in event.messageIdList) {
+        if (event.context != null && event.context.mounted) {
+          add(MessageSelectedEvent(
+            messageId: messageId,
+            context: event.context,
+            isGroup: event.isGroup,
+          ));
+        }
+      }
+      log(value.toString());
+      emit(state.copyWith(messages: state.messages));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
   FutureOr<void> messageSelectedEvent(
       MessageSelectedEvent event, Emitter<MessageState> emit) {
     try {
@@ -883,6 +883,15 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         updatedSelectedIds
             .add(event.messageModel?.messageId ?? event.messageId ?? '');
       }
+
+      MessageMethods.messageActionMethods(
+        groupModel: event.groupModel,
+        chatModel: event.chatModel,
+        isGroup: event.isGroup,
+        selectedMessagesId: updatedSelectedIds,
+        context: event.context,
+        message: event.messageModel,
+      );
       emit(state.copyWith(
           selectedMessageIds: updatedSelectedIds,
           messagemodel: event.messageModel));
@@ -893,10 +902,22 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> getReplyMessageEvent(
       GetReplyMessageEvent event, Emitter<MessageState> emit) {
-        try {
-          emit(state.copyWith(replyMessagemodel: event.repliedToMessage));
-        } catch (e) {
-          emit(MessageErrorState(message: e.toString()));
-        }
-      }
+    try {
+      emit(state.copyWith(replyMessagemodel: event.repliedToMessage));
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+
+ FutureOr<void> unSelectEvent(UnSelectEvent event, Emitter<MessageState> emit) {
+  if (state.selectedMessageIds != null) {
+    final updatedSelectedIds = Set<String>.from(state.selectedMessageIds!);
+    if (updatedSelectedIds.contains(event.messageId)) {
+      updatedSelectedIds.remove(event.messageId);
+      emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
+    }
+  }
+}
+
+
 }

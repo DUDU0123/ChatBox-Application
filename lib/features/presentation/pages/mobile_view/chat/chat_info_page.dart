@@ -68,6 +68,7 @@ class ChatInfoPage extends StatelessWidget {
               ),
               kHeight20,
               infoPageActionIconsBlueGradient(
+                context: context,
                 isGroup: isGroup,
               ),
               chatDescriptionOrAbout(
@@ -99,22 +100,6 @@ class ChatInfoPage extends StatelessWidget {
                 groupData: groupData,
               ),
               kHeight20,
-              // isGroup && groupAdmins != null
-              //     ? groupAdmins.contains(firebaseAuth.currentUser?.uid)
-              //         ? commonListTile(
-              //             leading: Icon(
-              //               Icons.delete_outline,
-              //               color: kRed,
-              //               size: 28.sp,
-              //             ),
-              //             color: kRed,
-              //             onTap: () {},
-              //             title: "Delete Group",
-              //             isSmallTitle: false,
-              //             context: context,
-              //           )
-              //         : zeroMeasureWidget
-              //     : zeroMeasureWidget,
           groupData!=null? groupData!.groupMembers!.contains(firebaseAuth.currentUser?.uid)?   infoPageListTileWidget(
                 groupData: groupData,
                 context: context,
