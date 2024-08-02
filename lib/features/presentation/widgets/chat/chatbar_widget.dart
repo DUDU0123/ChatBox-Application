@@ -307,7 +307,7 @@ void sendMessage({
 
   scrollController.animateTo(
     scrollController.position.maxScrollExtent,
-    duration: const Duration(milliseconds: 300),
+    duration: const Duration(milliseconds: 100),
     curve: Curves.easeOut,
   );
   context.read<MessageBloc>().add(

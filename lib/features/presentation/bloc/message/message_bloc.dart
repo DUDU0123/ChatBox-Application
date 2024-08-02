@@ -13,7 +13,7 @@ import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/domain/repositories/message_repo/message_repo.dart';
-import 'package:chatbox/features/presentation/widgets/message/message_methods.dart';
+import 'package:chatbox/core/utils/message_methods.dart';
 import 'package:equatable/equatable.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/domain/repositories/chat_repo/chat_repo.dart';

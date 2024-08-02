@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
@@ -72,20 +73,38 @@ Widget infoPageUserDetailsPart({
             Positioned(
               bottom: 0,
               right: 0,
-              child: CameraIconButton(
-                onPressed: () async {
-                  if (groupData != null) {
-                    File? pickedImageFile =
-                        await pickImage(imageSource: ImageSource.gallery);
-                    context.read<GroupBloc>().add(
-                          UpdateGroupEvent(
-                            updatedGroupData: groupData,
-                            groupProfileImage: pickedImageFile,
-                          ),
-                        );
-                  }
-                },
-              ),
+              child: StreamBuilder<GroupModel?>(
+                  stream: isGroup
+                      ? CommonDBFunctions.getOneGroupDataByStream(
+                          userID: firebaseAuth.currentUser!.uid,
+                          groupID: groupData?.groupID ?? '',
+                        )
+                      : null,
+                  builder: (context, snapshot) {
+                 
+                    bool isAdmin = snapshot.data!=null?snapshot.data!.groupAdmins!
+                        .contains(firebaseAuth.currentUser?.uid):false;
+                    bool isEditable = snapshot.data!=null?snapshot.data!.membersPermissions!
+                        .contains(MembersGroupPermission.editGroupSettings):false;
+                    if (isEditable || isAdmin) {
+                      return CameraIconButton(
+                        onPressed: () async {
+                          if (groupData != null) {
+                            File? pickedImageFile = await pickImage(
+                                imageSource: ImageSource.gallery);
+                            context.read<GroupBloc>().add(
+                                  UpdateGroupEvent(
+                                    updatedGroupData: groupData,
+                                    groupProfileImage: pickedImageFile,
+                                  ),
+                                );
+                          }
+                        },
+                      );
+                    } else {
+                      return zeroMeasureWidget;
+                    }
+                  }),
             )
           ],
         ),
@@ -98,6 +117,10 @@ Widget infoPageUserDetailsPart({
                   )
                 : null,
             builder: (context, snapshot) {
+              bool isAdmin = snapshot.data!=null?snapshot.data!.groupAdmins!
+                  .contains(firebaseAuth.currentUser?.uid):false;
+              bool isEditable = snapshot.data!=null?snapshot.data!.membersPermissions!
+                  .contains(MembersGroupPermission.editGroupSettings):false;
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -113,8 +136,7 @@ Widget infoPageUserDetailsPart({
                     ),
                   ),
                   groupData != null
-                      ? groupData.groupAdmins!
-                              .contains(firebaseAuth.currentUser?.uid)
+                      ? isAdmin || isEditable
                           ? IconButton(
                               onPressed: () {
                                 groupData.groupName != null

@@ -36,7 +36,7 @@ class SearchPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return const ChatListTileWidget(
             chatModel: ChatModel(),
-            userName: "User", isGroup: false,messageStatus: MessageStatus.none,);
+            userName: "User", isGroup: false,);
         },
         separatorBuilder: (context, index) => kHeight5,
         itemCount: 10,

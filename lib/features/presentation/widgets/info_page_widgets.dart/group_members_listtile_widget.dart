@@ -41,6 +41,8 @@ Widget groupMemberListTileWidget({
             mainAxisSize: MainAxisSize.min,
             children: [
               groupMemberSnapshot.data?.id != firebaseAuth.currentUser?.uid
+              &&groupData.groupAdmins!
+                            .contains(firebaseAuth.currentUser?.uid)
                   ? removeButtonWidget(
                       context: context,
                       groupMemberName: groupMemberName,
@@ -50,14 +52,18 @@ Widget groupMemberListTileWidget({
                   : zeroMeasureWidget,
               commonContainerChip(
                 onTap: () {
-                  groupMemberSnapshot.data?.id != firebaseAuth.currentUser?.uid
-                      ? dismissAdminMethodInGroup(
-                          context: context,
-                          groupMemberName: groupMemberName,
-                          groupData: groupData,
-                          groupMemberSnapshot: groupMemberSnapshot,
-                        )
-                      : null;
+                  if (groupMemberSnapshot.data?.id !=
+                      firebaseAuth.currentUser?.uid) {
+                    groupData.groupAdmins!
+                            .contains(firebaseAuth.currentUser?.uid)
+                        ? dismissAdminMethodInGroup(
+                            context: context,
+                            groupMemberName: groupMemberName,
+                            groupData: groupData,
+                            groupMemberSnapshot: groupMemberSnapshot,
+                          )
+                        : null;
+                  }
                 },
                 chipText: "Group Admin",
                 chipColor: buttonSmallTextColor.withOpacity(0.3),
@@ -69,25 +75,29 @@ Widget groupMemberListTileWidget({
             ? Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  removeButtonWidget(
-                    context: context,
-                    groupMemberName: groupMemberName,
-                    groupData: groupData,
-                    groupMemberSnapshot: groupMemberSnapshot,
-                  ),
-                  commonContainerChip(
-                    chipWidth: 80.w,
-                    chipColor: buttonSmallTextColor.withOpacity(0.3),
-                    chipText: "as admin",
-                    onTap: () {
-                      makeAMemberAsAdminInGroupMethod(
-                        context: context,
-                        groupMemberName: groupMemberName,
-                        groupMemberSnapshot: groupMemberSnapshot,
-                        groupData: groupData,
-                      );
-                    },
-                  ),
+                  if (groupMemberSnapshot.data?.id !=
+                      firebaseAuth.currentUser?.uid)
+                    removeButtonWidget(
+                      context: context,
+                      groupMemberName: groupMemberName,
+                      groupData: groupData,
+                      groupMemberSnapshot: groupMemberSnapshot,
+                    ),
+                  if (groupMemberSnapshot.data?.id !=
+                      firebaseAuth.currentUser?.uid)
+                    commonContainerChip(
+                      chipWidth: 80.w,
+                      chipColor: buttonSmallTextColor.withOpacity(0.3),
+                      chipText: "as admin",
+                      onTap: () {
+                        makeAMemberAsAdminInGroupMethod(
+                          context: context,
+                          groupMemberName: groupMemberName,
+                          groupMemberSnapshot: groupMemberSnapshot,
+                          groupData: groupData,
+                        );
+                      },
+                    ),
                 ],
               )
             : zeroMeasureWidget,

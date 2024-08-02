@@ -20,14 +20,13 @@ class ChatModel extends ChatEntity {
     super.isMuted,
     super.isIncomingMessage,
     super.isChatOpen,
-    super.isGroup,
     super.chatWallpaper,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> map) {
     log("Map Data: $map");
     return ChatModel(
-      isGroup:map[isGroupChat]??false,
+      // isGroup:map[isGroupChat]??false,
       attachmentsWithMessage: map['attachments'],
       chatID: map[chatId],
       receiverID: map[receiverId],
@@ -56,7 +55,7 @@ class ChatModel extends ChatEntity {
       chatId: chatID,
       receiverId: receiverID,
       senderId: senderID,
-      isGroupChat: isGroup,
+      // isGroupChat: isGroup,
       receiverProfilePhoto: receiverProfileImage,
       chatLastMessageTime: lastMessageTime,
       chatLastMessage: lastMessage,
@@ -80,7 +79,7 @@ class ChatModel extends ChatEntity {
     String? lastMessageTime,
     MessageStatus? lastMessageStatus,
     MessageType? lastMessageType,
-    bool? isGroup,
+    // bool? isGroup,
     int? notificationCount,
     String? receiverProfileImage,
     String? receiverName,
@@ -103,7 +102,7 @@ class ChatModel extends ChatEntity {
       isMuted: isMuted ?? this.isMuted,
       isIncomingMessage: isIncomingMessage ?? this.isIncomingMessage,
       isChatOpen: isChatOpen ?? this.isChatOpen,
-      isGroup: isGroup??this.isGroup,
+      // isGroup: isGroup??this.isGroup,
       chatWallpaper: chatWallpaper ?? this.chatWallpaper,
     );
   }

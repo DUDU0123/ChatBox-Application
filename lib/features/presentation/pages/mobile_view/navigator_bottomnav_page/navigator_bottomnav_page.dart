@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/get_appbar_title.dart';
+import 'package:chatbox/core/utils/network_status_methods.dart';
 import 'package:chatbox/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
 import 'package:chatbox/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
@@ -51,74 +52,23 @@ class NavigatorBottomnavPage extends StatefulWidget {
 }
 
 class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
-  // final NetworkStatusService _networkStatusService = NetworkStatusService();
-  // ConnectivityResult _connectivityResult = ConnectivityResult.none;
   final pages = [
     const ChatHomePage(),
     const GroupHomePage(),
-     StatusHomePage(),
+    const StatusHomePage(),
     const CallHomePage(),
   ];
 
   PageController pageController = PageController(initialPage: 0);
-  // Future<void> _initConnectivity() async {
-  //   ConnectivityResult result = await _networkStatusService.checkConnectivity();
-  //   setState(() {
-  //     _connectivityResult = result;
-  //   });
-  // }
 
   @override
   void initState() {
     super.initState();
-
-    // _initConnectivity();
-    // _networkStatusService.status.listen((result) {
-    //   setState(() {
-    //     _connectivityResult = result;
-    //   });
-    //   log("Connect: $result");
-    //   UserData.updateUserNetworkStatusInApp(isOnline: true);
-    // });
-
-    
-    SystemChannels.lifecycle.setMessageHandler(
-      (message) async {
-        log(message.toString());
-        if (message.toString().contains("resume") &&
-            await AuthenticationRepoImpl.isConnected()) {
-          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: true);
-        } else if (message.toString().contains("pause") ||
-            (message.toString().contains("pause") &&
-                !await AuthenticationRepoImpl.isConnected()) ||
-            !await AuthenticationRepoImpl.isConnected()) {
-          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: false);
-        }
-        AuthenticationRepoImpl.isConnected().then((v) => log(v.toString()));
-        return Future.value(message);
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: true);
-    SystemChannels.lifecycle.setMessageHandler(
-      (message) async {
-        log(message.toString());
-        if (message.toString().contains("resume") &&
-            await AuthenticationRepoImpl.isConnected()) {
-          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: true);
-        } else if (message.toString().contains("pause") ||
-            (message.toString().contains("pause") &&
-                !await AuthenticationRepoImpl.isConnected()) ||
-            !await AuthenticationRepoImpl.isConnected()) {
-          CommonDBFunctions.updateUserNetworkStatusInApp(isOnline: false);
-        }
-        AuthenticationRepoImpl.isConnected().then((v) => log(v.toString()));
-        return Future.value(message);
-      },
-    );
+    NetworkStatusMethods.initialize();
     final bottomNavBloc = BlocProvider.of<BottomNavBloc>(context);
     return Scaffold(
       body: NestedScrollView(

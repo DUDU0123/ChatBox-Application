@@ -1,10 +1,14 @@
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/app_bar_icon_list_messaging_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:chatbox/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -44,12 +48,13 @@ class CommonAppBar extends StatelessWidget {
                   ),
                 ),
                 kWidth5,
-                CircleAvatar(
-                  backgroundColor: kBlack,
-                  backgroundImage: userProfileImage != null
-                      ? NetworkImage(userProfileImage!)
-                      : const AssetImage(contact),
-                ),
+                    userProfileImage!=null? userProfileImageShowWidget(
+                      context: context,
+                      imageUrl: userProfileImage!,
+                    ):nullImageReplaceWidget(
+                        containerRadius: 45,
+                        context: context,
+                      ),
                 kWidth5,
                 Expanded(
                   child: GestureDetector(

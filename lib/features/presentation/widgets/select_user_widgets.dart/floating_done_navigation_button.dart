@@ -57,16 +57,18 @@ class FloatingDoneNavigateButton extends StatefulWidget {
   final String? uploadedStatusModelID;
 
   @override
-  State<FloatingDoneNavigateButton> createState() => _FloatingDoneNavigateButtonState();
+  State<FloatingDoneNavigateButton> createState() =>
+      _FloatingDoneNavigateButtonState();
 }
 
-class _FloatingDoneNavigateButtonState extends State<FloatingDoneNavigateButton> {
+class _FloatingDoneNavigateButtonState
+    extends State<FloatingDoneNavigateButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         final messageBloc = context.read<MessageBloc>();
-        
+
         switch (widget.pageType) {
           case PageTypeEnum.sendContactSelectPage:
             ContactMethods.sendSelectedContactMessage(
@@ -103,18 +105,51 @@ class _FloatingDoneNavigateButtonState extends State<FloatingDoneNavigateButton>
                 .get();
             final statusMOdell = StatusModel.fromJson(map: val.data()!);
             final sendingStatus = statusMOdell.statusList?.firstWhere(
-                (status) => status.uploadedStatusId == widget.uploadedStatusModelID);
+                (status) =>
+                    status.uploadedStatusId == widget.uploadedStatusModelID);
 
             StatusMethods.shareStatusToAnyChat(
               selectedContactList: widget.selectedContactList,
               uploadedStatusModel: sendingStatus,
               messageBloc: messageBloc,
             );
-            if(mounted){
+            if (mounted) {
               Navigator.pop(context);
             }
             break;
           case PageTypeEnum.broadcastMembersSelectPage:
+            final currentUserId = firebaseAuth.currentUser?.uid;
+            if (currentUserId != null && widget.selectedContactList != null) {
+              List<String> selectUsersID = [];
+              for (var user in widget.selectedContactList!) {
+                if (user.chatBoxUserId != null) {
+                  selectUsersID.add(user.chatBoxUserId!);
+                }
+              }
+              GroupModel newBroadCast = GroupModel(
+                  groupID: DateTime.now().millisecondsSinceEpoch.toString(),
+                  createdBy: currentUserId,
+                  isIncomingMessage: false,
+                  groupCreatedAt: DateTime.now().toString(),
+                  groupDescription: null,
+                  groupAdmins: [currentUserId],
+                  adminsPermissions: const [
+                    AdminsGroupPermission.addMembers,
+                    AdminsGroupPermission.editGroupSettings,
+                    AdminsGroupPermission.viewMembers,
+                    AdminsGroupPermission.sendMessages,
+                    AdminsGroupPermission.approveMembers,
+                  ],
+                  isMuted: false,
+                  membersPermissions: const [],
+                  groupMembers: [currentUserId, ...selectUsersID]);
+              await fireStore
+                  .collection(usersCollection)
+                  .doc(currentUserId)
+                  .collection(groupsCollection)
+                  .add(newBroadCast.toJson());
+            }
+
             break;
           case PageTypeEnum.groupDetailsAddPage:
             GroupMethods.groupDetailsAddOnCreationMethod(

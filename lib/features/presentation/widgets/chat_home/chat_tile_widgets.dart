@@ -1,12 +1,20 @@
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/date_provider.dart';
+import 'package:chatbox/core/utils/message_methods.dart';
+import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
+import 'package:chatbox/features/data/models/group_model/group_model.dart';
+import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/tile_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 Widget buildProfileImage({
   required String? userProfileImage,
   required BuildContext context,
@@ -50,46 +58,70 @@ Widget buildUserName({required String userName}) {
   );
 }
 
-Widget buildSubtitle(
-    {required bool? isIncomingMessage,
-    required bool isGroup,
-    required bool? isTyping,
-    required bool? isVoiceRecoding,
-    required String? lastMessage,
-    required MessageStatus messageStatus}) {
+Widget buildSubtitle({
+  required bool? isIncomingMessage,
+  required bool isGroup,
+  required bool? isTyping,
+  required bool? isVoiceRecoding,
+  required ChatModel? chatModel,
+  required GroupModel? groupModel,
+  required String? lastMessage,
+}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.end,
     mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      if (isIncomingMessage == null) zeroMeasureWidget,
-      if (isIncomingMessage == false)
-        buildOutgoingStatus(
-          messageStatus: messageStatus,
-          isTyping: isTyping,
-          isVoiceRecoding: isVoiceRecoding,
+      // if (isIncomingMessage == null) zeroMeasureWidget,
+      // if (isIncomingMessage == false)
+        StreamBuilder(
+          stream: MessageMethods.getLastMessage(
+            chatModel: chatModel,
+            groupModel: groupModel,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.data?.senderID == firebaseAuth.currentUser?.uid) {
+             return buildOutgoingStatus(
+                isTyping: isTyping,
+                isVoiceRecoding: isVoiceRecoding,
+                chatModel: chatModel,
+                groupModel: groupModel,
+              );
+            }
+            return zeroMeasureWidget;
+          },
         ),
+        // buildOutgoingStatus(
+        //   isTyping: isTyping,
+        //   isVoiceRecoding: isVoiceRecoding,
+        //   chatModel: chatModel,
+        //   groupModel: groupModel,
+        // ),
       if (isGroup && isIncomingMessage == true)
         buildIncomingPrefix(
           isTyping: isTyping,
           isVoiceRecoding: isVoiceRecoding,
         ),
       buildMessageText(
+        chatModel: chatModel,
+        groupModel: groupModel,
         isTyping: isTyping,
         isVoiceRecoding: isVoiceRecoding,
-        lastMessage: lastMessage,
       ),
     ],
   );
 }
 
-Widget buildOutgoingStatus(
-    {required bool? isTyping,
-    required bool? isVoiceRecoding,
-    required MessageStatus messageStatus}) {
+Widget buildOutgoingStatus({
+  required bool? isTyping,
+  required bool? isVoiceRecoding,
+  required ChatModel? chatModel,
+  required GroupModel? groupModel,
+}) {
   if (!(isTyping ?? false) && !(isVoiceRecoding ?? false)) {
     return messageStatusWidget(
-      messageStatus: messageStatus,
+      chatModel: chatModel,
+      groupModel: groupModel,
     );
   }
   return zeroMeasureWidget;
@@ -110,28 +142,57 @@ Widget buildIncomingPrefix({
   return zeroMeasureWidget;
 }
 
+String messageByType({required MessageModel? message}) {
+  switch (message?.messageType) {
+    case MessageType.audio:
+      return '🎧Audio';
+    case MessageType.contact:
+      return '📞Contact';
+    case MessageType.document:
+      return '📄Doc';
+    case MessageType.photo:
+      return '📷Photo';
+    case MessageType.video:
+      return '🎥Video';
+    case MessageType.location:
+      return '📌Location';
+    default:
+      return message?.message ?? '';
+  }
+}
+
 Widget buildMessageText({
   required bool? isTyping,
   required bool? isVoiceRecoding,
-  required String? lastMessage,
+  required ChatModel? chatModel,
+  required GroupModel? groupModel,
 }) {
   return Expanded(
-    child: TextWidgetCommon(
-      text: (!(isTyping ?? false) && !(isVoiceRecoding ?? false))
-          ? lastMessage ?? ''
-          : '',
-      overflow: TextOverflow.ellipsis,
-      textColor: kGrey,
-      fontSize: 14.sp,
-    ),
+    child: StreamBuilder<MessageModel?>(
+        stream: MessageMethods.getLastMessage(
+          chatModel: chatModel,
+          groupModel: groupModel,
+        ),
+        builder: (context, snapshot) {
+          return TextWidgetCommon(
+            text: (!(isTyping ?? false) && !(isVoiceRecoding ?? false))
+                ? messageByType(message: snapshot.data)
+                : '',
+            overflow: TextOverflow.ellipsis,
+            textColor: kGrey,
+            fontSize: 14.sp,
+          );
+        }),
   );
 }
 
-Widget buildTrailing(
-    {required BuildContext context,
-    required int? notificationCount,
-    required bool? isMutedChat,
-    required String? lastMessageTime}) {
+Widget buildTrailing({
+  required BuildContext context,
+  required int? notificationCount,
+  required bool? isMutedChat,
+  required ChatModel? chatModel,
+  required GroupModel? groupModel,
+}) {
   return SizedBox(
     // width: screenWidth(context: context) / 8,
     child: Column(
@@ -139,12 +200,24 @@ Widget buildTrailing(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        TextWidgetCommon(
-          text: lastMessageTime ?? '',
-          fontSize: 10.sp,
-          fontWeight: FontWeight.normal,
-          textColor: kGrey,
-        ),
+        StreamBuilder<MessageModel?>(
+            stream: MessageMethods.getLastMessage(
+              chatModel: chatModel,
+              groupModel: groupModel,
+            ),
+            builder: (context, snapshot) {
+              return TextWidgetCommon(
+                text: snapshot.data != null
+                    ? snapshot.data?.messageTime != null
+                        ? DateProvider.formatMessageDateTime(
+                            messageDateTimeString: snapshot.data!.messageTime!)
+                        : ""
+                    : "",
+                fontSize: 10.sp,
+                fontWeight: FontWeight.normal,
+                textColor: kGrey,
+              );
+            }),
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,

@@ -46,7 +46,7 @@ class _AudioMessageContentShowWidgetState
               }
               return circleImageShowPreventErrorWidget(
                 containerSize: 50,
-                image: snapshot.data!.userProfileImage!,
+                image: snapshot.data!.userProfileImage??'',
               );
             }),
         SizedBox(width: 10.w),

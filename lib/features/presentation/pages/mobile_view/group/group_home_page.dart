@@ -71,7 +71,6 @@ class GroupHomePage extends StatelessWidget {
                               : 'ChatBox Group'
                           : 'ChatBox Group',
                       isGroup: true,
-                      messageStatus: group.lastMessageStatus ?? MessageStatus.none,
                       groupModel: group,
                     );
                   },

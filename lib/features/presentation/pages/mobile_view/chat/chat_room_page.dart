@@ -7,7 +7,6 @@ import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/core/utils/snackbar.dart';
-import 'package:chatbox/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
@@ -163,35 +162,35 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                           .contains(MembersGroupPermission.sendMessages) &&
                       !widget.groupModel!.groupAdmins!
                           .contains(firebaseAuth.currentUser?.uid)
-                  ? Container(
-                      width: screenWidth(context: context),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 5.h,
-                      ),
-                      color: darkSwitchColor.withOpacity(0.3),
-                      child: TextWidgetCommon(
-                        text: "Only Admins can send messages",
-                        textColor: buttonSmallTextColor,
-                        textAlign: TextAlign.center,
-                        fontSize: 14.sp,
-                      ),
-                    )
-                  : ChatBarWidget(
-                      replyMessage:
-                          Provider.of<CommonProvider>(context).replyMessage,
-                      onCancelReply: () {
-                        cancelReply(context: context);
-                      },
-                      focusNode: focusNode,
-                      isGroup: widget.isGroup,
-                      groupModel: widget.groupModel,
-                      receiverContactName: widget.userName,
-                      recorder: recorder,
-                      scrollController: scrollController,
-                      chatModel: widget.chatModel,
-                      isImojiButtonClicked: false,
-                      messageController: messageController,
-                    )
+              ? Container(
+                  width: screenWidth(context: context),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 5.h,
+                  ),
+                  color: darkSwitchColor.withOpacity(0.3),
+                  child: TextWidgetCommon(
+                    text: "Only Admins can send messages",
+                    textColor: buttonSmallTextColor,
+                    textAlign: TextAlign.center,
+                    fontSize: 14.sp,
+                  ),
+                )
+              : ChatBarWidget(
+                  replyMessage:
+                      Provider.of<CommonProvider>(context).replyMessage,
+                  onCancelReply: () {
+                    cancelReply(context: context);
+                  },
+                  focusNode: focusNode,
+                  isGroup: widget.isGroup,
+                  groupModel: widget.groupModel,
+                  receiverContactName: widget.userName,
+                  recorder: recorder,
+                  scrollController: scrollController,
+                  chatModel: widget.chatModel,
+                  isImojiButtonClicked: false,
+                  messageController: messageController,
+                )
             ],
           ),
           Positioned(
@@ -213,21 +212,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               },
             ),
           ),
-          Align(
-              alignment: Alignment.topCenter,
-              child: BlocBuilder<MessageBloc, MessageState>(
-                builder: (context, state) {
-                  if (state.messageDate == null) {
-                    return zeroMeasureWidget;
-                  }
-                  if (state.messageDate!.isEmpty) {
-                    return zeroMeasureWidget;
-                  }
-                  return MessagePageDateShowWidget(
-                    date: state.messageDate!,
-                  );
-                },
-              ))
         ],
       ),
     );

@@ -10,7 +10,7 @@ import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_container_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_page_date_show_widget.dart';
-import 'package:chatbox/features/presentation/widgets/message/message_methods.dart';
+import 'package:chatbox/core/utils/message_methods.dart';
 import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

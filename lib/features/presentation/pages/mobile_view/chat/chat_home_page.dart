@@ -73,8 +73,6 @@ class ChatHomePage extends StatelessWidget {
                               return ChatListTileWidget(
                                 isIncomingMessage: chat[index].isIncomingMessage,
                                 chatModel: chat[index],
-                                messageStatus: chat[index].lastMessageStatus ??
-                                    MessageStatus.none,
                                 isGroup: false,
                                 isMutedChat: chat[index].isMuted,
                                 lastMessage: lastMessage,

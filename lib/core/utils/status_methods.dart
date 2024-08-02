@@ -86,7 +86,6 @@ class StatusMethods {
             await CommonDBFunctions.getOneUserDataFromDBFuture(
                 userId: contact.chatBoxUserId);
 
-                
         final MessageModel message = MessageModel(
           messageId: DateTime.now().millisecondsSinceEpoch.toString(),
           message: uploadedStatusModel?.statusContent,

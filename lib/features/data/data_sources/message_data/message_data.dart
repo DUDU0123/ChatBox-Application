@@ -187,78 +187,40 @@ class MessageData {
     if (chatModel == null && !isGroup) {
       return;
     }
-    String messageType = '';
-    String lastMessage = '';
+
     String messageStatus = MessageStatus.none.name;
 
     // Determine the message type and last message string
-    switch (message.messageType) {
-      case MessageType.audio:
-        messageType = 'audio';
-        lastMessage = '🎧Audio';
-        break;
-      case MessageType.contact:
-        messageType = 'contact';
-        lastMessage = '📞Contact';
-        break;
-      case MessageType.document:
-        messageType = 'document';
-        lastMessage = '📄Doc';
-        break;
-      case MessageType.photo:
-        messageType = 'photo';
-        lastMessage = '📷Photo';
-        break;
-      case MessageType.video:
-        messageType = 'video';
-        lastMessage = '🎥Video';
-        break;
-      case MessageType.location:
-        messageType = 'location';
-        lastMessage = '📌Location';
-        break;
-      default:
-        lastMessage = message.message ?? '';
-        messageType = 'text';
-    }
-
-    // if (isGroup) {
-    //   if (groupModel == null) {
-    //     return;
-    //   }
-    //   if (groupModel.groupMembers == null || groupModel.groupMembers!.isEmpty) {
-    //     return;
-    //   }
-    //   // group message important fields update
-    //   for (var userID in groupModel.groupMembers!) {
-    //     await FirebaseFirestore.instance
-    //         .collection(usersCollection)
-    //         .doc(userID)
-    //         .collection(groupsCollection)
-    //         .doc(groupModel.groupID)
-    //         .update({
-    //       dbGroupLastMessageType: messageType,
-    //       dbGroupLastMessageTime: message.messageTime,
-    //       dbGroupLastMessageStatus: messageStatus,
-    //       dbGroupLastMessage: lastMessage,
-    //       // isIncoming: message.senderID != userID
-    //       isIncoming: groupModel.groupMembers!
-    //               .contains(FirebaseAuth.instance.currentUser?.uid) &&
-    //           message.senderID == FirebaseAuth.instance.currentUser?.uid
-    //     });
-
-    //     await FirebaseFirestore.instance
-    //         .collection(usersCollection)
-    //         .doc(userID)
-    //         .collection(groupsCollection)
-    //         .doc(groupModel.groupID)
-    //         .collection(messagesCollection)
-    //         .doc(message.messageId)
-    //         .update({
-    //       dbMessageStatus: messageStatus,
-    //     });
-    //   }
+    // switch (message.messageType) {
+    //   case MessageType.audio:
+    //     messageType = 'audio';
+    //     lastMessage = '🎧Audio';
+    //     break;
+    //   case MessageType.contact:
+    //     messageType = 'contact';
+    //     lastMessage = '📞Contact';
+    //     break;
+    //   case MessageType.document:
+    //     messageType = 'document';
+    //     lastMessage = '📄Doc';
+    //     break;
+    //   case MessageType.photo:
+    //     messageType = 'photo';
+    //     lastMessage = '📷Photo';
+    //     break;
+    //   case MessageType.video:
+    //     messageType = 'video';
+    //     lastMessage = '🎥Video';
+    //     break;
+    //   case MessageType.location:
+    //     messageType = 'location';
+    //     lastMessage = '📌Location';
+    //     break;
+    //   default:
+    //     lastMessage = message.message ?? '';
+    //     messageType = 'text';
     // }
+
 
     // Listen to receiver's network status and chat state
     FirebaseFirestore.instance
@@ -357,33 +319,33 @@ class MessageData {
           log("No messages to update for receiver");
         }
 
-        // Update sender's chat document
-        await FirebaseFirestore.instance
-            .collection(usersCollection)
-            .doc(chatModel?.senderID)
-            .collection(chatsCollection)
-            .doc(chatModel?.chatID)
-            .update({
-          chatLastMessageTime: message.messageTime,
-          lastChatType: messageType,
-          chatLastMessage: lastMessage,
-          lastChatStatus: messageStatus,
-          isIncoming: message.senderID == chatModel?.receiverID,
-        });
+        // // Update sender's chat document
+        // await FirebaseFirestore.instance
+        //     .collection(usersCollection)
+        //     .doc(chatModel?.senderID)
+        //     .collection(chatsCollection)
+        //     .doc(chatModel?.chatID)
+        //     .update({
+        //   chatLastMessageTime: message.messageTime,
+        //   lastChatType: messageType,
+        //   chatLastMessage: lastMessage,
+        //   lastChatStatus: messageStatus,
+        //   isIncoming: message.senderID == chatModel?.receiverID,
+        // });
 
-        // Update receiver's chat document
-        await FirebaseFirestore.instance
-            .collection(usersCollection)
-            .doc(chatModel?.receiverID)
-            .collection(chatsCollection)
-            .doc(chatModel?.chatID)
-            .update({
-          chatLastMessageTime: message.messageTime,
-          lastChatType: messageType,
-          chatLastMessage: lastMessage,
-          lastChatStatus: messageStatus,
-          isIncoming: message.senderID != chatModel?.receiverID,
-        });
+        // // Update receiver's chat document
+        // await FirebaseFirestore.instance
+        //     .collection(usersCollection)
+        //     .doc(chatModel?.receiverID)
+        //     .collection(chatsCollection)
+        //     .doc(chatModel?.chatID)
+        //     .update({
+        //   chatLastMessageTime: message.messageTime,
+        //   lastChatType: messageType,
+        //   chatLastMessage: lastMessage,
+        //   lastChatStatus: messageStatus,
+        //   isIncoming: message.senderID != chatModel?.receiverID,
+        // });
 
         await FirebaseFirestore.instance
             .collection(usersCollection)

@@ -27,7 +27,9 @@ class SelectContactPage extends StatefulWidget {
     required this.pageType,
     this.groupModel,
     required this.isGroup,
-    this.uploadedStatusModel, this.statusModel, this.uploadedStatusModelID,
+    this.uploadedStatusModel,
+    this.statusModel,
+    this.uploadedStatusModelID,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
@@ -35,7 +37,7 @@ class SelectContactPage extends StatefulWidget {
   final GroupModel? groupModel;
   final UploadedStatusModel? uploadedStatusModel;
   final StatusModel? statusModel;
-   final String? uploadedStatusModelID;
+  final String? uploadedStatusModelID;
   final bool isGroup;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
@@ -53,6 +55,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
 
   @override
   Widget build(BuildContext context) {
+    log(widget.pageType.toString());
     log("${context.watch<ContactBloc>().state.contactList?.length}Length");
     if (context.watch<ContactBloc>().state.contactList?.length == 0 ||
         context.watch<ContactBloc>().state.contactList?.length == null) {
@@ -123,7 +126,8 @@ class _SelectContactPageState extends State<SelectContactPage> {
             child: BlocBuilder<ContactBloc, ContactState>(
               builder: (context, state) {
                 if (state is ContactsErrorState) {
-                  return commonErrorWidget(message: state.message);
+                  log(state.message);
+                  return commonErrorWidget(message: "Unable to load contacts");
                 }
                 if (state is ContactsLoadingState) {
                   return commonAnimationWidget(
@@ -156,7 +160,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                             itemBuilder: (context, index) {
                               final contact = contactList![index];
                               return ContactSingleWidget(
-                                contactNameorNumber: contact.userContactName??contact.userContactNumber??'',
+                                contactNameorNumber: contact.userContactName ??
+                                    contact.userContactNumber ??
+                                    '',
                                 contactModel: contact,
                                 isSelected: state.selectedContactList != null
                                     ? state.selectedContactList!
@@ -220,6 +226,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
       ),
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
+          
           return FloatingDoneNavigateButton(
             uploadedStatusModelID: widget.uploadedStatusModelID,
             statusModel: widget.statusModel,
@@ -228,7 +235,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                 ? Icons.done
                 : widget.pageType == PageTypeEnum.toSendPage
                     ? Icons.send_rounded
-                    : null,
+                    : widget.pageType == PageTypeEnum.broadcastMembersSelectPage
+                        ? Icons.done
+                        : null,
             groupModel: widget.groupModel,
             isGroup: widget.isGroup,
             pageType: widget.pageType,

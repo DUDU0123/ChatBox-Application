@@ -2,6 +2,7 @@ import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/config/common_provider/common_provider.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
+import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/common_db_functions.dart';
 import 'package:chatbox/core/utils/date_provider.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
@@ -46,26 +47,40 @@ Widget chatDescriptionOrAbout({
               groupID: groupData.groupID!)
           : null,
       builder: (context, snapshot) {
+        
         final commonProvider =
             Provider.of<CommonProvider>(context, listen: true);
-
+        bool isAdmin =
+           snapshot.data!=null? snapshot.data!.groupAdmins!.contains(firebaseAuth.currentUser?.uid):false;
+        bool isEditable = snapshot.data!=null?snapshot.data!.membersPermissions!
+            .contains(MembersGroupPermission.editGroupSettings):false;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
               onTap: () {
                 isGroup
-                    ? Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => GroupDescriptionAddPage(
-                            groupModel: snapshot.data!,
-                          ),
-                        ))
+                    ? snapshot.data != null
+                        ? isEditable || isAdmin
+                            ? Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GroupDescriptionAddPage(
+                                    groupModel: snapshot.data!,
+                                  ),
+                                ))
+                            : null
+                        : null
                     : null;
               },
               child: TextWidgetCommon(
-                text: !isGroup ? "About" : "Add Group Description",
+                text: !isGroup
+                    ? "About"
+                    : snapshot.data != null
+                        ? isEditable || isAdmin
+                            ? "Add Group Description"
+                            : "Group Description"
+                        : "About",
                 textColor: buttonSmallTextColor,
                 overflow: TextOverflow.ellipsis,
                 fontSize: 18.sp,
@@ -114,7 +129,9 @@ Widget chatDescriptionOrAbout({
                       return TextWidgetCommon(
                         text:
                             "Created by ${snapshot.data?.contactName ?? snapshot.data?.userName ?? ''}, (${DateProvider.formatMessageDateTime(
-                          messageDateTimeString: groupData.groupCreatedAt.toString(),isInsideChat: true,
+                          messageDateTimeString:
+                              groupData.groupCreatedAt.toString(),
+                          isInsideChat: true,
                         )})",
                         fontSize: 14.sp,
                         textColor: iconGreyColor,
@@ -127,7 +144,10 @@ Widget chatDescriptionOrAbout({
       });
 }
 
-Widget infoPageActionIconsBlueGradient({required bool isGroup, required BuildContext context,}) {
+Widget infoPageActionIconsBlueGradient({
+  required bool isGroup,
+  required BuildContext context,
+}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [

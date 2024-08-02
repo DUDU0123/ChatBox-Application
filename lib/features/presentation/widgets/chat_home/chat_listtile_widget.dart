@@ -25,7 +25,6 @@ class ChatListTileWidget extends StatelessWidget {
     this.isVoiceRecoding,
     this.isIncomingMessage,
     required this.isGroup,
-    required this.messageStatus,
     this.chatModel,
     this.groupModel,
     this.receiverID,
@@ -44,7 +43,6 @@ class ChatListTileWidget extends StatelessWidget {
   final bool isGroup;
   final ChatModel? chatModel;
   final GroupModel? groupModel;
-  final MessageStatus messageStatus;
   final String? receiverID;
   final EdgeInsetsGeometry? contentPadding;
 
@@ -80,14 +78,12 @@ class ChatListTileWidget extends StatelessWidget {
             ));
       },
       onLongPress: () {
-          
-          chatTileActionsOnLongPressMethod(
-            isGroup: isGroup,
-            groupModel: groupModel,
-            context: context,
-            chatModel: chatModel,
-          );
-        
+        chatTileActionsOnLongPressMethod(
+          isGroup: isGroup,
+          groupModel: groupModel,
+          context: context,
+          chatModel: chatModel,
+        );
       },
       child: ListTile(
         contentPadding: contentPadding,
@@ -118,9 +114,12 @@ class ChatListTileWidget extends StatelessWidget {
             context: context,
           ),
         ),
-        title: buildUserName(userName: userName),
+        title: buildUserName(
+          userName: userName,
+        ),
         subtitle: buildSubtitle(
-          messageStatus: messageStatus,
+          chatModel: chatModel,
+          groupModel: groupModel,
           isGroup: isGroup,
           isIncomingMessage: isIncomingMessage,
           isTyping: false,
@@ -128,10 +127,10 @@ class ChatListTileWidget extends StatelessWidget {
           lastMessage: lastMessage,
         ),
         trailing: buildTrailing(
+          chatModel: chatModel,groupModel: groupModel,
           context: context,
           notificationCount: notificationCount,
           isMutedChat: isMutedChat,
-          lastMessageTime: lastMessageTime,
         ),
       ),
     );
