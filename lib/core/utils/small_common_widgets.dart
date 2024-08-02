@@ -257,3 +257,14 @@ listTileCommonWidget({
     trailing: trailing,
   );
 }
+
+Future<dynamic> animationLoadingDialogBoxTransparent(
+      {required BuildContext context}) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: kTransparent,
+              content:
+                  commonAnimationWidget(context: context, isTextNeeded: false),
+            ));
+  }

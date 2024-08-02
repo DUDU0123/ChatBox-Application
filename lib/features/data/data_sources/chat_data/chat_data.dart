@@ -6,6 +6,7 @@ import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/user_model/user_model.dart';
+import 'package:fpdart/fpdart.dart';
 
 class ChatData {
   final FirebaseFirestore firestore;
@@ -157,27 +158,73 @@ class ChatData {
       throw Exception(e.toString());
     }
   }
+
   Future<void> clearChatInOneToOne({required String chatID}) async {
     try {
       final User? currentUser = firebaseAuth.currentUser;
-    final messageCollectionSnapshot = await firestore
-        .collection(usersCollection)
-        .doc(currentUser?.uid)
-        .collection(chatsCollection)
-        .doc(chatID)
-        .collection(messagesCollection)
-        .get();
-    final WriteBatch batch = firestore.batch();
-    for (final DocumentSnapshot messageDoc in messageCollectionSnapshot.docs) {
-      batch.delete(messageDoc.reference);
-    }
+      final messageCollectionSnapshot = await firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(chatsCollection)
+          .doc(chatID)
+          .collection(messagesCollection)
+          .get();
+      final WriteBatch batch = firestore.batch();
+      for (final DocumentSnapshot messageDoc
+          in messageCollectionSnapshot.docs) {
+        batch.delete(messageDoc.reference);
+      }
 
-    // Commit the batch
-    await batch.commit();
+      // Commit the batch
+      await batch.commit();
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+    }
+  }
+
+  Future<bool> clearAllChats() async {
+    try {
+      final User? currentUser = firebaseAuth.currentUser;
+      if (currentUser==null) {
+        return false;
+      }
+      final WriteBatch batch = firestore.batch();
+      final chatSnaphot = await firestore
+          .collection(usersCollection)
+          .doc(currentUser.uid)
+          .collection(chatsCollection)
+          .get();
+      for (var chatDoc in chatSnaphot.docs) {
+        final chatDocRef = chatDoc.reference;
+        final messageSnapShot =
+            await chatDocRef.collection(messagesCollection).get();
+        for (var messageDoc in messageSnapShot.docs) {
+          batch.delete(messageDoc.reference);
+        }
+      }
+      final groupSnapShot = await firestore
+          .collection(usersCollection)
+          .doc(currentUser.uid)
+          .collection(groupsCollection)
+          .get();
+      for (var groupDoc in groupSnapShot.docs) {
+        final groupDocRef = groupDoc.reference;
+        final messageSnapShot =
+            await groupDocRef.collection(messagesCollection).get();
+        for (var messageDoc in messageSnapShot.docs) {
+          batch.delete(messageDoc.reference);
+        }
+      }
+      await batch.commit();
+      return true;
+    } on FirebaseException catch (e) {
+      log("From new group creation firebase: ${e.toString()}");
+      return false;
+    } catch (e) {
+      log("From new group creation catch: ${e.toString()}");
+      return false;
     }
   }
 }

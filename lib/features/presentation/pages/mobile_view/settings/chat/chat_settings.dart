@@ -1,20 +1,23 @@
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
+import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/core/utils/theme_type_giver.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/settings/chat/wallpaper_setpage.dart';
+import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:chatbox/features/presentation/pages/mobile_view/wallpaper/wallpaper_select_page.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:chatbox/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:chatbox/features/presentation/widgets/dialog_widgets/theme_set_dialogbox.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ChatSettings extends StatelessWidget {
   const ChatSettings({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +58,9 @@ class ChatSettings extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const WallpaperSetPage(),
+                    builder: (context) => const WallpaperSelectPage(
+                      pageTypeEnum: PageTypeEnum.chatSetting,
+                    ),
                   ),
                 );
               },
@@ -70,50 +75,48 @@ class ChatSettings extends StatelessWidget {
               ),
             ),
             kHeight10,
-            commonListTile(
-              onTap: () {
-                normalDialogBoxWidget(
-                  actionButtonName: "Clear chats",
-                  context: context,
-                  onPressed: () {
-                     // method to clear all chats
-                  },
-                  subtitle:
-                      "This will clear all the messages except starred messages",
-                  title: "Clear all chats",
-                );
+            BlocListener<ChatBloc, ChatState>(
+              listener: (context, state) {
+                if (state is ClearChatsLoadingState) {
+                  animationLoadingDialogBoxTransparent(
+                    context: context,
+                  );
+                } else if (state is ClearChatsSuccessState) {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
+
+                  commonSnackBarWidget(
+                      context: context, contentText: state.clearChatMessage);
+                } else if (state is ClearChatsErrorState) {
+                  commonSnackBarWidget(
+                    context: context,
+                    contentText: state.errorMessage,
+                  );
+                }
               },
-              title: "Clear all chats",
-              isSmallTitle: false,
-              context: context,
-              leading: SvgPicture.asset(
-                clearIcon,
-                width: 30.w,
-                height: 30.h,
-                colorFilter: ColorFilter.mode(iconGreyColor, BlendMode.srcIn),
-              ),
-            ),
-            kHeight10,
-            commonListTile(
-              onTap: () {
-                normalDialogBoxWidget(
-                  actionButtonName: "Delete chats",
-                  context: context,
-                  onPressed: () {
-                    // method to delete all chats
-                  },
-                  subtitle: "This will delete all the messages in every chats.",
-                  title: "Delete all chats",
-                );
-              },
-              title: "Delete all chats",
-              isSmallTitle: false,
-              context: context,
-              leading: SvgPicture.asset(
-                deleteIcon2,
-                width: 30.w,
-                height: 30.h,
-                colorFilter: ColorFilter.mode(iconGreyColor, BlendMode.srcIn),
+              child: commonListTile(
+                onTap: () {
+                  normalDialogBoxWidget(
+                    actionButtonName: "Clear chats",
+                    context: context,
+                    onPressed: () {
+                      context.read<ChatBloc>().add(ClearAllChatsEvent());
+                      Navigator.pop(context);
+                    },
+                    subtitle: "This will clear all the messages in every chats",
+                    title: "Clear all chats",
+                  );
+                },
+                title: "Clear all chats",
+                isSmallTitle: false,
+                context: context,
+                leading: SvgPicture.asset(
+                  clearIcon,
+                  width: 30.w,
+                  height: 30.h,
+                  colorFilter: ColorFilter.mode(iconGreyColor, BlendMode.srcIn),
+                ),
               ),
             ),
           ],

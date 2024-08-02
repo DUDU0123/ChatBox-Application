@@ -37,10 +37,9 @@ class ChatHomePage extends StatelessWidget {
                     if (state is ChatErrorState) {
                       return SliverToBoxAdapter(
                           child: Center(
-                        child: TextWidgetCommon(text: state.message),
+                        child: TextWidgetCommon(text: state.errormessage),
                       ));
                     }
-                    
                       log("Length: ${state.chatList?.length}");
                       return StreamBuilder<List<ChatModel>>(
                         stream: state.chatList,

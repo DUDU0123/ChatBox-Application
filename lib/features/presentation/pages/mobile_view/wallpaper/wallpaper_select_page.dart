@@ -9,7 +9,6 @@ import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/presentation/bloc/chat_bloc/chat_bloc.dart';
-import 'package:chatbox/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,10 +19,11 @@ class WallpaperSelectPage extends StatefulWidget {
   const WallpaperSelectPage({
     super.key,
     this.groupModel,
-    this.chatModel,
+    this.chatModel, this.pageTypeEnum,
   });
   final GroupModel? groupModel;
   final ChatModel? chatModel;
+  final PageTypeEnum? pageTypeEnum;
 
   @override
   State<WallpaperSelectPage> createState() => _WallpaperSelectPageState();
@@ -38,7 +38,6 @@ class _WallpaperSelectPageState extends State<WallpaperSelectPage> {
           text: "Wallpaper",
         ),
       ),
-      // backgroundColor: darkScaffoldColor,
       body: SizedBox(
         width: screenWidth(context: context),
         child: Column(
@@ -103,8 +102,8 @@ class _WallpaperSelectPageState extends State<WallpaperSelectPage> {
                               context: context,
                               contentText: "Wallpaper set for all chats");
                         }),
-                    kWidth10,
-                    wallpaperButtonWidget(
+                     widget.pageTypeEnum!=PageTypeEnum.chatSetting?kWidth10:zeroMeasureWidget,
+                  widget.pageTypeEnum!=PageTypeEnum.chatSetting?  wallpaperButtonWidget(
                         buttonName: "Set for this",
                         onPressed: () async {
                           CommonDBFunctions.setWallpaper(
@@ -116,7 +115,7 @@ class _WallpaperSelectPageState extends State<WallpaperSelectPage> {
                           commonSnackBarWidget(
                               context: context,
                               contentText: "Wallpaper set for only this chat");
-                        }),
+                        }):zeroMeasureWidget,
                   ],
                 );
               },

@@ -15,28 +15,41 @@ class CreateANewChatEvent extends ChatEvent {
     required this.receiverId,
   });
   @override
-  List<Object> get props => [receiverId,recieverContactName,];
+  List<Object> get props => [
+        receiverId,
+        recieverContactName,
+      ];
 }
-class GetAllChatsEvent extends ChatEvent{}
+
+class GetAllChatsEvent extends ChatEvent {}
+
 class DeletAChatEvent extends ChatEvent {
   final ChatModel? chatModel;
   const DeletAChatEvent({
     required this.chatModel,
   });
   @override
-  List<Object> get props => [chatModel??const ChatModel(),];
+  List<Object> get props => [
+        chatModel ?? const ChatModel(),
+      ];
 }
+
 class MessageSentEvent extends ChatEvent {
   final String chatId;
   final MessageModel message;
- const MessageSentEvent({
+  const MessageSentEvent({
     required this.chatId,
     required this.message,
   });
   @override
-  List<Object> get props => [chatId,message,];
+  List<Object> get props => [
+        chatId,
+        message,
+      ];
 }
-class GetOneMessageEvent extends ChatEvent{}
+
+class GetOneMessageEvent extends ChatEvent {}
+
 class GetAllMessageEvent extends ChatEvent {
   final String chatId;
   const GetAllMessageEvent({
@@ -45,6 +58,7 @@ class GetAllMessageEvent extends ChatEvent {
   @override
   List<Object> get props => [chatId];
 }
+
 class ClearChatEvent extends ChatEvent {
   final String chatId;
   const ClearChatEvent({
@@ -53,11 +67,14 @@ class ClearChatEvent extends ChatEvent {
   @override
   List<Object> get props => [chatId];
 }
+
 class PickImageEvent extends ChatEvent {
   final File? pickedFile;
   const PickImageEvent({
     this.pickedFile,
   });
   @override
-  List<Object> get props => [pickedFile??File('')];
+  List<Object> get props => [pickedFile ?? File('')];
 }
+
+class ClearAllChatsEvent extends ChatEvent {}

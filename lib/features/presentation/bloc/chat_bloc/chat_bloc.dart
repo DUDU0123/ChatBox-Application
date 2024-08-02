@@ -18,7 +18,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<GetAllChatsEvent>(getAllChatsEvent);
     on<DeletAChatEvent>(deleteAChatEvent);
     on<ClearChatEvent>(clearChatEvent);
-     on<PickImageEvent>(pickImageEvent);
+    on<PickImageEvent>(pickImageEvent);
+    on<ClearAllChatsEvent>(clearAllChatsEvent);
   }
 
   FutureOr<void> createANewChatEvent(
@@ -31,7 +32,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       add(GetAllChatsEvent());
     } catch (e) {
       log("Create chat: e ${e.toString()}");
-      emit(ChatErrorState(message: e.toString()));
+      emit(ChatErrorState(errormessage: e.toString()));
     }
   }
 
@@ -45,7 +46,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatState(chatList: chatList));
     } catch (e) {
       log("Create chat: e ${e.toString()}");
-      emit(ChatErrorState(message: e.toString()));
+      emit(ChatErrorState(errormessage: e.toString()));
     }
   }
 
@@ -61,24 +62,41 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       add(GetAllChatsEvent());
     } catch (e) {
       log("Delete chat: e ${e.toString()}");
-      emit(ChatErrorState(message: e.toString()));
+      emit(ChatErrorState(errormessage: e.toString()));
     }
   }
 
-  FutureOr<void> clearChatEvent(ClearChatEvent event, Emitter<ChatState> emit) async{
+  FutureOr<void> clearChatEvent(
+      ClearChatEvent event, Emitter<ChatState> emit) async {
     try {
       await chatRepo.clearChatMethodInOneToOne(chatID: event.chatId);
     } catch (e) {
       log("Clear chat: e ${e.toString()}");
-      emit(ChatErrorState(message: e.toString()));
+      emit(ChatErrorState(errormessage: e.toString()));
     }
   }
 
   FutureOr<void> pickImageEvent(PickImageEvent event, Emitter<ChatState> emit) {
     try {
-      emit(state.copyWith(pickedFile: event.pickedFile, chatList: state.chatList));
+      emit(state.copyWith(
+          pickedFile: event.pickedFile, chatList: state.chatList));
     } catch (e) {
-      emit(ChatErrorState(message: e.toString()));
+      emit(ChatErrorState(errormessage: e.toString()));
+    }
+  }
+
+ Future<void> clearAllChatsEvent(ClearAllChatsEvent event, Emitter<ChatState> emit) async {
+    emit(ClearChatsLoadingState());
+    try {
+      final isCleared = await chatRepo.clearAllChatsInApp();
+      if (isCleared) {
+        emit(const ClearChatsSuccessState(clearChatMessage: "Cleared all chats"));
+        add(GetAllChatsEvent());
+      } else {
+        emit(const ClearChatsErrorState(errorMessage: "Can't clear the chats"));
+      }
+    } catch (e) {
+      emit(ClearChatsErrorState(errorMessage: e.toString()));
     }
   }
 }

@@ -9,7 +9,7 @@ class TextFieldCommon extends StatelessWidget {
     this.border,
     this.suffixIcon,
     this.hintText,
-    required this.controller,
+    this.controller,
     required this.textAlign,
     this.enabled,
     this.keyboardType,
@@ -24,7 +24,7 @@ class TextFieldCommon extends StatelessWidget {
   final Widget? suffixIcon;
   final String? hintText;
   final String? labelText;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final TextAlign textAlign;
   final bool? enabled;
   final TextInputType? keyboardType;

@@ -49,4 +49,10 @@ class ChatRepoImpl extends ChatRepo {
   Future<void> clearChatMethodInOneToOne({required String chatID}) async{
     await chatData.clearChatInOneToOne(chatID: chatID);
   }
+  
+  @override
+  Future<bool> clearAllChatsInApp() async{
+    return await chatData.clearAllChats();
+  }
+  
 }

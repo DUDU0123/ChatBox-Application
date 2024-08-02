@@ -5,6 +5,7 @@ import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
 import 'package:chatbox/core/utils/image_picker_method.dart';
 import 'package:chatbox/core/utils/small_common_widgets.dart';
+import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
 import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_permissions_page.dart';
@@ -36,6 +37,7 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
     groupNameController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,11 +56,11 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                     File? pickedImageFile =
+                      File? pickedImageFile =
                           await pickImage(imageSource: ImageSource.gallery);
                       if (mounted) {
                         context.read<GroupBloc>().add(
-                          GroupImagePickEvent(pickedFile: pickedImageFile));
+                            GroupImagePickEvent(pickedFile: pickedImageFile));
                       }
                     },
                     child: BlocBuilder<GroupBloc, GroupState>(
@@ -71,9 +73,12 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
                             color: kRed,
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: state.groupPickedImageFile != null?state.groupPickedImageFile!.path.isNotEmpty
-                                  ? FileImage(state.groupPickedImageFile!)
-                                  : const AssetImage(appLogo):const AssetImage(appLogo),
+                              image: state.groupPickedImageFile != null
+                                  ? state.groupPickedImageFile!.path
+                                          .isNotEmpty
+                                      ? FileImage(state.groupPickedImageFile!)
+                                      : const AssetImage(appLogo)
+                                  : const AssetImage(appLogo),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -132,7 +137,8 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
         pageType: PageTypeEnum.groupDetailsAddPage,
         icon: Icons.done,
         groupName: groupNameController.text,
-        pickedGroupImageFile: context.watch<GroupBloc>().state.groupPickedImageFile,
+        pickedGroupImageFile:
+            context.watch<GroupBloc>().state.groupPickedImageFile,
       ),
     );
   }

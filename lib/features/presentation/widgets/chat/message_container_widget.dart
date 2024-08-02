@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/height_width.dart';
 import 'package:chatbox/core/enums/enums.dart';
@@ -9,18 +6,13 @@ import 'package:chatbox/core/utils/small_common_widgets.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
 import 'package:chatbox/features/data/models/message_model/message_model.dart';
-import 'package:chatbox/features/data/models/user_model/user_model.dart';
-import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
 import 'package:chatbox/features/presentation/widgets/chat/contact_message_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/audio_message_widget.dart';
 import 'package:chatbox/features/presentation/widgets/chat/different_message_widgets.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_container_user_details.dart';
 import 'package:chatbox/features/presentation/widgets/chat/message_status_show_widget.dart';
-import 'package:chatbox/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:chatbox/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
