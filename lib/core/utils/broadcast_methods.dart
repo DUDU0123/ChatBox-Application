@@ -1,44 +1,46 @@
-// import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
-// import 'package:chatbox/core/enums/enums.dart';
-// import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
-// import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
-// import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
+import 'dart:developer';
 
-// import '../../features/data/models/message_model/message_model.dart';
+import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
+import 'package:chatbox/core/constants/database_name_constants.dart';
+import 'package:chatbox/features/data/models/broadcast_model/broadcast_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 
-// class BroadcastMethods {
-//   sendBroadCastMessages({
-//     required String messageContent,
-//     required MessageBloc messageBloc,
-//     required List<ContactModel>? selectedContactList,
-//     required ChatModel chatModel,
-    
-//   }) {
-//     for (var contact in selectedContactList!) {
-//       final MessageModel message = MessageModel(
-//         messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-//         message: messageContent,
-//         isDeletedMessage: false,
-//         isEditedMessage: false,
-//         isPinnedMessage: false,
-//         isStarredMessage: false,
-//         messageStatus: MessageStatus.sent,
-//         messageTime: DateTime.now().toString(),
-//         messageType: MessageType.text,
-//         receiverID: contact.chatBoxUserId,
-//         senderID: firebaseAuth.currentUser?.uid,
-//       );
-//       messageBloc.add(MessageSentEvent(
-//         chatModel: chatModel,
-//         receiverID: contact.chatBoxUserId!,
-//         currentUserId: firebaseAuth.currentUser!.uid,
-//         receiverContactName: receiverModel?.contactName ??
-//             receiverModel?.userName ??
-//             receiverModel?.phoneNumber ??
-//             '',
-//         message: message,
-//         isGroup: false,
-//       ));
-//     }
-//   }
-// }
+const broadcastCollection = 'broadcast';
+
+class BroadCastMethods {
+  // method for creating a broadcast
+  static Future<bool> createBroadCast({
+    required BroadCastModel brocastModel,
+  }) async {
+    try {
+      final currentUserId = firebaseAuth.currentUser?.uid;
+      final broadcastDocRef = await fireStore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(broadcastCollection)
+          .add(brocastModel.toJson());
+      final broadCastId = broadcastDocRef.id;
+      final updatedBroadcastModel = brocastModel.copyWith(
+        broadCastId: broadCastId,
+      );
+      await fireStore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(broadcastCollection)
+          .doc(broadCastId)
+          .update(updatedBroadcastModel.toJson());
+          log("Brodcast creared");
+      return true;
+    } on FirebaseException catch (e) {
+      log(e.message.toString());
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return true;
+    }
+  }
+  // method for sending message in broadcast
+}
+
+

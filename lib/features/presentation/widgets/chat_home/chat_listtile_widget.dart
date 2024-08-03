@@ -16,9 +16,7 @@ class ChatListTileWidget extends StatelessWidget {
   const ChatListTileWidget({
     super.key,
     required this.userName,
-    this.lastMessage,
     this.userProfileImage,
-    this.lastMessageTime,
     this.notificationCount,
     this.isMutedChat,
     this.isTyping,
@@ -33,9 +31,8 @@ class ChatListTileWidget extends StatelessWidget {
 
   final String userName;
   final String? userProfileImage;
-  final String? lastMessageTime;
   final int? notificationCount;
-  final String? lastMessage;
+
   final bool? isMutedChat;
   final bool? isTyping;
   final bool? isVoiceRecoding;
@@ -124,7 +121,6 @@ class ChatListTileWidget extends StatelessWidget {
           isIncomingMessage: isIncomingMessage,
           isTyping: false,
           isVoiceRecoding: false,
-          lastMessage: lastMessage,
         ),
         trailing: buildTrailing(
           chatModel: chatModel,groupModel: groupModel,

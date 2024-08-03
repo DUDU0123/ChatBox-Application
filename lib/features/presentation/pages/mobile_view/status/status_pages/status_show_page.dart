@@ -111,6 +111,7 @@ class _StatusShowPageState extends State<StatusShowPage> {
                               : null;
                           // Remove the deleted status from the list
                           widget.statusModel.statusList!.removeAt(currentIndex);
+                          Navigator.pop(context);
                         },
                         shareMethod: () {
                            Navigator.pop(context);

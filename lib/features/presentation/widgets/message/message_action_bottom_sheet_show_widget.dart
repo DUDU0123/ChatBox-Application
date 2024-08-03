@@ -59,7 +59,7 @@ Widget messageActionBottomSheetShowWidget(
                 : zeroMeasureWidget
             : zeroMeasureWidget,
         selectedMessagesId.length <= 1
-            ? message?.senderID == firebaseAuth.currentUser?.uid
+            ? message?.senderID == firebaseAuth.currentUser?.uid &&message?.messageType == MessageType.text
                 ? listTileCommonWidget(
                     textColor: Theme.of(context).colorScheme.onPrimary,
                     trailing: Icon(
@@ -71,6 +71,7 @@ Widget messageActionBottomSheetShowWidget(
                       Navigator.pop(context);
                       if (message != null) {
                         showModalBottomSheet<String>(
+                          
                           context: context,
                           isScrollControlled: true,
                           builder: (context) => EditMessageScreen(

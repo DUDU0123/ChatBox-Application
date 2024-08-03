@@ -40,7 +40,6 @@ class ChatHomePage extends StatelessWidget {
                         child: TextWidgetCommon(text: state.errormessage),
                       ));
                     }
-                      log("Length: ${state.chatList?.length}");
                       return StreamBuilder<List<ChatModel>>(
                         stream: state.chatList,
                         builder: (context, snapshot) {
@@ -58,8 +57,6 @@ class ChatHomePage extends StatelessWidget {
                               );
                             }
                           }
-
-                          log("Hello inside");
                           return SliverList.separated(
                             itemCount: snapshot.data?.length,
                             itemBuilder: (context, index) {
@@ -67,19 +64,11 @@ class ChatHomePage extends StatelessWidget {
                               if (chat == null) {
                                 return zeroMeasureWidget;
                               }
-                              log("Image : ${chat[index].receiverProfileImage}$index");
-                              log(chat[index].lastMessageTime.toString());
-                              final lastMessage = chat[index].lastMessage;
                               return ChatListTileWidget(
                                 isIncomingMessage: chat[index].isIncomingMessage,
                                 chatModel: chat[index],
                                 isGroup: false,
                                 isMutedChat: chat[index].isMuted,
-                                lastMessage: lastMessage,
-                                lastMessageTime:
-                                    lastMessage == null || lastMessage.isEmpty
-                                        ? ''
-                                        : DateProvider.formatMessageDateTime(messageDateTimeString: chat[index].lastMessageTime.toString()),
                                 notificationCount:
                                     chat[index].notificationCount,
                                 userName: chat[index].receiverName ?? '',

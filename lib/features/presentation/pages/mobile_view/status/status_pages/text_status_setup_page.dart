@@ -24,15 +24,13 @@ class _TextStatusSetupPageState extends State<TextStatusSetupPage> {
   TextEditingController textStatusController = TextEditingController();
 
   List<Color> availableColors = [
-    darkGreyColor,
-    darkSwitchColor,
-    darkScaffoldColor,
-    darkLinearGradientColorTwo,
-    kBlack,
+    const Color.fromARGB(237, 252, 88, 255),
+    const Color.fromARGB(255, 255, 144, 111),
+    const Color.fromARGB(255, 143, 160, 158),
+    const Color.fromARGB(255, 96, 135, 252),
+    Colors.teal,
     Colors.yellow,
   ];
-
-  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +74,7 @@ class _TextStatusSetupPageState extends State<TextStatusSetupPage> {
               icon: Icon(
                 Icons.color_lens,
                 size: 38.sp,
-                color: kWhite,
+                color: buttonSmallTextColor,
               ),
             ),
           )

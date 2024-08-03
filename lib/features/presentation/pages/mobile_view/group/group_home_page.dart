@@ -57,11 +57,6 @@ class GroupHomePage extends StatelessWidget {
                     log("Last : ${group.lastMessage}");
                     return ChatListTileWidget(
                       isMutedChat: group.isMuted,
-                      lastMessage: group.lastMessage,
-                      lastMessageTime: group.lastMessage == null || group.lastMessage!.isEmpty
-                          ? ''
-                          : DateProvider.formatMessageDateTime(
-                              messageDateTimeString: group.lastMessageTime.toString()),
                       notificationCount: group.notificationCount,
                       isIncomingMessage: group.isIncomingMessage,
                       userProfileImage: group.groupProfileImage,

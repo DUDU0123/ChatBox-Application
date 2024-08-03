@@ -107,6 +107,13 @@ const dbUserProfilePhotoOnChatBox = 'userProfilePhotoOnChatBox';
 const dbUserContactNumber = 'userContactNumber';
 const dbIsChatBoxUser = 'isChatBoxUser';
 
+// broadcast db field name
+const broadcastId = 'broadcast_id';
+const broadcastAdminId = 'broadcast_admin_id';
+const broadcastName = 'broadcast_name';
+const broadcastProfilePhoto = 'broadcast_profile_photo';
+const broadcastMembersId = 'broadcast_members_id';
+
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
 const chatAssetFolder = "chatsAsset/";

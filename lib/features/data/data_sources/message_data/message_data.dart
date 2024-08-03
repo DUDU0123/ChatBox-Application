@@ -221,7 +221,6 @@ class MessageData {
     //     messageType = 'text';
     // }
 
-
     // Listen to receiver's network status and chat state
     FirebaseFirestore.instance
         .collection(usersCollection)
@@ -318,34 +317,47 @@ class MessageData {
         } else {
           log("No messages to update for receiver");
         }
-
+        // if (isGroup && groupModel != null) {
+        //   if (groupModel.groupMembers != null) {
+        //     for (var memberID in groupModel.groupMembers!) {
+        //       await FirebaseFirestore.instance
+        //           .collection(usersCollection)
+        //           .doc(memberID)
+        //           .collection(groupsCollection)
+        //           .doc(groupModel.groupID)
+        //           .update({
+        //         dbGroupLastMessageTime: message.messageTime,
+        //       });
+        //     }
+        //   }
+        // }
         // // Update sender's chat document
-        // await FirebaseFirestore.instance
-        //     .collection(usersCollection)
-        //     .doc(chatModel?.senderID)
-        //     .collection(chatsCollection)
-        //     .doc(chatModel?.chatID)
-        //     .update({
-        //   chatLastMessageTime: message.messageTime,
-        //   lastChatType: messageType,
-        //   chatLastMessage: lastMessage,
-        //   lastChatStatus: messageStatus,
-        //   isIncoming: message.senderID == chatModel?.receiverID,
-        // });
+        await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel?.senderID)
+            .collection(chatsCollection)
+            .doc(chatModel?.chatID)
+            .update({
+          chatLastMessageTime: message.messageTime,
+          // lastChatType: messageType,
+          // chatLastMessage: lastMessage,
+          // lastChatStatus: messageStatus,
+          // isIncoming: message.senderID == chatModel?.receiverID,
+        });
 
         // // Update receiver's chat document
-        // await FirebaseFirestore.instance
-        //     .collection(usersCollection)
-        //     .doc(chatModel?.receiverID)
-        //     .collection(chatsCollection)
-        //     .doc(chatModel?.chatID)
-        //     .update({
-        //   chatLastMessageTime: message.messageTime,
-        //   lastChatType: messageType,
-        //   chatLastMessage: lastMessage,
-        //   lastChatStatus: messageStatus,
-        //   isIncoming: message.senderID != chatModel?.receiverID,
-        // });
+        await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(chatModel?.receiverID)
+            .collection(chatsCollection)
+            .doc(chatModel?.chatID)
+            .update({
+          chatLastMessageTime: message.messageTime,
+          // lastChatType: messageType,
+          // chatLastMessage: lastMessage,
+          // lastChatStatus: messageStatus,
+          // isIncoming: message.senderID != chatModel?.receiverID,
+        });
 
         await FirebaseFirestore.instance
             .collection(usersCollection)
@@ -454,9 +466,7 @@ class MessageData {
               .doc(groupModel.groupID)
               .collection(messagesCollection)
               .doc(messageId)
-              .update(
-                updatedData.toJson()
-              );
+              .update(updatedData.toJson());
         }
         return true;
       }

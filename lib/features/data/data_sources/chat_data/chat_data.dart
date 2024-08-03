@@ -125,7 +125,7 @@ class ChatData {
       return firestore
           .collection(usersCollection)
           .doc(currentUserId)
-          .collection(chatsCollection)
+          .collection(chatsCollection).orderBy(chatLastMessageTime, descending: true)
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map((doc) => ChatModel.fromJson(doc.data()))

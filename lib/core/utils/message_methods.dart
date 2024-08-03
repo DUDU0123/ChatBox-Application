@@ -37,6 +37,7 @@ class MessageMethods {
     required ChatModel? chatModel,
   }) {
     return showModalBottomSheet(
+      enableDrag: false,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25.sp),

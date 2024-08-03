@@ -119,14 +119,15 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                           children: [
                             widget.message.replyToMessage != null
                                 ? GestureDetector(
-                                    onTap: () {
-                                     
-                                    },
+                                    onTap: () {},
                                     child: Container(
                                       width: widget.message.replyToMessage
                                                   ?.messageType ==
                                               MessageType.text
-                                          ? null
+                                          ? widget.message.message!.length > 10
+                                              ? screenWidth(context: context) /
+                                                  3
+                                              : null
                                           : screenWidth(context: context) / 1.4,
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 10.w, vertical: 10.h),

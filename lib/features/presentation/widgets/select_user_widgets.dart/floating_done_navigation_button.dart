@@ -1,28 +1,23 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chatbox/config/bloc_providers/all_bloc_providers.dart';
 import 'package:chatbox/core/constants/colors.dart';
 import 'package:chatbox/core/constants/database_name_constants.dart';
 import 'package:chatbox/core/enums/enums.dart';
-import 'package:chatbox/core/utils/common_db_functions.dart';
+import 'package:chatbox/core/utils/broadcast_methods.dart';
 import 'package:chatbox/core/utils/contact_methods.dart';
 import 'package:chatbox/core/utils/group_methods.dart';
-import 'package:chatbox/core/utils/small_common_widgets.dart';
-import 'package:chatbox/core/utils/snackbar.dart';
 import 'package:chatbox/core/utils/status_methods.dart';
+import 'package:chatbox/features/data/models/broadcast_model/broadcast_model.dart';
 import 'package:chatbox/features/data/models/chat_model/chat_model.dart';
 import 'package:chatbox/features/data/models/contact_model/contact_model.dart';
 import 'package:chatbox/features/data/models/group_model/group_model.dart';
-import 'package:chatbox/features/data/models/message_model/message_model.dart';
 import 'package:chatbox/features/data/models/status_model/status_model.dart';
 import 'package:chatbox/features/data/models/status_model/uploaded_status_model.dart';
-import 'package:chatbox/features/data/models/user_model/user_model.dart';
-import 'package:chatbox/features/presentation/bloc/group/group_bloc.dart';
+import 'package:chatbox/features/presentation/bloc/broadcast/broadcast_bloc.dart';
 import 'package:chatbox/features/presentation/bloc/message/message_bloc.dart';
-import 'package:chatbox/features/presentation/pages/mobile_view/group/group_pages/group_details_add_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -126,28 +121,17 @@ class _FloatingDoneNavigateButtonState
                   selectUsersID.add(user.chatBoxUserId!);
                 }
               }
-              GroupModel newBroadCast = GroupModel(
-                  groupID: DateTime.now().millisecondsSinceEpoch.toString(),
-                  createdBy: currentUserId,
-                  isIncomingMessage: false,
-                  groupCreatedAt: DateTime.now().toString(),
-                  groupDescription: null,
-                  groupAdmins: [currentUserId],
-                  adminsPermissions: const [
-                    AdminsGroupPermission.addMembers,
-                    AdminsGroupPermission.editGroupSettings,
-                    AdminsGroupPermission.viewMembers,
-                    AdminsGroupPermission.sendMessages,
-                    AdminsGroupPermission.approveMembers,
-                  ],
-                  isMuted: false,
-                  membersPermissions: const [],
-                  groupMembers: [currentUserId, ...selectUsersID]);
-              await fireStore
-                  .collection(usersCollection)
-                  .doc(currentUserId)
-                  .collection(groupsCollection)
-                  .add(newBroadCast.toJson());
+              final newBroadCast = BroadCastModel(
+                broadCastAdminId: currentUserId,
+                broadCastMembersId: [currentUserId, ...selectUsersID],
+              );
+
+              context.read<BroadcastBloc>().add(
+                    CreateBroadCastEvent(
+                      newBroadCastModel: newBroadCast,
+                    ),
+                  );
+                  Navigator.pop(context);
             }
 
             break;

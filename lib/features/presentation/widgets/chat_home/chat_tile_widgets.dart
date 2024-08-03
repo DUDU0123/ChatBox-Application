@@ -65,7 +65,6 @@ Widget buildSubtitle({
   required bool? isVoiceRecoding,
   required ChatModel? chatModel,
   required GroupModel? groupModel,
-  required String? lastMessage,
 }) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.end,

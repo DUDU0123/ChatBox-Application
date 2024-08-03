@@ -101,7 +101,7 @@ class GroupData {
       return firebaseFirestore
           .collection(usersCollection)
           .doc(currentser?.uid)
-          .collection(groupsCollection)
+          .collection(groupsCollection).orderBy(dbGroupLastMessageTime, descending: true)
           .snapshots()
           .map((groupSnapShot) {
         return groupSnapShot.docs.map((doc) {
